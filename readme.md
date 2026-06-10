@@ -8,9 +8,7 @@ AI-powered productivity assistant for your browser. Summarize pages, fact-check 
 
 ## 🎥 Demo Video
 
-Watch how it works:
-
-https://github.com/roshhellwett/projectcortex/blob/9a8a58d952cff941ffc0cc874da72592d69f1e2f/sample/sample.mp4
+Watch how it works: - demo folder video..
 
 ---
 

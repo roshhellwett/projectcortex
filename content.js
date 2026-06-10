@@ -1,56 +1,113 @@
 // Copyright (c) 2026 Zenith Open Source Projects
 // SPDX-License-Identifier: MIT
 
-if (!window.__pcVisibilityPatched) {
-  window.__pcVisibilityPatched = true;
-  (() => {
-    let _pcForceVisible = false
-    window.__pcSetForceVisible = val => { _pcForceVisible = val }
+function injectMainWorldHacks() {
+  try {
+    if (document.getElementById('pc-main-hacks')) return;
+    const script = document.createElement('script');
+    script.id = 'pc-main-hacks';
+    script.textContent = `
+      (() => {
+        let _forceVisible = false;
+        let _forceCopyPaste = false;
+        window.addEventListener('message', e => {
+          if (e.data && e.data.type === 'PC_CONFIG_UPDATE') {
+            _forceVisible = !!e.data.forceVisible;
+            _forceCopyPaste = !!e.data.forceCopyPaste;
+          }
+        });
+        let _origHidden = null;
+        let _origVisState = null;
+        try { _origHidden = Object.getOwnPropertyDescriptor(Document.prototype, 'hidden'); } catch (_) {}
+        try { _origVisState = Object.getOwnPropertyDescriptor(Document.prototype, 'visibilityState'); } catch (_) {}
+        try {
+          Object.defineProperty(Document.prototype, 'hidden', {
+            get: function() { return _forceVisible ? false : (_origHidden ? _origHidden.get.call(this) : false); },
+            configurable: true
+          });
+          Object.defineProperty(Document.prototype, 'visibilityState', {
+            get: function() { return _forceVisible ? 'visible' : (_origVisState ? _origVisState.get.call(this) : 'visible'); },
+            configurable: true
+          });
+        } catch (_) {}
+        const origAddEL = document.addEventListener.bind(document);
+        document.addEventListener = function(type, listener, options) {
+          if (_forceVisible && type === 'visibilitychange') return;
+          return origAddEL.apply(this, arguments);
+        };
+        try {
+          let _onvis = null;
+          Object.defineProperty(document, 'onvisibilitychange', {
+            get: () => _forceVisible ? null : _onvis,
+            set: fn => { if (!_forceVisible) _onvis = fn; },
+            configurable: true
+          });
+        } catch (_) {}
+        const origHasFocus = document.hasFocus ? document.hasFocus.bind(document) : () => true;
+        document.hasFocus = function() { return _forceVisible ? true : origHasFocus.apply(this); };
+        
+        const blockEvents = ['copy', 'cut', 'paste', 'selectstart', 'contextmenu', 'dragstart'];
+        blockEvents.forEach(evt => {
+          window.addEventListener(evt, e => {
+            if (_forceCopyPaste) e.stopImmediatePropagation();
+          }, true);
+        });
 
-    let _origHidden = null
-    let _origVisState = null
-
-    const captureDescriptor = (proto, prop) => {
-      try {
-        const d = Object.getOwnPropertyDescriptor(proto, prop)
-        if (d) return d
-      } catch (_) {}
-      return null
-    }
-
-    _origHidden = captureDescriptor(Document.prototype, 'hidden')
-    _origVisState = captureDescriptor(Document.prototype, 'visibilityState')
-
-    const defineConstGetter = (proto, prop, getFn) => {
-      try {
-        Object.defineProperty(proto, prop, { get: getFn, configurable: true })
-      } catch (_) {}
-    }
-
-    defineConstGetter(Document.prototype, 'hidden', function () {
-      return _pcForceVisible ? false : _origHidden ? _origHidden.get.call(this) : false
-    })
-
-    defineConstGetter(Document.prototype, 'visibilityState', function () {
-      return _pcForceVisible ? 'visible' : _origVisState ? _origVisState.get.call(this) : 'visible'
-    })
-
-    const origAddEL = document.addEventListener.bind(document)
-    document.addEventListener = (type, listener, options) => {
-      if (_pcForceVisible && type === 'visibilitychange') return
-      return origAddEL(type, listener, options)
-    }
-
-    let _onvis = null
-    try {
-      Object.defineProperty(document, 'onvisibilitychange', {
-        get: () => _pcForceVisible ? null : _onvis,
-        set: fn => { if (!_pcForceVisible) _onvis = fn },
-        configurable: true,
-      })
-    } catch (_) {}
-  })()
+        const origPreventDefault = Event.prototype.preventDefault;
+        Event.prototype.preventDefault = function() {
+          if (_forceCopyPaste) {
+            if (blockEvents.includes(this.type)) return;
+            if (this.type === 'mousedown') {
+              const t = this.target && this.target.tagName ? this.target.tagName.toUpperCase() : '';
+              if (t !== 'BUTTON' && t !== 'A' && t !== 'INPUT' && t !== 'SELECT' && t !== 'TEXTAREA') {
+                return;
+              }
+            }
+          }
+          return origPreventDefault.apply(this, arguments);
+        };
+        
+        try {
+          const origRemoveAll = Selection.prototype.removeAllRanges;
+          const origEmpty = Selection.prototype.empty;
+          const origCollapse = Selection.prototype.collapse;
+          
+          Selection.prototype.removeAllRanges = function() {
+            if (_forceCopyPaste) return;
+            return origRemoveAll.apply(this, arguments);
+          };
+          Selection.prototype.empty = function() {
+            if (_forceCopyPaste) return;
+            return origEmpty?.apply(this, arguments);
+          };
+          Selection.prototype.collapse = function() {
+            if (_forceCopyPaste) return;
+            return origCollapse?.apply(this, arguments);
+          };
+        } catch (_) {}
+        
+        const clearInlineStyles = () => {
+          if (!_forceCopyPaste) return;
+          document.querySelectorAll('[style*="user-select"], [onselectstart], [onmousedown], [oncopy], [oncontextmenu]').forEach(el => {
+            el.style.userSelect = 'auto';
+            el.style.webkitUserSelect = 'auto';
+            el.removeAttribute('onselectstart');
+            el.removeAttribute('onmousedown');
+            el.removeAttribute('oncopy');
+            el.removeAttribute('oncontextmenu');
+          });
+        };
+        window.addEventListener('load', clearInlineStyles);
+        setInterval(clearInlineStyles, 2000);
+      })();
+    `;
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
+  } catch (e) {
+    console.warn('ProjectCortex: Main world injection blocked by CSP');
+  }
 }
+injectMainWorldHacks();
 
 ;(function () {
   if (window.__projectCortexLoaded) {
@@ -79,8 +136,33 @@ if (!window.__pcVisibilityPatched) {
 
   function isOurElement(el) {
     return Boolean(
-      el?.closest?.('#pagemind-panel, #pagemind-bubble, #pagemind-fab')
+      el?.closest?.('#pagemind-panel, #pagemind-bubble')
     )
+  }
+
+  function getDeepSelection() {
+    let sel = window.getSelection()
+    let active = document.activeElement
+    while (active && active.shadowRoot) {
+      if (active.shadowRoot.getSelection) {
+        const s = active.shadowRoot.getSelection()
+        if (s && s.rangeCount > 0 && !s.isCollapsed) sel = s
+      }
+      active = active.shadowRoot.activeElement
+    }
+    return sel
+  }
+
+  function getDeepSelectionText() {
+    const sel = getDeepSelection()
+    let text = sel?.toString() || ''
+    if (!text && document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+      try {
+        const ta = document.activeElement
+        text = ta.value.substring(ta.selectionStart, ta.selectionEnd)
+      } catch (e) {}
+    }
+    return text.replace(/[\u200B-\u200D\uFEFF]/g, '').trim()
   }
 
   function getCleanText(el) {
@@ -88,7 +170,7 @@ if (!window.__pcVisibilityPatched) {
     const clone = el.cloneNode(true)
     clone
       .querySelectorAll(
-        '#pagemind-panel,#pagemind-bubble,#pagemind-fab,script,style,noscript'
+        '#pagemind-panel,#pagemind-bubble,script,style,noscript'
       )
       .forEach(n => n.remove())
 
@@ -107,6 +189,7 @@ if (!window.__pcVisibilityPatched) {
 
     return (
       (clone.innerText || clone.textContent || '')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '')
         .replace(/\r/g, '')
         .replace(/[ \t]+\n/g, '\n')
         .replace(/\n{3,}/g, '\n\n')
@@ -322,15 +405,15 @@ if (!window.__pcVisibilityPatched) {
     const style = document.createElement('style')
     style.id = 'pm-copy-paste-override'
     style.textContent =
-      '* { user-select: auto !important; -webkit-user-select: auto !important; -moz-user-select: auto !important; -ms-user-select: auto !important; -webkit-touch-callout: default !important; }'
+      '*, html, body, div, p, span, a, h1, h2, h3, h4, h5, h6, table, tr, td, th, ul, ol, li, section, article, main, header, footer, form, label, input, textarea { user-select: auto !important; -webkit-user-select: auto !important; -moz-user-select: auto !important; -ms-user-select: auto !important; -webkit-touch-callout: default !important; }'
     document.head.appendChild(style)
   }
 
   function buildPrompt(selectedText, contextText) {
     return (
-      `The user selected this text as part of an MCQ:\n"${selectedText}"\n\n` +
-      `Here is the surrounding page text:\n---\n${contextText}\n---\n\n` +
-      `Find the full question, the options, and the correct answer. Respond ONLY with the requested exact format.`
+      `I have selected a specific question from a web page: "${selectedText}"\n\n` +
+      `Here is a snippet of the page that contains my question and its options:\n---\n${contextText}\n---\n\n` +
+      `CRITICAL INSTRUCTION: You MUST find the options specifically for the question I selected. DO NOT solve any other questions found in the page snippet. Ignore the rest of the page. Only extract the question matching my selected text, its options, and the correct answer. Respond ONLY with the requested exact format.`
     )
   }
 
@@ -345,17 +428,17 @@ if (!window.__pcVisibilityPatched) {
 
     let state = 'NONE'
     for (const line of lines) {
-      if (line.startsWith('QUESTION:')) {
-        question = line.replace('QUESTION:', '').trim()
+      if (/^\**QUESTION\s*:?\**\s*/i.test(line)) {
+        question = line.replace(/^\**QUESTION\s*:?\**\s*/i, '').trim()
         state = 'Q'
         continue
       }
-      if (line.startsWith('OPTIONS:')) {
+      if (/^\**OPTIONS\s*:?\**\s*/i.test(line)) {
         state = 'O'
         continue
       }
-      if (line.startsWith('ANSWER:')) {
-        answerLetter = line.replace('ANSWER:', '').trim()
+      if (/^\**ANSWER\s*:?\**\s*/i.test(line)) {
+        answerLetter = line.replace(/^\**ANSWER\s*:?\**\s*/i, '').trim()
         state = 'A'
         continue
       }
@@ -364,11 +447,11 @@ if (!window.__pcVisibilityPatched) {
         if (line) question += ' ' + line
       } else if (state === 'O') {
         if (line) {
-          const m = line.match(/^([A-Z])[\)\.]?\s*(.+)/)
+          const m = line.match(/^([A-Za-z0-9])[\)\.]?\s*(.+)/)
           if (m) {
             options.push({
               index: options.length + 1,
-              label: m[1],
+              label: m[1].toUpperCase(),
               text: m[2]
             })
           }
@@ -396,8 +479,7 @@ if (!window.__pcVisibilityPatched) {
 
   const runCorrectAnswers = guard(async function () {
     _lastAction = { name: 'correct_answers' }
-    const sel = window.getSelection()
-    const selectedText = sel?.toString()?.trim() || ''
+    const selectedText = getDeepSelectionText()
 
     if (!selectedText) {
       showError('Please select the question text first.')
@@ -447,7 +529,7 @@ if (!window.__pcVisibilityPatched) {
   })
 
   function getSelectedContainer() {
-    const sel = window.getSelection()
+    const sel = getDeepSelection()
     if (!sel?.rangeCount) return null
     const node = sel.getRangeAt(0).startContainer
     return node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement
@@ -459,8 +541,7 @@ if (!window.__pcVisibilityPatched) {
     showState('loading')
     startThinking('Reading page')
 
-    const sel = window.getSelection()
-    const selectedText = sel?.toString()?.trim() || ''
+    const selectedText = getDeepSelectionText()
     const pageText = selectedText || getCleanText(document.body)
 
     if (!pageText || pageText.length < 50) {
@@ -491,8 +572,7 @@ if (!window.__pcVisibilityPatched) {
 
   const runFactCheck = guard(async function () {
     _lastAction = { name: 'factcheck' }
-    const sel = window.getSelection()
-    const selectedText = sel?.toString()?.trim() || ''
+    const selectedText = getDeepSelectionText()
 
     if (!selectedText) {
       showError('Please select text on the page to fact-check, then click Fact Check again.')
@@ -715,8 +795,7 @@ if (!window.__pcVisibilityPatched) {
 
   function openPanel() {
     const panel = document.getElementById('pagemind-panel')
-    const fab = document.getElementById('pagemind-fab')
-    if (!panel || !fab) return
+    if (!panel ) return
     if (!panel.classList.contains('pm-open')) {
       if (_panelPos) {
         panel.style.left = _panelPos.x + 'px'
@@ -733,10 +812,8 @@ if (!window.__pcVisibilityPatched) {
 
   function closePanel() {
     const panel = document.getElementById('pagemind-panel')
-    const fab = document.getElementById('pagemind-fab')
     if (panel) panel.classList.remove('pm-open')
-    if (fab) fab.classList.remove('pm-active')
-  }
+      }
 
   function buildPanelHTML() {
     return `
@@ -836,6 +913,8 @@ if (!window.__pcVisibilityPatched) {
         '<button id="pm-bubble-factcheck">\uD83D\uDD0D Fact Check</button>' +
         '<button id="pm-bubble-summarize">\uD83D\uDCC4 Summarize</button>'
       document.body.appendChild(_bubble)
+      
+      _bubble.addEventListener('mousedown', e => { e.preventDefault() })
 
       _bubble.querySelector('#pm-bubble-correct')?.addEventListener('click', () => {
         hideBubble()
@@ -909,7 +988,7 @@ if (!window.__pcVisibilityPatched) {
   function scheduleBubbleCheck(delay = 200) {
     clearTimeout(_hideTimer)
     _hideTimer = setTimeout(() => {
-      const sel = window.getSelection()
+      const sel = getDeepSelection()
       if (sel && !sel.isCollapsed && sel.toString().trim()) {
         showBubble(sel)
       } else {
@@ -980,23 +1059,6 @@ if (!window.__pcVisibilityPatched) {
     })
   }
 
-  function createFab() {
-    const fab = document.createElement('button')
-    fab.id = 'pagemind-fab'
-    fab.innerHTML =
-      '<svg width="20" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    fab.addEventListener('click', () => {
-      const panel = document.getElementById('pagemind-panel')
-      if (panel.classList.contains('pm-open')) {
-        closePanel()
-      } else {
-        openPanel()
-        showState('welcome')
-      }
-    })
-    document.body.appendChild(fab)
-    return fab
-  }
 
   function wireActionButtons() {
     try {
@@ -1136,8 +1198,12 @@ if (!window.__pcVisibilityPatched) {
         data => {
           if (chrome.runtime.lastError) return
           const hostname = window.location.hostname
-          window.__pcSetForceVisible?.(Boolean(data.activeWindowsWhitelist?.[hostname]))
-          if (data.copyPasteWhitelist?.[hostname]) {
+          const forceVisible = Boolean(data.activeWindowsWhitelist?.[hostname])
+          const forceCopyPaste = Boolean(data.copyPasteWhitelist?.[hostname])
+          
+          window.postMessage({ type: 'PC_CONFIG_UPDATE', forceVisible, forceCopyPaste }, '*')
+          
+          if (forceCopyPaste) {
             applyCopyPasteOverride()
           }
         }
@@ -1146,7 +1212,7 @@ if (!window.__pcVisibilityPatched) {
   }
 
   function cleanup() {
-    document.querySelectorAll('#pagemind-panel, #pagemind-bubble, #pagemind-fab, #pm-copy-paste-override')
+    document.querySelectorAll('#pagemind-panel, #pagemind-bubble, #pm-copy-paste-override')
       .forEach(el => el.remove())
     if (_thinkTimer) clearInterval(_thinkTimer)
     if (_typeTimer) cancelAnimationFrame(_typeTimer)
@@ -1168,7 +1234,6 @@ if (!window.__pcVisibilityPatched) {
         document.addEventListener('DOMContentLoaded', init)
         return
       }
-      createFab()
       _panel = document.createElement('div')
       _panel.id = 'pagemind-panel'
       _panel.innerHTML = buildPanelHTML()

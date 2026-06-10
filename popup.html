@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<!-- Copyright (c) 2026 Zenith Open Source Projects -->
+<!-- SPDX-License-Identifier: MIT -->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 200px;
+      background: #0e0e0e;
+      color: #aaa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 10px;
+    }
+
+    .hdr {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 10px;
+      background: #111;
+    }
+
+    .hdr svg {
+      width: 12px;
+      height: 12px;
+      opacity: 0.7;
+    }
+
+    .hdr-t {
+      font-weight: 700;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #ccc;
+    }
+
+    .hdr-b {
+      margin-left: auto;
+      font-size: 6px;
+      font-weight: 700;
+      color: #555;
+      border: 1px solid #2a2a2a;
+      border-radius: 2px;
+      padding: 1px 4px;
+      line-height: 1.4;
+    }
+
+    .hdr-tg {
+      display: block;
+      font-size: 5.5px;
+      font-weight: 500;
+      color: #555;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .bd {
+      padding: 8px 10px;
+    }
+
+    .btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid #2a2a2a;
+      border-radius: 5px;
+      color: #999;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 6px 4px;
+      cursor: pointer;
+      transition: all 0.12s;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: #3a3a3a;
+      color: #ddd;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-w {
+      grid-column: 1 / -1;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 12px 0;
+      color: #555;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+
+    .loading.visible {
+      display: block;
+    }
+
+    .loading .spinner {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid #333;
+      border-top-color: #888;
+      border-radius: 50%;
+      animation: popSpin 0.7s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    @keyframes popSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hdr">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="#ccc" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </svg>
+    <div>
+      <span class="hdr-t">Cortex</span>
+      <span class="hdr-tg">Powered by Zenith</span>
+    </div>
+    <span class="hdr-b">AI</span>
+  </div>
+  <div class="bd">
+    <div class="btns">
+      <button class="btn" id="factCheck" aria-label="Fact check selected text">Fact Check</button>
+      <button class="btn" id="correctAnswers" aria-label="Find the correct MCQ answer">Correct Answer</button>
+      <button class="btn btn-w" id="summarize" aria-label="Summarize the current page">Summarize Page</button>
+      <button class="btn btn-w" id="openPanel" aria-label="Open the Cortex panel">Open Panel</button>
+      <button class="btn btn-w" id="openSettings" aria-label="Open settings and preferences">Settings</button>
+    </div>
+    <div class="loading" id="loading" aria-live="polite" aria-label="Processing"><span
+        class="spinner"></span>Processing...</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+
+</html>

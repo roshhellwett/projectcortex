@@ -1,0 +1,810 @@
+/* Copyright (c) 2026 Zenith Open Source Projects */
+/* SPDX-License-Identifier: MIT */
+
+:root {
+    --pm-surface: rgba(14,14,14,0.98);
+    --pm-surface-hover: rgba(255,255,255,0.04);
+    --pm-border: #2a2a2a;
+    --pm-border-light: rgba(255,255,255,0.06);
+    --pm-text: #ccc;
+    --pm-text-muted: #555;
+    --pm-text-bright: #fff;
+    --pm-accent-green: rgba(40,180,90,0.35);
+    --pm-accent-green-bg: rgba(20,120,60,0.12);
+    --pm-radius: 14px;
+    --pm-radius-sm: 10px;
+    --pm-radius-xs: 7px;
+    --pm-shadow: 0 24px 80px rgba(0,0,0,0.9);
+    --pm-transition: cubic-bezier(0.22,1,0.36,1);
+}
+
+#pagemind-panel,
+#pagemind-panel *,
+#pagemind-bubble,
+#pagemind-bubble *,
+#pagemind-fab,
+#pagemind-fab * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#pagemind-fab {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 2147483647 !important;
+    width: 52px !important;
+    height: 52px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #1e1e1e, #141414) !important;
+    border: 1px solid #333 !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
+    transition: all 0.25s var(--pm-transition) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#pagemind-fab:focus-visible {
+    outline: 2px solid #888 !important;
+    outline-offset: 2px !important;
+}
+
+#pagemind-fab:hover {
+    background: linear-gradient(135deg, #2a2a2a, #1e1e1e) !important;
+    transform: scale(1.08) !important;
+    border-color: #444 !important;
+}
+
+#pagemind-fab:active {
+    transform: scale(0.92) !important;
+}
+
+#pagemind-fab.pm-active {
+    background: linear-gradient(135deg, #0f0f0f, #0a0a0a) !important;
+    transform: scale(0.92) !important;
+}
+
+#pagemind-panel {
+    position: fixed !important;
+    top: 50%;
+    left: -430px;
+    transform: translateY(-50%);
+    z-index: 2147483646 !important;
+    width: 420px !important;
+    max-width: calc(100vw - 32px) !important;
+    max-height: 85vh !important;
+    background: var(--pm-surface) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--pm-border) !important;
+    border-radius: var(--pm-radius) !important;
+    box-shadow: var(--pm-shadow), 0 0 0 1px rgba(255,255,255,0.03) inset !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    transition: left 0.4s var(--pm-transition), opacity 0.3s ease !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel.pm-open {
+    left: 24px;
+    opacity: 1 !important;
+    pointer-events: all !important;
+}
+
+#pagemind-panel.pm-positioned {
+    left: auto;
+    top: auto;
+    transform: none;
+    transition: opacity 0.25s ease !important;
+}
+
+#pagemind-panel.pm-dragging {
+    transition: none !important;
+    user-select: none !important;
+    opacity: 0.96 !important;
+    box-shadow: 0 28px 100px rgba(0,0,0,0.95), 0 0 0 1px rgba(255,255,255,0.06) inset !important;
+}
+
+#pagemind-panel .pm-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 14px 18px !important;
+    border-bottom: 1px solid var(--pm-border-light) !important;
+    background: var(--pm-surface-hover) !important;
+    flex-shrink: 0 !important;
+    cursor: grab !important;
+}
+
+#pagemind-panel.pm-dragging .pm-header {
+    cursor: grabbing !important;
+}
+
+#pagemind-panel .pm-logo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+#pagemind-panel .pm-logo svg {
+    width: 16px !important;
+    height: 16px !important;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.15)) !important;
+}
+
+#pagemind-panel .pm-logo-text {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    letter-spacing: 0.1em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-badge {
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    background: rgba(255,255,255,0.06) !important;
+    color: #888 !important;
+    border: 1px solid #333 !important;
+    border-radius: 4px !important;
+    padding: 2px 7px !important;
+    margin: 0 !important;
+    letter-spacing: 0.05em !important;
+}
+
+#pagemind-panel .pm-header-actions {
+    display: flex !important;
+    gap: 4px !important;
+}
+
+#pagemind-panel .pm-icon-btn {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #555 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel .pm-icon-btn:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+}
+
+#pagemind-panel .pm-icon-btn:active {
+    transform: scale(0.9) !important;
+}
+
+#pagemind-panel .pm-page-info {
+    padding: 10px 18px !important;
+    border-bottom: 1px solid rgba(255,255,255,0.04) !important;
+    background: rgba(0,0,0,0.2) !important;
+    flex-shrink: 0 !important;
+}
+
+#pagemind-panel .pm-page-type {
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    color: #555 !important;
+    margin: 0 0 3px 0 !important;
+    padding: 0 !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+}
+
+#pagemind-panel .pm-page-title {
+    font-size: 12px !important;
+    color: #777 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.4 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 1 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+#pagemind-panel .pm-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 16px 18px !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #222 transparent !important;
+}
+
+#pagemind-panel .pm-body::-webkit-scrollbar {
+    width: 4px !important;
+}
+
+#pagemind-panel .pm-body::-webkit-scrollbar-thumb {
+    background: #222 !important;
+    border-radius: 2px !important;
+}
+
+#pagemind-panel .pm-body::-webkit-scrollbar-thumb:hover {
+    background: #333 !important;
+}
+
+#pagemind-panel .pm-state {
+    display: none !important;
+}
+
+#pagemind-panel .pm-state.active {
+    display: block !important;
+    animation: pmFadeIn 0.25s ease !important;
+}
+
+@keyframes pmFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+#pagemind-panel .pm-section-label {
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    color: #555 !important;
+    text-transform: uppercase !important;
+    margin: 0 0 12px 0 !important;
+    padding: 0 !important;
+    letter-spacing: 0.18em !important;
+}
+
+#pagemind-panel .pm-actions-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    margin-bottom: 18px !important;
+}
+
+#pagemind-panel .pm-action-btn {
+    background: var(--pm-surface-hover) !important;
+    border: 1px solid var(--pm-border) !important;
+    border-radius: var(--pm-radius-sm) !important;
+    color: var(--pm-text) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 13px 10px !important;
+    cursor: pointer !important;
+    transition: all 0.18s ease !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+}
+
+#pagemind-panel .pm-action-btn:hover {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: #444 !important;
+    color: #fff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+}
+
+#pagemind-panel .pm-action-btn:focus-visible,
+#pagemind-panel .pm-back-btn:focus-visible,
+#pagemind-panel .pm-retry-btn:focus-visible,
+#pagemind-panel .pm-copy-btn:focus-visible,
+#pagemind-panel .pm-icon-btn:focus-visible,
+#pagemind-panel #pm-ask-send:focus-visible {
+    outline: 2px solid #666 !important;
+    outline-offset: 1px !important;
+}
+
+#pagemind-panel .pm-action-btn:active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+#pagemind-panel .pm-divider {
+    height: 1px !important;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent) !important;
+    margin: 18px 0 !important;
+    border: none !important;
+}
+
+#pagemind-panel .pm-welcome-hint {
+    font-size: 12px !important;
+    color: #555 !important;
+    margin: 0 0 4px 0 !important;
+    line-height: 1.5 !important;
+}
+
+#pagemind-panel .pm-loading-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    padding: 60px 20px !important;
+}
+
+#pagemind-panel .pm-loader {
+    width: 36px !important;
+    height: 36px !important;
+    border: 2.5px solid rgba(255,255,255,0.06) !important;
+    border-top-color: #888 !important;
+    border-radius: 50% !important;
+    animation: pmSpin 0.8s linear infinite !important;
+}
+
+@keyframes pmSpin {
+    to { transform: rotate(360deg); }
+}
+
+#pagemind-panel .pm-loading-label {
+    font-size: 11px !important;
+    color: #555 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-loading-sub {
+    font-size: 9px !important;
+    color: #444 !important;
+    margin-top: 6px !important;
+    padding: 0 !important;
+    letter-spacing: 0.05em !important;
+}
+
+#pagemind-panel .pm-result-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+}
+
+#pagemind-panel .pm-result-action {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #aaa !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-back-btn {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid #2a2a2a !important;
+    color: #888 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    padding: 6px 13px !important;
+    border-radius: 7px !important;
+    transition: all 0.14s !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel .pm-back-btn:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: var(--pm-text-bright) !important;
+    border-color: #444 !important;
+}
+
+#pagemind-panel .pm-error-actions {
+    display: flex !important;
+    gap: 6px !important;
+    margin-top: 10px !important;
+    justify-content: center !important;
+}
+
+#pagemind-panel .pm-retry-btn {
+    background: rgba(255,255,255,0.06) !important;
+    border: 1px solid #3a3a3a !important;
+    color: #bbb !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    padding: 6px 13px !important;
+    border-radius: 7px !important;
+    transition: all 0.14s !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel .pm-retry-btn:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: var(--pm-text-bright) !important;
+    border-color: #555 !important;
+}
+
+#pagemind-panel .pm-retry-btn:active {
+    transform: scale(0.96) !important;
+}
+
+#pagemind-panel .pm-back-btn:active {
+    transform: scale(0.96) !important;
+}
+
+#pagemind-panel .pm-result-body {
+    font-size: 13px !important;
+    color: var(--pm-text) !important;
+    line-height: 1.75 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+}
+
+#pagemind-panel .pm-result-body strong {
+    color: #fff !important;
+    font-weight: 700 !important;
+}
+
+#pagemind-panel .pm-cursor {
+    display: inline-block !important;
+    width: 6px !important;
+    height: 1.1em !important;
+    background: #888 !important;
+    margin-left: 2px !important;
+    animation: pmBlink 0.7s step-end infinite !important;
+    vertical-align: text-bottom !important;
+    border-radius: 1px !important;
+}
+
+@keyframes pmBlink {
+    50% { opacity: 0; }
+}
+
+#pagemind-panel .pm-result-footer {
+    margin-top: 18px !important;
+    padding-top: 14px !important;
+    border-top: 1px solid rgba(255,255,255,0.04) !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+#pagemind-panel .pm-copy-btn {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid #2a2a2a !important;
+    color: #888 !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 7px 15px !important;
+    cursor: pointer !important;
+    border-radius: 7px !important;
+    transition: all 0.14s !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel .pm-copy-btn:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+    border-color: #444 !important;
+}
+
+#pagemind-panel .pm-copy-btn:active {
+    transform: scale(0.96) !important;
+}
+
+#pagemind-panel .pm-mcq-question {
+    font-size: 13px !important;
+    color: #ddd !important;
+    font-weight: 500 !important;
+    margin: 0 0 14px 0 !important;
+    padding: 0 0 13px 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    line-height: 1.6 !important;
+}
+
+#pagemind-panel .pm-options-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin: 0 0 16px 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-option {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    background: rgba(255,255,255,0.02) !important;
+    border: 1px solid var(--pm-border-light) !important;
+    border-radius: 9px !important;
+    padding: 11px 13px !important;
+    margin: 0 !important;
+    transition: all 0.15s !important;
+}
+
+#pagemind-panel .pm-option--correct {
+    background: rgba(20,120,60,0.12) !important;
+    border-color: rgba(40,180,90,0.35) !important;
+    box-shadow: 0 0 0 1px rgba(40,180,90,0.2) inset !important;
+}
+
+#pagemind-panel .pm-option-num,
+#pagemind-panel .pm-option-tick {
+    flex-shrink: 0 !important;
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-option-num {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: #555 !important;
+}
+
+#pagemind-panel .pm-option-tick {
+    background: rgba(40,180,90,0.2) !important;
+    border: 1px solid rgba(40,180,90,0.4) !important;
+    color: #4ade80 !important;
+}
+
+#pagemind-panel .pm-option-text {
+    flex: 1 !important;
+    font-size: 12.5px !important;
+    color: #aaa !important;
+    line-height: 1.5 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-option--correct .pm-option-text {
+    color: #b8f5d6 !important;
+    font-weight: 600 !important;
+}
+
+#pagemind-panel .pm-answer-card {
+    background: rgba(20,120,60,0.08) !important;
+    border: 1px solid rgba(40,180,90,0.3) !important;
+    border-radius: 10px !important;
+    padding: 14px 16px !important;
+    margin: 0 !important;
+    box-shadow: 0 0 0 1px rgba(40,180,90,0.15) inset !important;
+}
+
+#pagemind-panel .pm-answer-kicker {
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    color: #4ade80 !important;
+    text-transform: uppercase !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    letter-spacing: 0.18em !important;
+}
+
+#pagemind-panel .pm-answer-value {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-answer-num {
+    flex-shrink: 0 !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: rgba(40,180,90,0.2) !important;
+    border: 1px solid rgba(40,180,90,0.4) !important;
+    color: #4ade80 !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-answer-txt {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #b8f5d6 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#pagemind-panel .pm-error-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 50px 20px !important;
+    text-align: center !important;
+}
+
+#pagemind-panel .pm-error-icon {
+    font-size: 28px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    opacity: 0.5 !important;
+}
+
+#pagemind-panel .pm-error-msg {
+    font-size: 13px !important;
+    color: #777 !important;
+    line-height: 1.6 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+}
+
+#pagemind-panel .pm-ask-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    border-top: 1px solid rgba(255,255,255,0.04) !important;
+    background: rgba(0,0,0,0.3) !important;
+    flex-shrink: 0 !important;
+}
+
+#pagemind-panel #pm-ask-input {
+    flex: 1 !important;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid #2a2a2a !important;
+    border-radius: 8px !important;
+    color: #ddd !important;
+    font-size: 12px !important;
+    padding: 10px 12px !important;
+    outline: none !important;
+    transition: all 0.15s !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel #pm-ask-input:focus {
+    border-color: #444 !important;
+    background: rgba(255,255,255,0.06) !important;
+}
+
+#pagemind-panel #pm-ask-input::placeholder {
+    color: #444 !important;
+}
+
+#pagemind-panel #pm-ask-send {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 8px !important;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid #2a2a2a !important;
+    color: #666 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.14s !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+#pagemind-panel #pm-ask-send:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff !important;
+    border-color: #444 !important;
+}
+
+#pagemind-panel #pm-ask-send:active {
+    transform: scale(0.92) !important;
+}
+
+#pagemind-bubble {
+    position: fixed !important;
+    z-index: 2147483647 !important;
+    display: none !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: rgba(16,16,16,0.96) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--pm-border) !important;
+    border-radius: var(--pm-radius-sm) !important;
+    padding: 5px !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.8) !important;
+    max-width: calc(100vw - 20px) !important;
+    flex-wrap: wrap !important;
+}
+
+#pagemind-bubble.visible {
+    display: flex !important;
+    animation: pmBubbleIn 0.15s ease !important;
+}
+
+@keyframes pmBubbleIn {
+    from { opacity: 0; transform: scale(0.92) translateY(4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+#pagemind-bubble button {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    border-radius: 7px !important;
+    color: #bbb !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 6px 10px !important;
+    cursor: pointer !important;
+    transition: all 0.12s !important;
+    white-space: nowrap !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    margin: 0 !important;
+}
+
+#pagemind-bubble button:hover {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: #444 !important;
+    color: #fff !important;
+}
+
+#pagemind-bubble button:focus-visible {
+    outline: 2px solid #666 !important;
+    outline-offset: 1px !important;
+}
+
+#pagemind-bubble button:active {
+    transform: scale(0.94) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pagemind-panel,
+    #pagemind-panel *,
+    #pagemind-fab,
+    #pagemind-fab *,
+    #pagemind-bubble,
+    #pagemind-bubble * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media print {
+    #pagemind-panel,
+    #pagemind-fab,
+    #pagemind-bubble {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #pagemind-panel {
+        width: calc(100vw - 32px) !important;
+        max-height: 80vh !important;
+    }
+    #pagemind-panel.pm-open {
+        left: 16px !important;
+    }
+    #pagemind-panel .pm-actions-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

@@ -6,6 +6,8 @@
 
 AI-powered productivity assistant for your browser. Summarize pages, fact-check claims, solve MCQs, and ask anything about any webpage — all powered by Groq and OpenRouter.
 
+https://github.com/roshhellwett/projectcortex/blob/9a8a58d952cff941ffc0cc874da72592d69f1e2f/sample/sample.mp4
+
 ---
 
 ## ✨ Key Features

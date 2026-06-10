@@ -91,15 +91,13 @@ if (!window.__pcVisibilityPatched) {
         '#pagemind-panel,#pagemind-bubble,#pagemind-fab,script,style,noscript'
       )
       .forEach(n => n.remove())
-    
-    // Preserve checkboxes and radio buttons as explicit list markers
+
     clone.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(n => {
       const span = document.createElement('span')
       span.textContent = '[ ] '
       if (n.parentNode) n.parentNode.replaceChild(span, n)
     })
 
-    // Force newlines for block elements so textContent preserves formatting
     clone.querySelectorAll('div, p, li, h1, h2, h3, h4, h5, h6, tr').forEach(n => {
       n.appendChild(document.createTextNode('\n'))
     })
@@ -339,7 +337,7 @@ if (!window.__pcVisibilityPatched) {
   function parseAiResponse(response) {
     let cleanResponse = String(response || '').trim()
     cleanResponse = cleanResponse.replace(/^```[a-z]*\n/im, '').replace(/\n```$/im, '').trim()
-    
+
     const lines = cleanResponse.split('\n').map(l => l.trim())
     let question = ''
     let options = []

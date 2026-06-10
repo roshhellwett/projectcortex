@@ -106,7 +106,6 @@ function classifyError(status, data, apiProvider) {
   const msg = data?.error?.message || data?.message || data?.error || '';
   const lower = typeof msg === 'string' ? msg.toLowerCase() : '';
 
-  // Sanitize error message to prevent key exposure
   let sanitizedMsg = lower.replace(/sk_[a-zA-Z0-9_\-]{20,}/g, 'sk_***');
   sanitizedMsg = sanitizedMsg.replace(/gsk_[a-zA-Z0-9_\-]{20,}/g, 'gsk_***');
   sanitizedMsg = sanitizedMsg.replace(/sk-or-[a-zA-Z0-9_\-]{20,}/g, 'sk-or-***');

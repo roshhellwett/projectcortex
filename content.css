@@ -22,21 +22,12 @@
 #pagemind-panel *,
 #pagemind-bubble,
 #pagemind-bubble * * {
+    all: revert !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    box-sizing: border-box !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-
-
-
-
-
-
-
-
-
-
-#pagemind-panel {
+}#pagemind-panel {
     position: fixed !important;
     top: 50%;
     left: -430px;

@@ -30,16 +30,33 @@ function injectMainWorldHacks() {
             configurable: true
           });
         } catch (_) {}
-        const origAddEL = document.addEventListener.bind(document);
+        const origDocAddEL = document.addEventListener.bind(document);
         document.addEventListener = function(type, listener, options) {
           if (_forceVisible && type === 'visibilitychange') return;
-          return origAddEL.apply(this, arguments);
+          return origDocAddEL.apply(this, arguments);
+        };
+        const origWinAddEL = window.addEventListener.bind(window);
+        window.addEventListener = function(type, listener, options) {
+          if (_forceVisible && (type === 'blur' || type === 'focus' || type === 'visibilitychange')) return;
+          return origWinAddEL.apply(this, arguments);
         };
         try {
           let _onvis = null;
           Object.defineProperty(document, 'onvisibilitychange', {
             get: () => _forceVisible ? null : _onvis,
             set: fn => { if (!_forceVisible) _onvis = fn; },
+            configurable: true
+          });
+          let _onblur = null;
+          Object.defineProperty(window, 'onblur', {
+            get: () => _forceVisible ? null : _onblur,
+            set: fn => { if (!_forceVisible) _onblur = fn; },
+            configurable: true
+          });
+          let _onfocus = null;
+          Object.defineProperty(window, 'onfocus', {
+            get: () => _forceVisible ? null : _onfocus,
+            set: fn => { if (!_forceVisible) _onfocus = fn; },
             configurable: true
           });
         } catch (_) {}
@@ -57,6 +74,11 @@ function injectMainWorldHacks() {
         Event.prototype.preventDefault = function() {
           if (_forceCopyPaste) {
             if (blockEvents.includes(this.type)) return;
+            if (this.type === 'keydown' || this.type === 'keyup') {
+              if ((this.ctrlKey || this.metaKey) && ['c', 'v', 'x', 'a', 'C', 'V', 'X', 'A'].includes(this.key)) {
+                return;
+              }
+            }
             if (this.type === 'mousedown') {
               const t = this.target && this.target.tagName ? this.target.tagName.toUpperCase() : '';
               if (t !== 'BUTTON' && t !== 'A' && t !== 'INPUT' && t !== 'SELECT' && t !== 'TEXTAREA') {
@@ -401,12 +423,21 @@ injectMainWorldHacks();
   }
 
   function applyCopyPasteOverride() {
-    if (document.getElementById('pm-copy-paste-override')) return
+    if (window._pmCssObserver) return
     const style = document.createElement('style')
     style.id = 'pm-copy-paste-override'
     style.textContent =
       '*, html, body, div, p, span, a, h1, h2, h3, h4, h5, h6, table, tr, td, th, ul, ol, li, section, article, main, header, footer, form, label, input, textarea { user-select: auto !important; -webkit-user-select: auto !important; -moz-user-select: auto !important; -ms-user-select: auto !important; -webkit-touch-callout: default !important; }'
     document.head.appendChild(style)
+
+    window._pmCssObserver = new MutationObserver(() => {
+      if (!document.getElementById('pm-copy-paste-override')) {
+        document.head.appendChild(style)
+      } else if (document.head.lastElementChild !== style) {
+        document.head.appendChild(style)
+      }
+    })
+    window._pmCssObserver.observe(document.head, { childList: true })
   }
 
   function buildPrompt(selectedText, contextText) {

@@ -6,6 +6,12 @@
 
 AI-powered productivity assistant for your browser. Summarize pages, fact-check claims, solve MCQs, and ask anything about any webpage — all powered by Groq and OpenRouter.
 
+## 🎥 Demo Video
+
+Watch how it works:
+
+https://github.com/roshhellwett/projectcortex/blob/9a8a58d952cff941ffc0cc874da72592d69f1e2f/sample/sample.mp4
+
 ---
 
 ## ✨ Key Features
@@ -31,7 +37,19 @@ AI-powered productivity assistant for your browser. Summarize pages, fact-check 
 ### From Chrome Web Store
 *(Coming soon — install manually for now)*
 
-### Manual Installation (Developer Mode)
+### Easy Installation (For Everyone)
+
+No coding knowledge required! Just follow these simple steps:
+
+1. Click the green **Code** button at the top of this page and select **Download ZIP**.
+2. Extract the downloaded ZIP file to a folder on your computer.
+3. Open Chrome and go to `chrome://extensions/` (or click the puzzle piece icon > Manage extensions).
+4. Turn on **Developer mode** using the toggle switch in the top-right corner.
+5. Click the **Load unpacked** button in the top-left.
+6. Select the extracted folder (`projectcortex-main`).
+7. Done! Click the puzzle piece icon to pin **Project Cortex** to your toolbar for easy access.
+
+### For Developers (Git)
 
 ```bash
 git clone https://github.com/roshhellwett/projectcortex.git
@@ -40,7 +58,6 @@ git clone https://github.com/roshhellwett/projectcortex.git
 1. Open `chrome://extensions` in your browser.
 2. Enable **Developer mode** (toggle in top-right).
 3. Click **Load unpacked** and select the cloned `projectcortex` folder.
-4. The extension is now installed. Pin it from the extensions toolbar.
 
 ## 🚀 Quick Start
 

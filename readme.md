@@ -1,7 +1,4 @@
-![Repo Size](https://img.shields.io/github/repo-size/roshhellwett/projectcortex?style=for-the-badge)
 ![Stars](https://img.shields.io/github/stars/roshhellwett/projectcortex?style=for-the-badge)
-![Forks](https://img.shields.io/github/forks/roshhellwett/projectcortex?style=for-the-badge)
-![Issues](https://img.shields.io/github/issues/roshhellwett/projectcortex?style=for-the-badge)
 ![Chrome](https://img.shields.io/badge/Chrome-Extension-brightgreen?style=for-the-badge)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge)
 

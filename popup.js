@@ -6,22 +6,6 @@ async function getActiveTab() {
   return tab;
 }
 
-async function clickFab(tab) {
-  if (!tab?.id) return false;
-  try {
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: () => {
-        const fab = document.getElementById('pagemind-fab');
-        if (fab) fab.click();
-      }
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 function getHostnameFromUrl(url) {
   try { return new URL(url).hostname; } catch { return ''; }
 }
@@ -44,32 +28,29 @@ async function sendAction(tab, action) {
 const btnMap = [
   ['openPanel', async () => {
     const tab = await getActiveTab();
-    if (!tab) return;
-    await clickFab(tab);
+    if (!tab?.id) return;
+    await sendAction(tab, 'open_panel');
     window.close();
   }],
   ['factCheck', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
     setLoading(true);
-    const res = await sendAction(tab, 'factcheck');
-    if (!res) await clickFab(tab);
+    await sendAction(tab, 'factcheck');
     window.close();
   }],
   ['correctAnswers', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
     setLoading(true);
-    const res = await sendAction(tab, 'correct_answers');
-    if (!res) await clickFab(tab);
+    await sendAction(tab, 'correct_answers');
     window.close();
   }],
   ['summarize', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
     setLoading(true);
-    const res = await sendAction(tab, 'summarize');
-    if (!res) await clickFab(tab);
+    await sendAction(tab, 'summarize');
     window.close();
   }],
   ['openSettings', async () => {

@@ -6,10 +6,6 @@
 
 AI-powered productivity assistant for your browser. Summarize pages, fact-check claims, solve MCQs, and ask anything about any webpage — all powered by Groq and OpenRouter.
 
-## 🎥 Demo Video
-
-Watch how it works: - demo folder video..
-
 ---
 
 ## ✨ Key Features

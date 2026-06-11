@@ -1,9 +1,5 @@
+'use client';
 import './globals.css';
-
-export const metadata = {
-  title: 'ProjectCortex | Enterprise AI Browser Extension',
-  description: 'The ultimate AI-powered browser extension for professionals. Context-aware AI, live fact-checking, and enterprise DRM.',
-};
 
 export default function Home() {
   return (

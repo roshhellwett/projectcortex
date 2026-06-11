@@ -230,9 +230,13 @@ export default function Guide() {
             </div>
           </div>
         </div>
-        <div style={{ maxWidth: '1080px', margin: '32px auto 0 auto', paddingTop: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', fontSize: '12px', flexWrap: 'wrap', gap: '8px' }}>
+        <div style={{ maxWidth: '1080px', margin: '32px auto 0 auto', paddingTop: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '12px', flexWrap: 'wrap', gap: '8px' }}>
           <span>&copy; {new Date().getFullYear()} ProjectCortex.</span>
-          <span>Idea of <a href="https://github.com/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none' }}>roshhellwett</a></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span>Idea of <a href="https://github.com/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--primary)'}>roshhellwett</a></span>
+            <span style={{ color: 'var(--border)' }}>|</span>
+            <span>A <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground)', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--primary)'} onMouseLeave={e => e.target.style.color='var(--foreground)'}>Zenith Open Source Project</a></span>
+          </div>
         </div>
       </footer>
     </main>

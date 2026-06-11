@@ -162,7 +162,7 @@ function callAIAction(settings, action, prompt, systemPrompt) {
 }
 
 var runCorrectAnswers = guard(async function () {
-  if (_isLocked) return;
+  if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'correct_answers' }
   const selectedText = getDeepSelectionText()
 
@@ -214,7 +214,7 @@ var runCorrectAnswers = guard(async function () {
 })
 
 var runSummarize = guard(async function () {
-  if (_isLocked) return;
+  if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'summarize' }
   openPanel()
   showState('loading')
@@ -250,7 +250,7 @@ var runSummarize = guard(async function () {
 })
 
 var runFactCheck = guard(async function () {
-  if (_isLocked) return;
+  if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'factcheck' }
   const selectedText = getDeepSelectionText()
 
@@ -285,7 +285,7 @@ var runFactCheck = guard(async function () {
 })
 
 var runAsk = guard(async function (question) {
-  if (_isLocked) return;
+  if (_isLocked) { openPanel(); showState('locked'); return; }
   if (!question?.trim()) return
   _lastAction = { name: 'ask', question }
 

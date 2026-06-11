@@ -16,11 +16,8 @@ function initMessageListener() {
           if (sel && !sel.isCollapsed && sel.toString().trim()) {
             showBubble(sel)
           } else {
-            if (!_panel) createPanel()
-            _panel.classList.add('visible')
-            if (!_bubble) createBubble()
-            _bubble.classList.remove('visible')
-            showState('welcome')
+            openPanel()
+            showState(_isLocked ? 'locked' : 'welcome')
           }
         }
       }

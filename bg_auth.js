@@ -9,37 +9,42 @@
 
 const API_BASE = 'https://projectcortex.vercel.app';
 
-function generateInstallId() {
-  return 'idx_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+async function hashHWID(rawHWID, key) {
+  if (!rawHWID) return null;
+  const msgBuffer = new TextEncoder().encode(rawHWID + '|' + key);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return 'hw_' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
 }
 
 export async function getAuthState() {
   return new Promise(resolve => {
-    chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime'], data => {
+    chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime', 'licenseKey'], data => {
       resolve(data);
     });
   });
 }
 
-export async function checkAuthStatus() {
+export async function checkAuthStatus(rawHWID) {
   const state = await getAuthState();
   
-  if (!state.installId) {
-    const newId = generateInstallId();
-    chrome.storage.local.set({ installId: newId });
-    return { locked: true, reason: 'NO_TOKEN', installId: newId };
+  if (!state.installId || !state.authToken) {
+    return { locked: true, reason: 'NO_TOKEN', installId: state.installId || null };
   }
 
-  if (!state.authToken) {
-    return { locked: true, reason: 'NO_TOKEN', installId: state.installId };
+  // Anti-Cloning HWID Lock Verification
+  if (rawHWID && state.licenseKey) {
+    const expectedHWID = await hashHWID(rawHWID, state.licenseKey);
+    if (expectedHWID && expectedHWID !== state.installId) {
+       chrome.storage.local.remove(['authToken', 'installId']);
+       return { locked: true, reason: 'HWID_MISMATCH', installId: null };
+    }
   }
 
-  
   const now = Date.now();
   const lastVerify = state.lastVerifyTime || 0;
   
   if (now - lastVerify > 2.5 * 60 * 1000) {
-    
     try {
       const res = await fetch(`${API_BASE}/api/verify`, {
         method: 'POST',
@@ -49,17 +54,12 @@ export async function checkAuthStatus() {
       const data = await res.json();
       
       if (!res.ok) {
-        
         chrome.storage.local.remove(['authToken']);
-        
-        
         chrome.tabs.query({}, (tabs) => {
           tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
         });
-        
         return { locked: true, reason: data.error || 'EXPIRED', installId: state.installId };
       }
-      
       
       if (data.token) {
         chrome.storage.local.set({ authToken: data.token });
@@ -68,24 +68,18 @@ export async function checkAuthStatus() {
       return { locked: false, seed: data.seed, installId: state.installId };
       
     } catch (e) {
-      
-      
-      
       console.warn('Cortex Auth: Offline, relying on cached token.', e);
       return { locked: false, offline: true, installId: state.installId };
     }
   }
 
-  
   return { locked: false, installId: state.installId };
 }
 
-export async function activateLicense(licenseKey) {
-  const state = await getAuthState();
-  let installId = state.installId;
+export async function activateLicense(licenseKey, rawHWID) {
+  const installId = await hashHWID(rawHWID, licenseKey);
   if (!installId) {
-    installId = generateInstallId();
-    chrome.storage.local.set({ installId });
+    return { success: false, error: 'Hardware fingerprinting failed. Please refresh the page.' };
   }
 
   try {
@@ -102,9 +96,10 @@ export async function activateLicense(licenseKey) {
 
     chrome.storage.local.set({ 
       authToken: data.token, 
+      installId: installId,
+      licenseKey: licenseKey,
       lastVerifyTime: Date.now() 
     });
-    
     
     chrome.tabs.query({}, (tabs) => {
       tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));

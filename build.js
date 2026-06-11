@@ -14,7 +14,8 @@ const JavaScriptObfuscator = require('javascript-obfuscator');
 const filesToObfuscate = [
   'bg_auth.js',
   'content_ui.js',
-  'content_ai.js'
+  'content_ai.js',
+  'content_hwid.js'
 ];
 
 const obfuscationOptions = {

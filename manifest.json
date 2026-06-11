@@ -30,6 +30,7 @@
         "<all_urls>"
       ],
       "js": [
+        "content_hwid.js",
         "content_globals.js",
         "content_utils.js",
         "content_anti_cheat.js",

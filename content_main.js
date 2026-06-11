@@ -102,8 +102,8 @@ async function init() {
     initMessageListener()
     applySiteSettings()
 
-    
-    chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+    const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
+    chrome.runtime.sendMessage({ type: 'CHECK_AUTH', rawHWID: rawHWID }, res => {
       if (chrome.runtime.lastError) {
         console.warn('[Cortex] Auth check failed (service worker may be restarting):', chrome.runtime.lastError.message);
         _isLocked = true;

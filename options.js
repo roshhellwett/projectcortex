@@ -150,18 +150,18 @@ function updateKeyHint() {
     const authStatus = document.getElementById('optionsAuthStatus');
 
     if (activateBtn && licenseInput) {
-        activateBtn.addEventListener('click', () => {
+        activateBtn.addEventListener('click', async () => {
             const key = licenseInput.value.trim();
-            if (!key) {
-                authStatus.textContent = 'Please enter a license key.';
-                return;
-            }
-            
+            if (!key) return;
+
+            authStatus.textContent = '';
+            authStatus.style.color = '#ededed';
             activateBtn.textContent = 'Verifying...';
             activateBtn.disabled = true;
-            authStatus.textContent = '';
-            
-            chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
+
+            const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
+
+            chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key, rawHWID: rawHWID }, res => {
                 activateBtn.textContent = 'Activate License';
                 activateBtn.disabled = false;
                 

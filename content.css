@@ -62,6 +62,20 @@
     left: 24px;
     opacity: 1 !important;
     pointer-events: all !important;
+    animation: pmPanelFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+@keyframes pmPanelFadeIn {
+    0% {
+        opacity: 0;
+        filter: blur(10px);
+        margin-left: -20px;
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+        margin-left: 0;
+    }
 }
 
 #pagemind-panel.pm-positioned {
@@ -329,19 +343,26 @@
     padding: 60px 20px !important;
 }
 
-#pagemind-panel .pm-loader {
-    width: 36px !important;
-    height: 36px !important;
-    border: 2.5px solid rgba(255, 255, 255, 0.06) !important;
-    border-top-color: #888 !important;
-    border-radius: 50% !important;
-    animation: pmSpin 0.8s linear infinite !important;
+#pagemind-panel .pm-skeleton-loader {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 240px !important;
+    margin-bottom: 8px !important;
 }
 
-@keyframes pmSpin {
-    to {
-        transform: rotate(360deg);
-    }
+#pagemind-panel .pm-skeleton-line {
+    height: 12px !important;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%) !important;
+    background-size: 200% 100% !important;
+    animation: pmSkeletonShimmer 1.5s infinite linear !important;
+    border-radius: 6px !important;
+}
+
+@keyframes pmSkeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 #pagemind-panel .pm-loading-label {
@@ -735,16 +756,21 @@
 
 #pagemind-bubble.visible {
     display: flex !important;
-    animation: pmBubbleIn 0.15s ease !important;
+    animation: pmBubbleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
 @keyframes pmBubbleIn {
-    from {
+    0% {
         opacity: 0;
-        transform: scale(0.92) translateY(4px);
+        transform: scale(0.85) translateY(10px);
+        filter: blur(4px);
     }
-
-    to {
+    60% {
+        opacity: 1;
+        transform: scale(1.05) translateY(-2px);
+        filter: blur(0px);
+    }
+    100% {
         opacity: 1;
         transform: scale(1) translateY(0);
     }
@@ -781,6 +807,50 @@
 
 #pagemind-bubble button:active {
     transform: scale(0.94) !important;
+}
+
+#pagemind-panel .pm-inline-code {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 4px !important;
+    padding: 2px 4px !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 0.9em !important;
+    color: #e5e5e5 !important;
+}
+
+#pagemind-panel blockquote {
+    border-left: 3px solid rgba(255, 255, 255, 0.2) !important;
+    margin: 10px 0 !important;
+    padding-left: 12px !important;
+    color: #999 !important;
+    font-style: italic !important;
+}
+
+#pagemind-panel h1, #pagemind-panel h2, #pagemind-panel h3 {
+    color: #fff !important;
+    margin: 16px 0 8px 0 !important;
+    font-weight: 600 !important;
+}
+
+#pagemind-panel h1 { font-size: 1.3em !important; }
+#pagemind-panel h2 { font-size: 1.15em !important; }
+#pagemind-panel h3 { font-size: 1.05em !important; }
+
+#pagemind-panel .pm-list-item {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    margin-bottom: 6px !important;
+}
+
+#pagemind-panel .pm-bullet {
+    color: #666 !important;
+    font-weight: bold !important;
+}
+
+#pagemind-panel .pm-list-content {
+    flex: 1 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

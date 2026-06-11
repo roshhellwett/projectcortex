@@ -39,6 +39,15 @@ function initMessageListener() {
       init();
     }
   })
+
+  // Real-time synchronization across all tabs without page reloads
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'sync') {
+      if (changes.activeWindowsWhitelist || changes.copyPasteWhitelist) {
+        applySiteSettings()
+      }
+    }
+  })
 }
 
 function applySiteSettings() {
@@ -74,7 +83,33 @@ function cleanup() {
   _panel = null
   _panelPos = null
   _busy = false
+  _busy = false
   _lastAction = null
+}
+
+let _lastAuthCheck = 0
+let _cachedAuthRes = null
+
+function handleAuthRes(res) {
+  if (chrome.runtime.lastError) {
+    console.warn('[Cortex] Auth check failed (service worker may be restarting):', chrome.runtime.lastError.message);
+    _isLocked = true;
+    hideBubble();
+    showState('locked');
+    return;
+  }
+  if (res && res.installId) {
+    const idEl = document.getElementById('pm-install-id');
+    if (idEl) idEl.textContent = res.installId;
+  }
+  if (res && res.locked) {
+    _isLocked = true;
+    hideBubble(); 
+    showState('locked');
+  } else {
+    _isLocked = false;
+    showState('welcome');
+  }
 }
 
 async function init() {
@@ -101,33 +136,57 @@ async function init() {
     initSelectionListeners()
     initMessageListener()
     applySiteSettings()
-
-    const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
-    chrome.runtime.sendMessage({ type: 'CHECK_AUTH', rawHWID: rawHWID }, res => {
-      if (chrome.runtime.lastError) {
-        console.warn('[Cortex] Auth check failed (service worker may be restarting):', chrome.runtime.lastError.message);
-        _isLocked = true;
-        hideBubble();
-        showState('locked');
-        return;
-      }
-      if (res && res.installId) {
-        const idEl = document.getElementById('pm-install-id');
-        if (idEl) idEl.textContent = res.installId;
-      }
-      if (res && res.locked) {
-        _isLocked = true;
-        hideBubble(); 
-        showState('locked');
-      } else {
-        _isLocked = false;
-        showState('welcome');
-      }
-    });
+    initSecurityObserver()
+    if (Date.now() - _lastAuthCheck < 5000 && _cachedAuthRes) {
+      handleAuthRes(_cachedAuthRes)
+    } else {
+      _lastAuthCheck = Date.now()
+      const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
+      chrome.runtime.sendMessage({ type: 'CHECK_AUTH', rawHWID: rawHWID }, res => {
+        _cachedAuthRes = res
+        handleAuthRes(res)
+      })
+    }
 
   } catch (e) {
     console.error('[Cortex] Init failed:', e)
   }
+}
+
+let _securityObserver = null;
+let _securityInterval = null;
+
+function initSecurityObserver() {
+  if (_securityObserver) _securityObserver.disconnect();
+  if (_securityInterval) clearInterval(_securityInterval);
+
+  const enforceLock = () => {
+    if (_isLocked && _panel) {
+      const lockedEl = document.getElementById('pm-state-locked');
+      const isTampered = !lockedEl || 
+                         !lockedEl.classList.contains('active') || 
+                         getComputedStyle(lockedEl).display === 'none' || 
+                         getComputedStyle(lockedEl).opacity === '0' ||
+                         getComputedStyle(lockedEl).visibility === 'hidden';
+      
+      if (isTampered) {
+        console.warn('[Cortex] Security violation detected. Restoring lock state.');
+        showState('locked');
+      }
+      
+      if (!document.body.contains(_panel)) {
+        document.body.appendChild(_panel);
+      }
+    }
+  };
+
+  _securityObserver = new MutationObserver(() => enforceLock());
+  if (_panel) {
+    _securityObserver.observe(_panel, { attributes: true, childList: true, subtree: true });
+    _securityObserver.observe(document.body, { childList: true });
+  }
+
+  _securityInterval = setInterval(enforceLock, 1000);
 }
 
 if (document.readyState === 'loading') {

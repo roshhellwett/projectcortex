@@ -41,19 +41,33 @@ function getDeepSelectionText() {
 function getCleanText(el) {
   if (!el) return ''
   const clone = el.cloneNode(true)
-  clone
-    .querySelectorAll(
-      '#pagemind-panel,#pagemind-bubble,script,style,noscript'
-    )
-    .forEach(n => n.remove())
+  
+  // 1. Remove definitively non-content tags
+  clone.querySelectorAll('#pagemind-panel, #pagemind-bubble, script, style, noscript, nav, footer, aside, header, form, iframe, canvas, svg').forEach(n => n.remove())
 
+  // 2. Remove common junk based on class/id heuristics
+  const junkRegex = /comment|menu|nav|footer|header|sidebar|ad-|promo|sponsor|cookie|popup|modal|banner|share|social|newsletter/i
+  const allEls = clone.querySelectorAll('*')
+  allEls.forEach(n => {
+    const classStr = typeof n.className === 'string' ? n.className : ''
+    const idStr = n.id || ''
+    // If it strongly matches a junk container, remove it
+    if (junkRegex.test(classStr) || junkRegex.test(idStr)) {
+      if (n.tagName !== 'ARTICLE' && n.tagName !== 'MAIN') { // Don't remove the main article if it happens to match a generic regex
+        n.remove()
+      }
+    }
+  })
+
+  // 3. Normalize inputs
   clone.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(n => {
     const span = document.createElement('span')
     span.textContent = '[ ] '
     if (n.parentNode) n.parentNode.replaceChild(span, n)
   })
 
-  clone.querySelectorAll('div, p, li, h1, h2, h3, h4, h5, h6, tr').forEach(n => {
+  // 4. Ensure proper spacing for block elements
+  clone.querySelectorAll('div, p, li, h1, h2, h3, h4, h5, h6, tr, section, article').forEach(n => {
     n.appendChild(document.createTextNode('\n'))
   })
   clone.querySelectorAll('br').forEach(n => {
@@ -86,6 +100,25 @@ function sanitizeText(text) {
     s = s.replace(re, replacement)
   }
   return s.trim()
+}
+
+function parseMarkdown(text) {
+  if (!text) return ''
+  let html = esc(text)
+  
+  html = html
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code class="pm-inline-code">$1</code>')
+    .replace(/^&gt;\s+(.*)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+    .replace(/^[\s]*[-*]\s+(.*)$/gm, '<div class="pm-list-item"><span class="pm-bullet">•</span> <span class="pm-list-content">$1</span></div>')
+    .replace(/^[\s]*\d+\.\s+(.*)$/gm, '<div class="pm-list-item"><span class="pm-bullet">#</span> <span class="pm-list-content">$1</span></div>')
+    .replace(/\n/g, '<br>')
+
+  return html
 }
 
 function getPageContext(el) {

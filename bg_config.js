@@ -32,8 +32,8 @@ export const ACTION_CONFIG = {
 export const DEFAULT_ACTION = { maxTokens: 1024, temperature: 0.65, topP: 0.9 };
 
 export const TIMEOUT_MS = 30000;
-export const MAX_RETRIES = 2;
-export const RETRY_BASES = [2500, 6000];
+export const MAX_RETRIES = 3;
+export const RETRY_BASES = [2000, 4500, 10000];
 
 export const PROVIDER_GROQ = 'groq';
 export const PROVIDER_OPENROUTER = 'openrouter';

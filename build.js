@@ -70,13 +70,38 @@ allFiles.forEach(file => {
   }
 });
 
+function minifyHTML(html) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/>\s+</g, '><')
+    .trim();
+}
 
-fs.copyFileSync(path.join(__dirname, 'manifest.json'), path.join(distDir, 'manifest.json'));
-fs.copyFileSync(path.join(__dirname, 'content.css'), path.join(distDir, 'content.css'));
-fs.copyFileSync(path.join(__dirname, 'options.html'), path.join(distDir, 'options.html'));
-fs.copyFileSync(path.join(__dirname, 'popup.html'), path.join(distDir, 'popup.html'));
+function minifyCSS(css) {
+  return css
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([\{\}\:\;\,\>])\s*/g, '$1')
+    .replace(/;}/g, '}')
+    .trim();
+}
 
+['manifest.json', 'popup.html'].forEach(file => {
+  if (fs.existsSync(path.join(__dirname, file))) {
+    fs.copyFileSync(path.join(__dirname, file), path.join(distDir, file));
+  }
+});
 
+if (fs.existsSync(path.join(__dirname, 'content.css'))) {
+  const css = fs.readFileSync(path.join(__dirname, 'content.css'), 'utf8');
+  fs.writeFileSync(path.join(distDir, 'content.css'), minifyCSS(css), 'utf8');
+}
+
+if (fs.existsSync(path.join(__dirname, 'options.html'))) {
+  const html = fs.readFileSync(path.join(__dirname, 'options.html'), 'utf8');
+  fs.writeFileSync(path.join(distDir, 'options.html'), minifyHTML(html), 'utf8');
+}
 
 
 filesToObfuscate.forEach(file => {

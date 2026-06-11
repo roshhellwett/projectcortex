@@ -62,35 +62,60 @@ function showError(msg) {
   showState('error')
 }
 
-function typeText(el, text, speed) {
+function typeHtml(el, htmlString, speed) {
   cancelTypewriter()
   el.innerHTML = ''
-  if (!text) return
+  if (!htmlString) return
 
-  let i = 0
-  let lastTime = 0
   const cursor = document.createElement('span')
   cursor.className = 'pm-cursor'
   el.appendChild(cursor)
 
-  const delay = speed || (text.length > 800 ? 8 : text.length > 300 ? 15 : 25)
+  const parts = htmlString.split(/(<[^>]+>)/g).filter(Boolean)
+  let partIndex = 0
+  let charIndex = 0
+  let lastTime = 0
+  let decodedText = ''
+  
+  const delay = speed || (htmlString.length > 800 ? 5 : htmlString.length > 300 ? 10 : 20)
 
   function frame(time) {
     if (time - lastTime < delay) { _typeTimer = requestAnimationFrame(frame); return }
-    if (i < text.length) {
-      lastTime = time
-      cursor.insertAdjacentText('beforebegin', text[i])
-      i++
-      _typeTimer = requestAnimationFrame(frame)
-    } else {
-      _typeTimer = null
+    lastTime = time
+
+    while (partIndex < parts.length) {
+      const part = parts[partIndex]
+      if (part.startsWith('<') && part.endsWith('>')) {
+        cursor.insertAdjacentHTML('beforebegin', part)
+        partIndex++
+        charIndex = 0
+        continue
+      }
+      
+      if (charIndex === 0) {
+        const textarea = document.createElement('textarea')
+        textarea.innerHTML = part
+        decodedText = textarea.value
+      }
+
+      if (charIndex < decodedText.length) {
+        cursor.insertAdjacentText('beforebegin', decodedText[charIndex])
+        charIndex++
+        _typeTimer = requestAnimationFrame(frame)
+        return
+      } else {
+        charIndex = 0
+        partIndex++
+      }
     }
+    cursor.remove()
+    _typeTimer = null
   }
   _typeTimer = requestAnimationFrame(frame)
 }
 
 function showGenericResult(actionLabel, content) {
-  const clean = sanitizeText(content)
+  const htmlContent = parseMarkdown(content)
   const actionEl = document.getElementById('pm-result-action')
   const genericEl = document.getElementById('pm-generic-result')
   const mcqEl = document.getElementById('pm-mcq-result')
@@ -99,9 +124,9 @@ function showGenericResult(actionLabel, content) {
   if (actionEl) actionEl.textContent = '\u2713 ' + actionLabel
   if (genericEl) genericEl.style.display = 'block'
   if (mcqEl) mcqEl.style.display = 'none'
-  if (copyBtn) copyBtn.dataset.content = clean
+  if (copyBtn) copyBtn.dataset.content = content
   showState('result')
-  if (bodyEl) typeText(bodyEl, clean)
+  if (bodyEl) typeHtml(bodyEl, htmlContent)
 }
 
 function renderOptions(options) {
@@ -188,7 +213,7 @@ function buildPanelHTML() {
         <span class="pm-badge">AI</span>
       </div>
       <div class="pm-header-actions">
-        <button class="pm-icon-btn" id="pm-close-btn">
+        <button class="pm-icon-btn" id="pm-close-btn" aria-label="Close Cortex panel">
           <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -212,7 +237,7 @@ function buildPanelHTML() {
         <div style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
             <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"/>
             <div id="pm-license-error" style="color: #ff4444; font-size: 11px; display: none;"></div>
-            <button class="pm-action-btn" id="pm-action-activate" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; border: none; font-weight: bold;">Activate License</button>
+            <button class="pm-action-btn" id="pm-action-activate" aria-label="Activate License" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; border: none; font-weight: bold;">Activate License</button>
             <div style="margin-top: 6px; font-size: 11px; color: #666; text-align: center;">
               Install ID: <span id="pm-install-id" style="color: #888; font-family: monospace; user-select: all;">...</span><br/>
               Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
@@ -223,10 +248,10 @@ function buildPanelHTML() {
       <div id="pm-state-welcome" class="pm-state">
         <div class="pm-section-label">Quick Actions</div>
         <div class="pm-actions-grid">
-          <button class="pm-action-btn" id="pm-action-summarize">\uD83D\uDCC4 Summarize Page</button>
-          <button class="pm-action-btn" id="pm-action-factcheck">\uD83D\uDD0D Fact Check</button>
-          <button class="pm-action-btn" id="pm-action-correct">\uD83C\uDFAF Correct Answer</button>
-          <button class="pm-action-btn" id="pm-action-settings">\u2699\uFE0F Settings</button>
+          <button class="pm-action-btn" id="pm-action-summarize" aria-label="Summarize Page">\uD83D\uDCC4 Summarize Page</button>
+          <button class="pm-action-btn" id="pm-action-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>
+          <button class="pm-action-btn" id="pm-action-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>
+          <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings">\u2699\uFE0F Settings</button>
         </div>
         <div class="pm-divider"></div>
         <div class="pm-section-label">Ask About Page</div>
@@ -235,7 +260,11 @@ function buildPanelHTML() {
 
       <div id="pm-state-loading" class="pm-state">
         <div class="pm-loading-wrap">
-          <div class="pm-loader"></div>
+          <div class="pm-skeleton-loader">
+            <div class="pm-skeleton-line" style="width: 100%"></div>
+            <div class="pm-skeleton-line" style="width: 90%"></div>
+            <div class="pm-skeleton-line" style="width: 65%"></div>
+          </div>
           <div class="pm-loading-label" id="pm-loading-label">Processing\u2026</div>
           <div class="pm-loading-sub" id="pm-loading-sub"></div>
         </div>
@@ -244,7 +273,7 @@ function buildPanelHTML() {
       <div id="pm-state-result" class="pm-state">
         <div class="pm-result-header">
           <span class="pm-result-action" id="pm-result-action">\u2713 Done</span>
-          <button class="pm-back-btn" id="pm-back-btn">\u2190 Back</button>
+          <button class="pm-back-btn" id="pm-back-btn" aria-label="Go back">\u2190 Back</button>
         </div>
         <div id="pm-generic-result">
           <div class="pm-result-body" id="pm-result-body"></div>
@@ -255,7 +284,7 @@ function buildPanelHTML() {
           <div class="pm-answer-card"></div>
         </div>
         <div class="pm-result-footer">
-          <button class="pm-copy-btn" id="pm-copy-btn">
+          <button class="pm-copy-btn" id="pm-copy-btn" aria-label="Copy to clipboard">
             <svg width="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy
           </button>
@@ -267,8 +296,8 @@ function buildPanelHTML() {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <div id="pm-error-msg"></div>
           <div style="display: flex; gap: 8px; justify-content: center; margin-top: 16px;">
-            <button class="pm-back-btn" id="pm-error-back-btn" style="margin: 0;">\u2190 Back</button>
-            <button class="pm-back-btn" id="pm-error-settings-btn" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
+            <button class="pm-back-btn" id="pm-error-back-btn" aria-label="Go back from error" style="margin: 0;">\u2190 Back</button>
+            <button class="pm-back-btn" id="pm-error-settings-btn" aria-label="Open Settings" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
           </div>
           <div style="margin-top: 14px; font-size: 11px; color: #666; text-align: center;">Need help? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a></div>
         </div>
@@ -276,12 +305,12 @@ function buildPanelHTML() {
 
     </div>
 
-    <div class="pm-ask-bar">
-      <input type="text" id="pm-ask-input" placeholder="Ask about this page\u2026" />
-      <button id="pm-ask-send">
-        <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-    </div>
+      <div class="pm-ask-bar">
+        <input type="text" id="pm-ask-input" class="pm-ask-input" placeholder="Type to ask AI..." aria-label="Ask AI input field">
+        <button class="pm-ask-send" id="pm-ask-send" aria-label="Send query">
+          <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
   `
 }
 
@@ -290,9 +319,9 @@ function createBubble() {
     _bubble = document.createElement('div')
     _bubble.id = 'pagemind-bubble'
     _bubble.innerHTML =
-      '<button id="pm-bubble-correct">\uD83C\uDFAF Correct Answer</button>' +
-      '<button id="pm-bubble-factcheck">\uD83D\uDD0D Fact Check</button>' +
-      '<button id="pm-bubble-summarize">\uD83D\uDCC4 Summarize</button>'
+      '<button id="pm-bubble-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>' +
+      '<button id="pm-bubble-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>' +
+      '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>'
     document.body.appendChild(_bubble)
     
     _bubble.addEventListener('mousedown', e => { e.preventDefault() })
@@ -423,12 +452,18 @@ function initDragger() {
   if (_dragListenersAdded) return
   _dragListenersAdded = true
 
+  let _rafPending = false
   document.addEventListener('mousemove', e => {
     if (!_drag || !_panel) return
-    const x = clamp(_sl + (e.clientX - _sx), 0, window.innerWidth - 100)
-    const y = clamp(_st + (e.clientY - _sy), 0, window.innerHeight - 100)
-    _panel.style.left = x + 'px'
-    _panel.style.top = y + 'px'
+    if (_rafPending) return
+    _rafPending = true
+    requestAnimationFrame(() => {
+      _rafPending = false
+      const x = clamp(_sl + (e.clientX - _sx), 0, window.innerWidth - 100)
+      const y = clamp(_st + (e.clientY - _sy), 0, window.innerHeight - 100)
+      _panel.style.left = x + 'px'
+      _panel.style.top = y + 'px'
+    })
   })
 
   document.addEventListener('mouseup', () => {
@@ -493,30 +528,39 @@ function wireActionButtons() {
       activateBtn.textContent = 'Verifying...';
       activateBtn.disabled = true;
 
-      chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
+      const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : null;
+
+      try {
+        chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key, rawHWID }, res => {
+          activateBtn.textContent = 'Activate License';
+          activateBtn.disabled = false;
+          
+          if (chrome.runtime.lastError) {
+            errorEl.textContent = 'Extension backend unreachable. Please reload the page.';
+            errorEl.style.display = 'block';
+            return;
+          }
+
+          if (res?.success) {
+            errorEl.style.display = 'none';
+            inputEl.value = '';
+            activateBtn.textContent = 'Success!';
+            setTimeout(() => {
+              activateBtn.textContent = 'Activate License';
+              showState('welcome');
+              init();
+            }, 1500);
+          } else {
+            errorEl.textContent = res?.error || 'Failed to verify license';
+            errorEl.style.display = 'block';
+          }
+        });
+      } catch (e) {
         activateBtn.textContent = 'Activate License';
         activateBtn.disabled = false;
-        
-        if (chrome.runtime.lastError) {
-          errorEl.textContent = 'Extension backend unreachable. Please reload the page.';
-          errorEl.style.display = 'block';
-          return;
-        }
-
-        if (res?.success) {
-          errorEl.style.display = 'none';
-          inputEl.value = '';
-          activateBtn.textContent = 'Success!';
-          setTimeout(() => {
-            activateBtn.textContent = 'Activate License';
-            showState('welcome');
-            init();
-          }, 1500);
-        } else {
-          errorEl.textContent = res?.error || 'Failed to verify license';
-          errorEl.style.display = 'block';
-        }
-      });
+        errorEl.textContent = 'Extension context invalidated. Please reload the webpage.';
+        errorEl.style.display = 'block';
+      }
     });
 
     document.getElementById('pm-close-btn')?.addEventListener('click', closePanel)
@@ -615,8 +659,35 @@ function initSelectionListeners() {
     scheduleBubbleCheck(300)
   })
 
-  document.addEventListener('scroll', hideBubble, true)
+  let _scrollTimer = null
+  document.addEventListener('scroll', () => {
+    if (_scrollTimer) return
+    _scrollTimer = setTimeout(() => {
+      _scrollTimer = null
+      hideBubble()
+    }, 50)
+  }, true)
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') hideBubble()
+    if (e.key === 'Escape') {
+      hideBubble()
+      closePanel()
+    }
+    
+    // Alt+A (or Option+A on Mac) to toggle the Cortex Panel globally
+    if (e.altKey && e.key.toLowerCase() === 'a') {
+      e.preventDefault()
+      const panel = document.getElementById('pagemind-panel')
+      if (panel && panel.classList.contains('pm-open')) {
+        closePanel()
+      } else {
+        openPanel()
+        if (_isLocked) {
+          showState('locked')
+        } else {
+          showState('welcome')
+          document.getElementById('pm-ask-input')?.focus()
+        }
+      }
+    }
   })
 }

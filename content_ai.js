@@ -139,30 +139,38 @@ function handleAIError(err) {
     return
   }
   if (/auth|unauthorized|invalid key|key.*reject/i.test(msg)) {
-    showError('API key is invalid or expired. Check your key in Settings, then click Retry. Need help? zenithprojects@icloud.com')
+    showError('API key is invalid or expired. Please check your settings, then try again. Need help? zenithprojects@icloud.com')
+    return
+  }
+  if (/quota|insufficient/i.test(msg)) {
+    showError('Your API provider quota has been exhausted. Please add credits to your account or switch providers.')
+    return
+  }
+  if (/rate limit|too many|overloaded|busy/i.test(msg)) {
+    showError('The AI provider is currently overloaded or you have hit a rate limit. The extension automatically tried to wait and backoff, but it was unsuccessful. Please try again in a few minutes.')
     return
   }
   if (/access denied|403/i.test(msg)) {
-    showError('Access denied by provider. Check billing or try the other provider in Settings. Contact zenithprojects@icloud.com for help.')
+    showError('Access denied by provider. Check your API billing status or switch providers in Settings. Contact zenithprojects@icloud.com for help.')
     return
   }
   if (/model.*not found|model.*not available|does not exist/i.test(msg)) {
-    showError('The selected model is not available. Open Settings and pick a different model. Contact zenithprojects@icloud.com if stuck.')
+    showError('The selected AI model is currently offline or unavailable. Open Settings and pick a different model to continue.')
     return
   }
   if (/timed out/i.test(msg)) {
-    showError('Request timed out. The provider may be slow or your network may have issues. Click Retry.')
+    showError('The request timed out. The AI provider may be experiencing heavy load, or your network is slow. Please click Retry.')
     return
   }
   if (/network|internet|connection/i.test(msg)) {
-    showError('Network error. Check your internet connection, then click Retry.')
+    showError('Network connectivity error. Please verify your internet connection and click Retry.')
     return
   }
   if (/empty response/i.test(msg)) {
-    showError('AI returned nothing. The model or provider may be overloaded. Try again.')
+    showError('The AI returned an empty response. The model may be malfunctioning or the server is overloaded. Try selecting a different model.')
     return
   }
-  showError(msg)
+  showError('An unexpected error occurred: ' + msg)
 }
 
 function callAIAction(settings, action, prompt, systemPrompt) {
@@ -237,9 +245,14 @@ var runSummarize = guard(async function () {
   startThinking('Reading page')
 
   const selectedText = getDeepSelectionText()
-  const pageText = selectedText || getCleanText(document.body)
+  let pageText = selectedText;
+  
+  // If the user selected very little text (like a stray click), fallback to summarizing the entire page.
+  if (!pageText || pageText.trim().length < 10) {
+    pageText = getCleanText(document.body);
+  }
 
-  if (!pageText || pageText.length < 50) {
+  if (!pageText || pageText.trim().length < 25) {
     showError('Not enough content to summarize. Select text or load a page with more content.')
     return
   }

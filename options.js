@@ -126,14 +126,25 @@ function updateKeyHint() {
                 if (lockIdEl) lockIdEl.textContent = res.installId;
                 if (creditsIdEl) creditsIdEl.textContent = res.installId;
             }
+            
+            const lockOverlay = document.getElementById('lockOverlay');
+            const mainContainer = document.getElementById('mainContainer');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
             if (res && res.locked) {
-                document.getElementById('lockOverlay').style.display = 'flex';
-                document.getElementById('mainContainer').style.filter = 'blur(10px)';
-                document.getElementById('mainContainer').style.pointerEvents = 'none';
+                lockOverlay.style.opacity = '1';
+                lockOverlay.style.pointerEvents = 'auto';
+                mainContainer.style.filter = 'blur(10px)';
             } else {
-                document.getElementById('lockOverlay').style.display = 'none';
-                document.getElementById('mainContainer').style.filter = 'none';
-                document.getElementById('mainContainer').style.pointerEvents = 'auto';
+                lockOverlay.style.opacity = '0';
+                lockOverlay.style.pointerEvents = 'none';
+                mainContainer.style.opacity = '1';
+                mainContainer.style.filter = 'none';
+            }
+            
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => loadingOverlay.style.display = 'none', 400);
             }
         });
     };
@@ -261,8 +272,15 @@ function updateKeyHint() {
                 copyPasteWhitelist: copyWhitelist
             });
 
-            const keyNote = apiKey ? '' : ' Add an API key later to use AI actions.';
-            showStatus('ok', `✓ Settings saved. Refreshing the page to apply site utilities.${keyNote}`);
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) translateY(100px)';
+                }, 3000);
+            }
             setTimeout(reloadActiveTab, 1000);
         } catch (e) {
             showStatus('err', `⚠ Save failed: ${e.message}`);

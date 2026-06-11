@@ -201,13 +201,16 @@ function buildPanelHTML() {
         </div>
         <h2 style="font-size: 16px; color: #fff; margin: 0 0 8px 0;">Activation Required</h2>
         <p style="font-size: 13px; color: #aaa; margin-bottom: 16px; line-height: 1.4;">
-          Your license has expired or is missing. Enter a valid key to unlock Cortex.
+          Your subscription has been ended. Please enter a new activation key to start using this SaaS.
         </p>
         <div style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
             <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"/>
             <div id="pm-license-error" style="color: #ff4444; font-size: 11px; display: none;"></div>
             <button class="pm-action-btn" id="pm-action-activate" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; border: none; font-weight: bold;">Activate License</button>
-            <div style="margin-top: 6px; font-size: 11px; color: #666; text-align: center;">Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a></div>
+            <div style="margin-top: 6px; font-size: 11px; color: #666; text-align: center;">
+              Install ID: <span id="pm-install-id" style="color: #888; font-family: monospace; user-select: all;">...</span><br/>
+              Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
+            </div>
         </div>
       </div>
 

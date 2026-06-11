@@ -113,6 +113,12 @@ function updateKeyHint() {
 (async function init() {
     const checkLockStatus = () => {
         chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+            if (res && res.installId) {
+                const lockIdEl = document.getElementById('optionsInstallId');
+                const creditsIdEl = document.getElementById('optionsCreditsInstallId');
+                if (lockIdEl) lockIdEl.textContent = res.installId;
+                if (creditsIdEl) creditsIdEl.textContent = res.installId;
+            }
             if (res && res.locked) {
                 document.getElementById('lockOverlay').style.display = 'flex';
                 document.getElementById('mainContainer').style.filter = 'blur(10px)';

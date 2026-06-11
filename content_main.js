@@ -105,6 +105,10 @@ async function init() {
         showState('locked');
         return;
       }
+      if (res && res.installId) {
+        const idEl = document.getElementById('pm-install-id');
+        if (idEl) idEl.textContent = res.installId;
+      }
       if (res && res.locked) {
         _isLocked = true;
         hideBubble(); // prevent bubble usage

@@ -30,11 +30,11 @@ export async function checkAuthStatus() {
     return { locked: true, reason: 'NO_TOKEN', installId: state.installId };
   }
 
-  // Check if we need to ping the server (every 24 hours)
+  // Check if we need to ping the server (every 2.5 minutes)
   const now = Date.now();
   const lastVerify = state.lastVerifyTime || 0;
   
-  if (now - lastVerify > 24 * 60 * 60 * 1000) {
+  if (now - lastVerify > 2.5 * 60 * 1000) {
     // We need to re-verify online
     try {
       const res = await fetch(`${API_BASE}/api/verify`, {
@@ -47,10 +47,19 @@ export async function checkAuthStatus() {
       if (!res.ok) {
         // Token is invalid or expired or revoked
         chrome.storage.local.remove(['authToken']);
+        
+        // Broadcast to all tabs to lock immediately
+        chrome.tabs.query({}, (tabs) => {
+          tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
+        });
+        
         return { locked: true, reason: data.error || 'EXPIRED', installId: state.installId };
       }
       
       // Token is valid! Update the last verify time.
+      if (data.token) {
+        chrome.storage.local.set({ authToken: data.token });
+      }
       chrome.storage.local.set({ lastVerifyTime: now, seed: data.seed });
       return { locked: false, seed: data.seed, installId: state.installId };
       

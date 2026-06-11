@@ -92,6 +92,11 @@ export async function activateLicense(licenseKey) {
       lastVerifyTime: Date.now() 
     });
     
+    // Broadcast to all tabs to sync the new auth state immediately
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
+    });
+    
     return { success: true };
   } catch (e) {
     return { success: false, error: 'Network error connecting to activation server.' };

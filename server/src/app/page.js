@@ -29,11 +29,11 @@ export default function Home() {
           ✨ Version 2.2 Now Live
         </div>
         
-        <h1 className="animate-fade-up delay-100" style={{ fontSize: '4.5rem', fontWeight: '800', margin: '0', lineHeight: '1.1', maxWidth: '800px' }}>
+        <h1 className="animate-fade-up delay-100" style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', fontWeight: '800', margin: '0', lineHeight: '1.1', maxWidth: '800px' }}>
           Supercharge your browser with <span style={{ color: 'var(--primary)', textShadow: '0 0 40px rgba(0, 209, 255, 0.4)' }}>Intelligent AI</span>.
         </h1>
         
-        <p className="animate-fade-up delay-200" style={{ fontSize: '1.25rem', color: '#888', maxWidth: '600px', margin: '30px auto', lineHeight: '1.6' }}>
+        <p className="animate-fade-up delay-200" style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: '#888', maxWidth: '600px', margin: '30px auto', lineHeight: '1.6' }}>
           Instantly summarize long articles, fact-check dubious claims, and answer complex questions without ever leaving your current tab.
         </p>
         

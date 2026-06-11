@@ -106,6 +106,16 @@ function guard(fn) {
 
 function handleAIError(err) {
   const msg = err.message || ''
+  
+  const settingsBtn = document.getElementById('pm-error-settings-btn');
+  if (settingsBtn) {
+    if (msg === '__NO_KEY__' || /auth|unauthorized|invalid key|key.*reject/i.test(msg) || /model.*not found|does not exist/i.test(msg)) {
+      settingsBtn.style.display = 'inline-flex';
+    } else {
+      settingsBtn.style.display = 'none';
+    }
+  }
+
   if (msg === '__NO_KEY__') {
     showError('No API key configured. Open Settings to add one, then click Retry.')
     return

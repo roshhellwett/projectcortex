@@ -42,14 +42,23 @@ export default function AdminDashboard() {
   };
 
   const generateKeys = async () => {
+    const input = window.prompt("How many keys would you like to generate? (1-100)", "5");
+    if (!input) return;
+    
+    const count = parseInt(input, 10);
+    if (isNaN(count) || count < 1 || count > 100) {
+      showToast('Please enter a valid number between 1 and 100.');
+      return;
+    }
+
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'generate', count: 5 })
+        body: JSON.stringify({ action: 'generate', count })
       });
       if (res.ok) {
-        showToast('5 new keys generated successfully!');
+        showToast(`${count} new keys generated successfully!`);
         fetchLicenses();
       }
     } catch (err) {
@@ -123,7 +132,7 @@ export default function AdminDashboard() {
             <h1 style={{ margin: '0 0 8px 0', fontSize: '32px' }}>Cortex Command Center</h1>
             <p style={{ color: '#888', margin: 0 }}>Manage your extension licenses and track usage.</p>
           </div>
-          <button className="premium-button" onClick={generateKeys}>+ Generate 5 Keys</button>
+          <button className="premium-button" onClick={generateKeys}>+ Generate Keys</button>
         </header>
 
         {/* Stats Grid */}

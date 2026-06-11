@@ -28,6 +28,10 @@ function initMessageListener() {
       }
       return true
     }
+    
+    if (message.type === 'AUTH_STATE_CHANGED') {
+      init();
+    }
   })
 }
 

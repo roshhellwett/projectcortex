@@ -195,13 +195,19 @@ function buildPanelHTML() {
 
     <div class="pm-body">
 
-      <div id="pm-state-locked" class="pm-state">
-        <div class="pm-section-label">Activation Required</div>
-        <p style="font-size: 13px; color: #aaa; margin-bottom: 12px; line-height: 1.4;">
-          Your 7-day license has expired or is invalid. Please enter a valid license key to continue using Cortex.
+      <div id="pm-state-locked" class="pm-state" style="text-align: center;">
+        <div style="width: 48px; height: 48px; background: rgba(239,68,68,0.1); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <h2 style="font-size: 16px; color: #fff; margin: 0 0 8px 0;">Activation Required</h2>
+        <p style="font-size: 13px; color: #aaa; margin-bottom: 16px; line-height: 1.4;">
+          Your license has expired or is missing. Enter a valid key to unlock Cortex.
         </p>
-        <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: #111; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 6px; font-family: monospace; font-size: 14px; margin-bottom: 10px; outline: none;"/>
-        <button class="pm-action-btn" id="pm-action-activate" style="width: 100%; text-align: center; justify-content: center; background: #2196F3; border: none; font-weight: bold;">Activate License</button>
+        <div style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
+            <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"/>
+            <div id="pm-license-error" style="color: #ff4444; font-size: 11px; display: none;"></div>
+            <button class="pm-action-btn" id="pm-action-activate" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; border: none; font-weight: bold;">Activate License</button>
+        </div>
       </div>
 
       <div id="pm-state-welcome" class="pm-state">
@@ -248,11 +254,11 @@ function buildPanelHTML() {
 
       <div id="pm-state-error" class="pm-state">
         <div class="pm-error-wrap">
-          <div class="pm-error-icon">\u26A0</div>
-          <div class="pm-error-msg" id="pm-error-msg"></div>
-          <div class="pm-error-actions">
-            <button class="pm-retry-btn" id="pm-error-retry">\u21BB Retry</button>
-            <button class="pm-back-btn" id="pm-error-back">\u2190 Back</button>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div id="pm-error-msg"></div>
+          <div style="display: flex; gap: 8px; justify-content: center; margin-top: 16px;">
+            <button class="pm-back-btn" id="pm-error-back-btn" style="margin: 0;">\u2190 Back</button>
+            <button class="pm-back-btn" id="pm-error-settings-btn" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
           </div>
         </div>
       </div>
@@ -374,6 +380,21 @@ function initDragger() {
   const header = document.querySelector('.pm-header')
   if (!header) return
 
+  if (!_panelPos) {
+    try {
+      const saved = localStorage.getItem('pc_panel_pos');
+      if (saved) {
+        _panelPos = JSON.parse(saved);
+        if (_panel && _panel.classList.contains('pm-open')) {
+          _panel.style.left = _panelPos.x + 'px';
+          _panel.style.top = _panelPos.y + 'px';
+          _panel.style.transform = 'none';
+          _panel.classList.add('pm-positioned');
+        }
+      }
+    } catch (_) {}
+  }
+
   header.addEventListener('mousedown', e => {
     if (e.target.closest('button, input, select, textarea')) return
     _drag = true
@@ -423,8 +444,16 @@ function wireActionButtons() {
       })
     })
 
+    document.getElementById('pm-error-settings-btn')?.addEventListener('click', () => {
+      chrome.runtime.sendMessage({
+        type: 'OPEN_OPTIONS',
+        hostname: window.location.hostname,
+      })
+    })
+
     document.getElementById('pm-action-activate')?.addEventListener('click', () => {
       const inputEl = document.getElementById('pm-license-input');
+      const errorEl = document.getElementById('pm-license-error');
       const key = inputEl?.value?.trim();
       
       // Reset invalid state
@@ -432,30 +461,53 @@ function wireActionButtons() {
         inputEl.classList.remove('pm-invalid');
         void inputEl.offsetWidth; // trigger reflow
       }
+      if (errorEl) {
+        errorEl.style.display = 'none';
+        errorEl.textContent = '';
+      }
+
+      const showInlineError = (msg) => {
+        if (inputEl) inputEl.classList.add('pm-invalid');
+        if (errorEl) {
+          errorEl.textContent = msg;
+          errorEl.style.display = 'block';
+        }
+      };
 
       if (!key) {
-        if (inputEl) inputEl.classList.add('pm-invalid');
-        return showError('Please enter a license key');
+        return showInlineError('Please enter a license key.');
       }
       
-      showState('loading');
-      setLoadingLabel('Verifying license...');
+      const activateBtn = document.getElementById('pm-action-activate');
+      if (activateBtn) {
+        activateBtn.textContent = 'Verifying...';
+        activateBtn.disabled = true;
+      }
+
       chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
+        if (activateBtn) {
+          activateBtn.textContent = 'Activate License';
+          activateBtn.disabled = false;
+        }
+
         if (res?.success) {
           showState('welcome');
-          // Re-init completely to unlock features
           init();
         } else {
-          showState('locked'); // Go back to locked state
-          if (inputEl) inputEl.classList.add('pm-invalid'); // Shake it
-          showError(res?.error || 'Activation failed');
+          showInlineError(res?.error || 'Failed to verify license');
         }
       });
     });
 
     document.getElementById('pm-close-btn')?.addEventListener('click', closePanel)
-    document.getElementById('pm-back-btn')?.addEventListener('click', () => showState(_isLocked ? 'locked' : 'welcome'))
-    document.getElementById('pm-error-back')?.addEventListener('click', () => showState(_isLocked ? 'locked' : 'welcome'))
+    document.getElementById('pm-back-btn')?.addEventListener('click', () => {
+      if (_isLocked) { showState('locked'); return; }
+      showState('welcome')
+    })
+    document.getElementById('pm-error-back-btn')?.addEventListener('click', () => {
+      if (_isLocked) { showState('locked'); return; }
+      showState('welcome')
+    })
     document.getElementById('pm-error-retry')?.addEventListener('click', () => {
       if (_isLocked) return showState('locked');
       if (!_lastAction) return

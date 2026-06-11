@@ -111,13 +111,63 @@ function updateKeyHint() {
 }
 
 (async function init() {
-    chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
-        if (res && res.locked) {
-            document.getElementById('lockOverlay').style.display = 'flex';
-            document.getElementById('mainContainer').style.filter = 'blur(10px)';
-            document.getElementById('mainContainer').style.pointerEvents = 'none';
+    const checkLockStatus = () => {
+        chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+            if (res && res.locked) {
+                document.getElementById('lockOverlay').style.display = 'flex';
+                document.getElementById('mainContainer').style.filter = 'blur(10px)';
+                document.getElementById('mainContainer').style.pointerEvents = 'none';
+            } else {
+                document.getElementById('lockOverlay').style.display = 'none';
+                document.getElementById('mainContainer').style.filter = 'none';
+                document.getElementById('mainContainer').style.pointerEvents = 'auto';
+            }
+        });
+    };
+
+    checkLockStatus();
+
+    chrome.runtime.onMessage.addListener((message) => {
+        if (message.type === 'AUTH_STATE_CHANGED') {
+            checkLockStatus();
         }
     });
+
+    const activateBtn = document.getElementById('optionsActivateBtn');
+    const licenseInput = document.getElementById('optionsLicenseInput');
+    const authStatus = document.getElementById('optionsAuthStatus');
+
+    if (activateBtn && licenseInput) {
+        activateBtn.addEventListener('click', () => {
+            const key = licenseInput.value.trim();
+            if (!key) {
+                authStatus.textContent = 'Please enter a license key.';
+                return;
+            }
+            
+            activateBtn.textContent = 'Verifying...';
+            activateBtn.disabled = true;
+            authStatus.textContent = '';
+            
+            chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
+                activateBtn.textContent = 'Activate License';
+                activateBtn.disabled = false;
+                
+                if (res && res.success) {
+                    authStatus.style.color = '#4ade80';
+                    authStatus.textContent = 'Activated successfully!';
+                    setTimeout(() => {
+                        document.getElementById('lockOverlay').style.display = 'none';
+                        document.getElementById('mainContainer').style.filter = 'none';
+                        document.getElementById('mainContainer').style.pointerEvents = 'auto';
+                    }, 800);
+                } else {
+                    authStatus.style.color = '#ff4444';
+                    authStatus.textContent = res?.error || 'Activation failed.';
+                }
+            });
+        });
+    }
 
     await loadSettings().catch(() => { });
 

@@ -23,6 +23,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "ProjectCortex | Enterprise AI Browser Extension",
   description: "AI-powered browser extension for professionals. Summarize, fact-check, and answer questions directly in your browser.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }) {

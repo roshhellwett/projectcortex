@@ -39,25 +39,15 @@ Built with a stunning, Apple-inspired Next.js frontend, ProjectCortex is fully e
 
 The latest enterprise build is fully compiled, obfuscated, and ready for deployment.
 
-**[📥 Download ProjectCortex (Latest ZIP)](https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip)**
+**[📥 Download ProjectCortex (Latest ZIP)](https://github.com/roshhell wett/projectcortex/archive/refs/heads/main.zip)**
 
 ### Installation Guide:
 1. Download and extract the ZIP file above.
-2. Inside, locate the `dist/` folder (this contains the obfuscated, production-ready extension).
+2. Inside, locate the `projectcortex-main/` or `projectcortex/` folder (this contains the obfuscated, production-ready extension).
 3. Open Chrome and navigate to `chrome://extensions/`.
 4. Turn on **Developer mode** using the toggle switch in the top-right corner.
-5. Click **Load unpacked** and select the `dist/` folder.
+5. Click **Load unpacked** and select the `projectcortex-main/` or `projectcortex/` folder.
 6. Click the extension icon to pin Cortex to your toolbar!
-
----
-
-## 💻 Tech Stack
-
-* **Extension Core:** Manifest V3, Vanilla JS, Chrome Storage API, Chrome Alarms.
-* **Web Platform & Admin Dashboard:** Next.js 14, React, Tailwind / Vanilla CSS.
-* **Authentication & Database:** Supabase (PostgreSQL), JSON Web Tokens (JWT).
-* **AI Providers:** Groq API (Llama 3), OpenRouter API.
-* **Build System:** Node.js, `javascript-obfuscator`.
 
 ---
 

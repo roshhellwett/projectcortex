@@ -118,7 +118,8 @@ function updateKeyHint() {
 
 (async function init() {
     const checkLockStatus = () => {
-        chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+        const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
+        chrome.runtime.sendMessage({ type: 'CHECK_AUTH', rawHWID }, res => {
             if (res && res.installId) {
                 const lockIdEl = document.getElementById('optionsInstallId');
                 const creditsIdEl = document.getElementById('optionsCreditsInstallId');

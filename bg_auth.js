@@ -9,9 +9,11 @@
 
 const API_BASE = 'https://projectcortex.vercel.app';
 
-async function hashHWID(rawHWID, key) {
+const STATIC_SALT = 'ProjectCortex_Secret_Salt_2026';
+
+async function hashHWID(rawHWID) {
   if (!rawHWID) return null;
-  const msgBuffer = new TextEncoder().encode(rawHWID + '|' + key);
+  const msgBuffer = new TextEncoder().encode(rawHWID + '|' + STATIC_SALT);
   const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return 'hw_' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
@@ -19,7 +21,7 @@ async function hashHWID(rawHWID, key) {
 
 export async function getAuthState() {
   return new Promise(resolve => {
-    chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime', 'licenseKey'], data => {
+    chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime'], data => {
       resolve(data);
     });
   });
@@ -28,17 +30,27 @@ export async function getAuthState() {
 export async function checkAuthStatus(rawHWID) {
   const state = await getAuthState();
   
-  if (!state.installId || !state.authToken) {
-    return { locked: true, reason: 'NO_TOKEN', installId: state.installId || null };
+  let currentInstallId = state.installId;
+
+  // Always compute installId if we have rawHWID (to show on lock screen before activation)
+  if (rawHWID) {
+    const computedHWID = await hashHWID(rawHWID);
+    if (computedHWID) {
+      currentInstallId = computedHWID;
+      if (state.installId !== computedHWID) {
+        chrome.storage.local.set({ installId: computedHWID });
+        
+        // If the HWID changed but we have a token, it's a cloned database! Lock it.
+        if (state.authToken && state.installId) {
+           chrome.storage.local.remove(['authToken']);
+           return { locked: true, reason: 'HWID_MISMATCH', installId: computedHWID };
+        }
+      }
+    }
   }
 
-  // Anti-Cloning HWID Lock Verification
-  if (rawHWID && state.licenseKey) {
-    const expectedHWID = await hashHWID(rawHWID, state.licenseKey);
-    if (expectedHWID && expectedHWID !== state.installId) {
-       chrome.storage.local.remove(['authToken', 'installId']);
-       return { locked: true, reason: 'HWID_MISMATCH', installId: null };
-    }
+  if (!currentInstallId || !state.authToken) {
+    return { locked: true, reason: 'NO_TOKEN', installId: currentInstallId || null };
   }
 
   const now = Date.now();
@@ -58,26 +70,26 @@ export async function checkAuthStatus(rawHWID) {
         chrome.tabs.query({}, (tabs) => {
           tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
         });
-        return { locked: true, reason: data.error || 'EXPIRED', installId: state.installId };
+        return { locked: true, reason: data.error || 'EXPIRED', installId: currentInstallId };
       }
       
       if (data.token) {
         chrome.storage.local.set({ authToken: data.token });
       }
       chrome.storage.local.set({ lastVerifyTime: now, seed: data.seed });
-      return { locked: false, seed: data.seed, installId: state.installId };
+      return { locked: false, seed: data.seed, installId: currentInstallId };
       
     } catch (e) {
       console.warn('Cortex Auth: Offline, relying on cached token.', e);
-      return { locked: false, offline: true, installId: state.installId };
+      return { locked: false, offline: true, installId: currentInstallId };
     }
   }
 
-  return { locked: false, installId: state.installId };
+  return { locked: false, installId: currentInstallId };
 }
 
 export async function activateLicense(licenseKey, rawHWID) {
-  const installId = await hashHWID(rawHWID, licenseKey);
+  const installId = await hashHWID(rawHWID);
   if (!installId) {
     return { success: false, error: 'Hardware fingerprinting failed. Please refresh the page.' };
   }
@@ -97,7 +109,6 @@ export async function activateLicense(licenseKey, rawHWID) {
     chrome.storage.local.set({ 
       authToken: data.token, 
       installId: installId,
-      licenseKey: licenseKey,
       lastVerifyTime: Date.now() 
     });
     

@@ -20,5 +20,8 @@
   "homepage": "https://github.com/roshhellwett/projectcortex#readme",
   "devDependencies": {
     "javascript-obfuscator": "^5.4.3"
+  },
+  "dependencies": {
+    "strip-comments": "^2.0.1"
   }
 }

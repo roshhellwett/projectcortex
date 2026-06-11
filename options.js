@@ -159,6 +159,12 @@ function updateKeyHint() {
                 activateBtn.textContent = 'Activate License';
                 activateBtn.disabled = false;
                 
+                if (chrome.runtime.lastError) {
+                    authStatus.style.color = '#ff4444';
+                    authStatus.textContent = 'Extension backend unreachable. Please reload the extension.';
+                    return;
+                }
+
                 if (res && res.success) {
                     authStatus.style.color = '#4ade80';
                     authStatus.textContent = 'Activated successfully!';

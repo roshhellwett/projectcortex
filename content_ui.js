@@ -484,22 +484,31 @@ function wireActionButtons() {
       }
       
       const activateBtn = document.getElementById('pm-action-activate');
-      if (activateBtn) {
-        activateBtn.textContent = 'Verifying...';
-        activateBtn.disabled = true;
-      }
+      activateBtn.textContent = 'Verifying...';
+      activateBtn.disabled = true;
 
       chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
-        if (activateBtn) {
-          activateBtn.textContent = 'Activate License';
-          activateBtn.disabled = false;
+        activateBtn.textContent = 'Activate License';
+        activateBtn.disabled = false;
+        
+        if (chrome.runtime.lastError) {
+          errorEl.textContent = 'Extension backend unreachable. Please reload the page.';
+          errorEl.style.display = 'block';
+          return;
         }
 
         if (res?.success) {
-          showState('welcome');
-          init();
+          errorEl.style.display = 'none';
+          inputEl.value = '';
+          activateBtn.textContent = 'Success!';
+          setTimeout(() => {
+            activateBtn.textContent = 'Activate License';
+            showState('welcome');
+            init();
+          }, 1500);
         } else {
-          showInlineError(res?.error || 'Failed to verify license');
+          errorEl.textContent = res?.error || 'Failed to verify license';
+          errorEl.style.display = 'block';
         }
       });
     });

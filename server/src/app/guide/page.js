@@ -58,6 +58,25 @@ export default function Guide() {
           </p>
         </div>
 
+        {/* Demo Video */}
+        <div className="reveal" style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(138, 43, 226, 0.15)', background: 'var(--glass-bg)', backdropFilter: 'blur(20px)', marginBottom: '60px' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40px', background: 'rgba(255, 255, 255, 0.02)', borderBottom: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: '8px', zIndex: 10 }}>
+             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56', border: '1px solid rgba(0,0,0,0.1)' }}></div>
+             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e', border: '1px solid rgba(0,0,0,0.1)' }}></div>
+             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#27c93f', border: '1px solid rgba(0,0,0,0.1)' }}></div>
+          </div>
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            style={{ width: '100%', height: 'auto', display: 'block', paddingTop: '40px' }}
+          >
+            <source src="/demo.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           
           {/* Step 1 */}

@@ -1,0 +1,24 @@
+{
+  "name": "projectcortex",
+  "version": "1.0.0",
+  "description": "![Stars](https://img.shields.io/github/stars/roshhellwett/projectcortex?style=for-the-badge)\r ![Chrome](https://img.shields.io/badge/Chrome-Extension-brightgreen?style=for-the-badge)\r ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge)",
+  "main": "bg_api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roshhellwett/projectcortex.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/roshhellwett/projectcortex/issues"
+  },
+  "homepage": "https://github.com/roshhellwett/projectcortex#readme",
+  "devDependencies": {
+    "javascript-obfuscator": "^5.4.3"
+  }
+}

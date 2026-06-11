@@ -1,61 +1,18 @@
 // Copyright (c) 2026 Zenith Open Source Projects
 // SPDX-License-Identifier: MIT
 
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODELS = {
-  DEFAULT: 'llama-3.1-8b-instant',
-  DEFAULT_OR: 'openrouter/free',
-  MCQ_GROQ: 'llama-3.3-70b-versatile',
-  MCQ_OR: 'openrouter/free',
-  FALLBACK_GROQ: 'llama3-8b-8192',
-  FALLBACK_OR: 'deepseek/deepseek-chat:free',
-};
+import {
+  GROQ_URL, OPENROUTER_URL, MODELS, ACTION_CONFIG, DEFAULT_ACTION,
+  TIMEOUT_MS, MAX_RETRIES, RETRY_BASES, PROVIDER_GROQ, PROVIDER_OPENROUTER, PROVIDER_CUSTOM
+} from './bg_config.js';
 
-const ACTION_CONFIG = {
-  correct_answers: {
-    maxTokens: 300, temperature: 0, topP: 1,
-    overrideModelOnGroq: true,
-    overrideModelOnOpenRouter: true,
-  },
-  summarize: { maxTokens: 2048, temperature: 0.5, topP: 0.9 },
-  factcheck: { maxTokens: 2048, temperature: 0.5, topP: 0.9 },
-  ask: { maxTokens: 2048, temperature: 0.5, topP: 0.9 },
-};
-const DEFAULT_ACTION = { maxTokens: 1024, temperature: 0.65, topP: 0.9 };
-
-const TIMEOUT_MS = 30000;
-const MAX_RETRIES = 2;
-const RETRY_BASES = [2500, 6000];
-
-const PROVIDER_GROQ = 'groq';
-const PROVIDER_OPENROUTER = 'openrouter';
-const PROVIDER_CUSTOM = 'custom';
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'AI_REQUEST') {
-    handleAIRequest(message.payload, sendResponse);
-    return true;
-  }
-  if (message.type === 'OPEN_OPTIONS') {
-    const hostname = message.hostname || extractHostname(sender?.tab?.url);
-    chrome.storage.local.set({ settingsTargetHost: hostname || '' }, () => {
-      chrome.runtime.openOptionsPage();
-    });
-  }
-});
-
-const extractHostname = url => {
-  try { return new URL(url).hostname; } catch { return ''; }
-};
-
-const resolveEndpoint = (apiProvider, customEndpoint) => {
+export const resolveEndpoint = (apiProvider, customEndpoint) => {
   if (apiProvider === PROVIDER_OPENROUTER) return OPENROUTER_URL;
   if (apiProvider === PROVIDER_CUSTOM && customEndpoint) return customEndpoint;
   return GROQ_URL;
 };
 
-const resolveModel = (apiProvider, model, action) => {
+export const resolveModel = (apiProvider, model, action) => {
   const cfg = ACTION_CONFIG[action];
   if (!cfg) return model || (apiProvider === PROVIDER_OPENROUTER ? MODELS.DEFAULT_OR : MODELS.DEFAULT);
   if (cfg.overrideModelOnGroq && apiProvider === PROVIDER_GROQ) return MODELS.MCQ_GROQ;
@@ -63,7 +20,7 @@ const resolveModel = (apiProvider, model, action) => {
   return model || (apiProvider === PROVIDER_OPENROUTER ? MODELS.DEFAULT_OR : MODELS.DEFAULT);
 };
 
-const nextFallback = (apiProvider, currentModel) => {
+export const nextFallback = (apiProvider, currentModel) => {
   if (apiProvider === PROVIDER_GROQ) {
     if (currentModel === MODELS.MCQ_GROQ) return MODELS.FALLBACK_GROQ;
     if (currentModel === MODELS.FALLBACK_GROQ) return MODELS.DEFAULT;
@@ -76,7 +33,7 @@ const nextFallback = (apiProvider, currentModel) => {
   return currentModel;
 };
 
-const buildHeaders = (apiProvider, apiKey, customEndpoint) => {
+export const buildHeaders = (apiProvider, apiKey, customEndpoint) => {
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${apiKey}`
@@ -88,10 +45,10 @@ const buildHeaders = (apiProvider, apiKey, customEndpoint) => {
   return headers;
 };
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-const jitter = base => base + Math.random() * base * 0.4;
+export const sleep = ms => new Promise(r => setTimeout(r, ms));
+export const jitter = base => base + Math.random() * base * 0.4;
 
-async function attemptFetch(endpoint, headers, body, signal) {
+export async function attemptFetch(endpoint, headers, body, signal) {
   const res = await fetch(endpoint, {
     method: 'POST', headers, body: JSON.stringify(body), signal
   });
@@ -102,7 +59,7 @@ async function attemptFetch(endpoint, headers, body, signal) {
   return { res, data };
 }
 
-function classifyError(status, data, apiProvider) {
+export function classifyError(status, data, apiProvider) {
   const msg = data?.error?.message || data?.message || data?.error || '';
   const lower = typeof msg === 'string' ? msg.toLowerCase() : '';
 
@@ -155,7 +112,7 @@ function classifyError(status, data, apiProvider) {
   return { type: 'error', message: msg || `HTTP ${status}: Request failed`, retryable: false };
 }
 
-async function handleAIRequest(payload, sendResponse) {
+export async function handleAIRequest(payload, sendResponse) {
   const {
     prompt, systemPrompt, apiKey,
     apiProvider = 'groq', customEndpoint = '',

@@ -12,9 +12,7 @@
   },
   "permissions": [
     "activeTab",
-    "storage",
-    "scripting",
-    "tabs"
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>",
@@ -22,7 +20,8 @@
     "https://openrouter.ai/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "bg_main.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -30,7 +29,12 @@
         "<all_urls>"
       ],
       "js": [
-        "content.js"
+        "content_globals.js",
+        "content_utils.js",
+        "content_anti_cheat.js",
+        "content_ui.js",
+        "content_ai.js",
+        "content_main.js"
       ],
       "css": [
         "content.css"

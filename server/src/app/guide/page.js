@@ -1,8 +1,23 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import '../globals.css';
+import LiveBackground from '../../components/LiveBackground';
 
 export default function Guide() {
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (mainRef.current) {
+        mainRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
+        mainRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -17,7 +32,9 @@ export default function Guide() {
   }, []);
 
   return (
-    <main style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'var(--background)' }}>
+    <main ref={mainRef} style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'var(--background)' }}>
+      <LiveBackground />
+      <div className="spotlight"></div>
       <div className="ambient-mesh">
         <div className="ambient-orb-1"></div>
         <div className="ambient-orb-2"></div>

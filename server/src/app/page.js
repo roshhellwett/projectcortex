@@ -72,9 +72,9 @@ export default function Home() {
               Download Free
             </button>
           </a>
-          <a href="#features" style={{ textDecoration: 'none' }}>
+          <a href="/guide" style={{ textDecoration: 'none' }}>
             <button style={{ color: 'var(--primary)', background: 'transparent', border: 'none', fontSize: '17px', padding: '16px 20px', fontWeight: '500', cursor: 'pointer', transition: 'opacity 0.2s' }} onMouseEnter={e => e.target.style.opacity='0.7'} onMouseLeave={e => e.target.style.opacity='1'}>
-              Learn more →
+              Setup Guide →
             </button>
           </a>
         </div>

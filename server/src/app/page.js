@@ -1,10 +1,27 @@
 'use client';
+import { useEffect } from 'react';
 import './globals.css';
 
 export default function Home() {
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'var(--background)' }}>
-      <div className="ambient-glow"></div>
+      <div className="ambient-mesh">
+        <div className="ambient-orb-1"></div>
+        <div className="ambient-orb-2"></div>
+      </div>
       
       {/* Navigation */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 5%', alignItems: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)', borderBottom: '1px solid var(--glass-border)', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -14,7 +31,7 @@ export default function Home() {
             Project<span style={{ color: 'var(--primary)' }}>Cortex</span>
           </span>
         </div>
-        <div style={{ display: 'flex', gap: '28px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
           <a href="#features" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Features</a>
           <a href="#how-it-works" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>How it Works</a>
           <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Pricing</a>
@@ -24,6 +41,11 @@ export default function Home() {
             <button className="premium-button" style={{ fontSize: '14px', padding: '10px 22px' }}>
               Download
             </button>
+          </a>
+        </div>
+        <div className="mobile-cta" style={{ display: 'none' }}>
+          <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
+            <button className="premium-button" style={{ fontSize: '13px', padding: '8px 16px' }}>Download</button>
           </a>
         </div>
       </nav>
@@ -59,14 +81,14 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section id="features" style={{ maxWidth: '1080px', margin: '40px auto 100px auto', padding: '0 5%' }}>
+      <section id="features" className="reveal" style={{ maxWidth: '1080px', margin: '40px auto 100px auto', padding: '0 5%' }}>
         <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-          <h2 className="animate-fade-up" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: '700', margin: '0 0 12px 0', letterSpacing: '-0.03em', color: 'var(--foreground)' }}>Built for professionals.</h2>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: '700', margin: '0 0 12px 0', letterSpacing: '-0.03em', color: 'var(--foreground)' }}>Built for professionals.</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', maxWidth: '500px', margin: '0 auto' }}>Speed, accuracy, and absolute security — in every interaction.</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-          <div className="feature-card">
+          <div className="feature-card float-anim" style={{ animationDelay: '0s' }}>
             <div style={{ width: '44px', height: '44px', background: 'var(--primary-light)', borderRadius: '12px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
             </div>
@@ -74,16 +96,16 @@ export default function Home() {
             <p style={{ color: 'var(--text-secondary)', margin: '0', lineHeight: '1.5', fontSize: '15px' }}>Highlight any text to summarize, explain, or instantly solve multiple-choice questions.</p>
           </div>
 
-          <div className="feature-card">
-            <div style={{ width: '44px', height: '44px', background: '#e8faf0', borderRadius: '12px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="feature-card float-anim" style={{ animationDelay: '2s' }}>
+            <div style={{ width: '44px', height: '44px', background: 'rgba(52, 199, 89, 0.15)', borderRadius: '12px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(52, 199, 89, 0.3)' }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#34c759" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: '600', margin: '0 0 8px 0', color: 'var(--foreground)', letterSpacing: '-0.01em' }}>Resilient Routing</h3>
             <p style={{ color: 'var(--text-secondary)', margin: '0', lineHeight: '1.5', fontSize: '15px' }}>Automatic failover between Groq and OpenRouter. Zero downtime, always.</p>
           </div>
 
-          <div className="feature-card">
-            <div style={{ width: '44px', height: '44px', background: '#fff0f0', borderRadius: '12px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="feature-card float-anim" style={{ animationDelay: '4s' }}>
+            <div style={{ width: '44px', height: '44px', background: 'rgba(255, 59, 48, 0.15)', borderRadius: '12px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255, 59, 48, 0.3)' }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             </div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: '600', margin: '0 0 8px 0', color: 'var(--foreground)', letterSpacing: '-0.01em' }}>Enterprise DRM</h3>
@@ -93,7 +115,7 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" style={{ background: 'var(--surface)', padding: '100px 5%' }}>
+      <section id="how-it-works" className="reveal" style={{ background: 'var(--surface)', padding: '100px 5%' }}>
         <div style={{ maxWidth: '960px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '56px' }}>
             <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: '700', margin: '0 0 12px 0', letterSpacing: '-0.03em', color: 'var(--foreground)' }}>Three steps. That's it.</h2>
@@ -121,10 +143,10 @@ export default function Home() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" style={{ maxWidth: '880px', margin: '0 auto', padding: '100px 5%' }}>
+      <section id="pricing" className="reveal" style={{ maxWidth: '1080px', margin: '100px auto', padding: '0 5%' }}>
         <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: '700', margin: '0 0 12px 0', letterSpacing: '-0.03em', color: 'var(--foreground)' }}>Simple pricing.</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Start with a trial or go enterprise.</p>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: '700', margin: '0 0 12px 0', letterSpacing: '-0.03em', color: 'var(--foreground)' }}>Enterprise Licensing</h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Self-host the dashboard or use our cloud. Transparent pricing.</p>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>

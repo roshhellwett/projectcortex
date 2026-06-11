@@ -103,17 +103,85 @@ body {
   transform: scale(0.98);
 }
 
-/* Ambient Background */
-.ambient-glow {
+/* Morphing Animation for Background */
+@keyframes morph {
+  0% { transform: scale(1) translate(0, 0) rotate(0deg); }
+  33% { transform: scale(1.2) translate(100px, 50px) rotate(120deg); }
+  66% { transform: scale(0.8) translate(-50px, -100px) rotate(240deg); }
+  100% { transform: scale(1) translate(0, 0) rotate(360deg); }
+}
+
+@keyframes continuousFloat {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Scroll Reveal Classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.float-anim {
+  animation: continuousFloat 6s ease-in-out infinite;
+}
+
+/* Ambient Background Mesh */
+.ambient-mesh {
   position: absolute;
-  width: 1000px;
-  height: 1000px;
-  background: radial-gradient(circle, rgba(138, 43, 226, 0.12) 0%, rgba(0, 113, 227, 0.05) 30%, rgba(0,0,0,0) 70%);
-  top: -400px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
   z-index: -1;
   pointer-events: none;
+}
+
+.ambient-orb-1 {
+  position: absolute;
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(138, 43, 226, 0.15) 0%, rgba(0,0,0,0) 60%);
+  top: -200px; left: 10%;
+  border-radius: 50%;
+  animation: morph 20s infinite linear alternate;
+}
+
+.ambient-orb-2 {
+  position: absolute;
+  width: 900px; height: 900px;
+  background: radial-gradient(circle, rgba(0, 113, 227, 0.1) 0%, rgba(0,0,0,0) 60%);
+  top: 20%; right: -10%;
+  border-radius: 50%;
+  animation: morph 25s infinite linear alternate-reverse;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  nav {
+    padding: 12px 5% !important;
+  }
+  .nav-links {
+    display: none !important; /* Hide links on mobile, show only CTA */
+  }
+  .mobile-cta {
+    display: block !important;
+  }
+  .feature-card {
+    padding: 24px;
+  }
+  section {
+    padding-top: 60px !important;
+    padding-bottom: 60px !important;
+  }
+  .enterprise-gradient-text {
+    font-size: clamp(2rem, 8vw, 2.8rem) !important;
+  }
 }
 
 /* Gradient Text */

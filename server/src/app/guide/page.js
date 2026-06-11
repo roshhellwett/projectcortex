@@ -1,10 +1,27 @@
 'use client';
+import { useEffect } from 'react';
 import '../globals.css';
 
 export default function Guide() {
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'var(--background)' }}>
-      <div className="ambient-glow"></div>
+      <div className="ambient-mesh">
+        <div className="ambient-orb-1"></div>
+        <div className="ambient-orb-2"></div>
+      </div>
       
       {/* Navigation */}
       <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 5%', alignItems: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)', borderBottom: '1px solid var(--glass-border)', position: 'sticky', top: 0, zIndex: 100 }}>
@@ -14,7 +31,7 @@ export default function Guide() {
             Project<span style={{ color: 'var(--primary)' }}>Cortex</span>
           </span>
         </a>
-        <div style={{ display: 'flex', gap: '28px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
           <a href="/guide" style={{ color: 'var(--foreground)', textDecoration: 'none', fontSize: '14px', fontWeight: '500' }}>Setup Guide</a>
           <a href="/#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Pricing</a>
           <a href="/admin" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Admin</a>
@@ -22,6 +39,11 @@ export default function Guide() {
             <button className="premium-button" style={{ fontSize: '14px', padding: '10px 22px' }}>
               Download
             </button>
+          </a>
+        </div>
+        <div className="mobile-cta" style={{ display: 'none' }}>
+          <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
+            <button className="premium-button" style={{ fontSize: '13px', padding: '8px 16px' }}>Download</button>
           </a>
         </div>
       </nav>
@@ -39,7 +61,7 @@ export default function Guide() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           
           {/* Step 1 */}
-          <div className="feature-card">
+          <div className="feature-card reveal float-anim" style={{ animationDelay: '0s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>1</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Download & Prepare</h2>
@@ -53,7 +75,7 @@ export default function Guide() {
           </div>
 
           {/* Step 2 */}
-          <div className="feature-card">
+          <div className="feature-card reveal float-anim" style={{ animationDelay: '1s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>2</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Relocate to C: Drive</h2>
@@ -68,7 +90,7 @@ export default function Guide() {
           </div>
 
           {/* Step 3 */}
-          <div className="feature-card">
+          <div className="feature-card reveal float-anim" style={{ animationDelay: '2s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>3</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Browser Installation</h2>
@@ -83,7 +105,7 @@ export default function Guide() {
           </div>
 
           {/* Step 4 */}
-          <div className="feature-card">
+          <div className="feature-card reveal float-anim" style={{ animationDelay: '3s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
               <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>4</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Configuration & Activation</h2>
@@ -101,7 +123,7 @@ export default function Guide() {
         </div>
 
         {/* Troubleshooting Fallback */}
-        <div style={{ marginTop: '80px' }}>
+        <div className="reveal" style={{ marginTop: '80px' }}>
           <div style={{ background: 'linear-gradient(135deg, rgba(255, 59, 48, 0.1) 0%, rgba(255, 59, 48, 0.02) 100%)', border: '1px solid rgba(255, 59, 48, 0.3)', borderRadius: '24px', padding: '40px', boxShadow: '0 8px 30px rgba(255, 59, 48, 0.1)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
               <div style={{ width: '44px', height: '44px', background: 'rgba(255, 59, 48, 0.15)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

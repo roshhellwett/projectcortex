@@ -87,6 +87,7 @@ export default function Guide() {
             loop 
             muted 
             playsInline 
+            controls
             style={{ width: '100%', height: 'auto', display: 'block', paddingTop: '40px' }}
           >
             <source src="/demo.mp4" type="video/mp4" />

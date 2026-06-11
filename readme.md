@@ -33,17 +33,6 @@ Built with a stunning, Apple-inspired Next.js frontend, ProjectCortex is fully e
 * **MCQ Solver:** Highlight any multiple-choice question and instantly reveal the correct answer.
 * **Ask About Page:** Type any question related to the current page and get instant answers without losing your workflow.
 
-### 🛡️ Enterprise Architecture & Security
-* **Zero-Touch License Management:** Fully automated JWT-based authentication. Admins can generate, extend, or revoke licenses from the central dashboard. Changes sync globally to users within 2.5 minutes without requiring re-logins.
-* **Code Obfuscation:** The extension build pipeline automatically flattens, minifies, and encrypts core logic to prevent tampering and reverse engineering.
-* **Rate Limit Resilience:** Built-in exponential backoff, jitter, and automatic failovers between Groq and OpenRouter ensure 99.9% uptime for AI queries.
-* **Anti-Cheat Stealth:** Advanced observer-blocking prevents examination portals or restrictive enterprise websites from detecting tab visibility changes or tracking selection state.
-
-### 💎 Premium User Experience
-* **Glassmorphism UI:** A sleek, non-intrusive floating panel utilizing high-performance CSS backdrop filters.
-* **Universal Selection Bubble:** Select text on any webpage to instantly reveal action shortcuts.
-* **Right-Click Bypass:** Override draconian copy/paste and right-click blockers on rigid enterprise or educational domains.
-
 ---
 
 ## 📦 Download & Installation

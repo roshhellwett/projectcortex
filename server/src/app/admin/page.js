@@ -152,8 +152,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Table */}
-        <div className="glass-panel" style={{ overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="glass-panel" style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
             <thead>
               <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--border)' }}>
                 <th style={{ padding: '16px 24px', color: '#888', fontWeight: '600', fontSize: '13px', textTransform: 'uppercase' }}>License Key</th>

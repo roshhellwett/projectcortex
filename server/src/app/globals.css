@@ -86,12 +86,92 @@ body {
 /* Ambient Background */
 .ambient-glow {
   position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 209, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
-  top: -200px;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(0, 209, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  top: -300px;
   left: 50%;
   transform: translateX(-50%);
   z-index: -1;
   pointer-events: none;
+  animation: pulseGlow 8s infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+  100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+}
+
+.enterprise-gradient-text {
+  background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  padding: 40px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 209, 255, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 209, 255, 0.1);
+  border: 1px solid rgba(0, 209, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 24px;
+  box-shadow: 0 0 20px rgba(0, 209, 255, 0.2);
+}
+
+.glow-btn {
+  position: relative;
+}
+
+.glow-btn::after {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px; right: -2px; bottom: -2px;
+  background: linear-gradient(135deg, #00D1FF 0%, #0088FF 100%);
+  border-radius: 10px;
+  z-index: -1;
+  filter: blur(10px);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.glow-btn:hover::after {
+  opacity: 0.8;
 }

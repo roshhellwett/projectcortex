@@ -129,19 +129,19 @@ function handleAIError(err) {
     return
   }
   if (/quota|insufficient|billing|credits/i.test(msg)) {
-    showError('Account quota exhausted. Add credits at your provider\'s website, then click Retry.')
+    showError('Account quota exhausted. Add credits at your provider\'s website, then click Retry. If this persists, contact zenithprojects@icloud.com')
     return
   }
   if (/auth|unauthorized|invalid key|key.*reject/i.test(msg)) {
-    showError('API key is invalid or expired. Check your key in Settings, then click Retry.')
+    showError('API key is invalid or expired. Check your key in Settings, then click Retry. Need help? zenithprojects@icloud.com')
     return
   }
   if (/access denied|403/i.test(msg)) {
-    showError('Access denied by provider. Check billing or try the other provider in Settings.')
+    showError('Access denied by provider. Check billing or try the other provider in Settings. Contact zenithprojects@icloud.com for help.')
     return
   }
   if (/model.*not found|model.*not available|does not exist/i.test(msg)) {
-    showError('The selected model is not available. Open Settings and pick a different model.')
+    showError('The selected model is not available. Open Settings and pick a different model. Contact zenithprojects@icloud.com if stuck.')
     return
   }
   if (/timed out/i.test(msg)) {

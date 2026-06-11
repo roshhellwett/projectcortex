@@ -18,9 +18,10 @@ export default function Home() {
             PROJECT<span style={{ color: 'var(--primary)' }}>CORTEX</span>
           </span>
         </div>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
           <a href="#features" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', fontWeight: '600', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>Features</a>
           <a href="#how-it-works" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', fontWeight: '600', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>How it Works</a>
+          <a href="#pricing" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', fontWeight: '600', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>Pricing</a>
           <a href="/admin" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', fontWeight: '600', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>Admin Vault</a>
           <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
             <button className="premium-button glow-btn" style={{ fontSize: '14px', padding: '10px 20px' }}>
@@ -188,9 +189,10 @@ export default function Home() {
               <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>Download Extension</a>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <strong style={{ color: '#fff', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Admin</strong>
+              <strong style={{ color: '#fff', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contact</strong>
               <a href="/admin" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>DRM Vault Login</a>
-              <a href="mailto:support@zenith.org" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>Support</a>
+              <a href="mailto:zenithprojects@icloud.com" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>zenithprojects@icloud.com</a>
+              <a href="https://t.me/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ color: '#888', textDecoration: 'none', fontSize: '14px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='#fff'} onMouseLeave={e => e.target.style.color='#888'}>Telegram @roshhellwett</a>
             </div>
           </div>
         </div>

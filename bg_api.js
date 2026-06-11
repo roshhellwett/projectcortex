@@ -123,7 +123,7 @@ export async function handleAIRequest(payload, sendResponse) {
   const safeRespond = msg => {
     if (responded) return;
     responded = true;
-    try { sendResponse(msg); } catch (_) { }
+    try { sendResponse(msg); } catch (e) { console.warn('[Cortex] safeRespond failed:', e.message); }
   };
 
   if (!apiKey) {

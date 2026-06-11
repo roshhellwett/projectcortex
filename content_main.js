@@ -98,6 +98,13 @@ async function init() {
 
     // Check activation lock
     chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+      if (chrome.runtime.lastError) {
+        console.warn('[Cortex] Auth check failed (service worker may be restarting):', chrome.runtime.lastError.message);
+        _isLocked = true;
+        hideBubble();
+        showState('locked');
+        return;
+      }
       if (res && res.locked) {
         _isLocked = true;
         hideBubble(); // prevent bubble usage
@@ -119,9 +126,13 @@ if (document.readyState === 'loading') {
   init()
 }
 
+var _lastInitTime = 0;
 setInterval(() => {
   if (location.href !== _lastURL) {
     _lastURL = location.href
+    // Debounce: skip if init() ran less than 1s ago
+    if (Date.now() - _lastInitTime < 1000) return;
+    _lastInitTime = Date.now();
     init()
   }
 }, 500)

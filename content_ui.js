@@ -207,6 +207,7 @@ function buildPanelHTML() {
             <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"/>
             <div id="pm-license-error" style="color: #ff4444; font-size: 11px; display: none;"></div>
             <button class="pm-action-btn" id="pm-action-activate" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; border: none; font-weight: bold;">Activate License</button>
+            <div style="margin-top: 6px; font-size: 11px; color: #666; text-align: center;">Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a></div>
         </div>
       </div>
 
@@ -260,6 +261,7 @@ function buildPanelHTML() {
             <button class="pm-back-btn" id="pm-error-back-btn" style="margin: 0;">\u2190 Back</button>
             <button class="pm-back-btn" id="pm-error-settings-btn" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
           </div>
+          <div style="margin-top: 14px; font-size: 11px; color: #666; text-align: center;">Need help? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a></div>
         </div>
       </div>
 

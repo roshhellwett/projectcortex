@@ -152,6 +152,25 @@ function parseAiResponse(response) {
 
   if (!question || options.length < 2 || !answerLetter) return null
 
-  const matched = options.find(o => o.label === answerLetter)
-  return { question, options, matched }
+  // Try exact match first
+  let matched = options.find(o => o.label === answerLetter.toUpperCase())
+  // Fallback: try matching just the first character (handles "A)" or "A." answers)
+  if (!matched) {
+    const firstChar = answerLetter.charAt(0).toUpperCase()
+    matched = options.find(o => o.label === firstChar)
+  }
+  // Fallback: try partial text match (handles "Option A" style answers)
+  if (!matched) {
+    const ansLower = answerLetter.toLowerCase()
+    matched = options.find(o => ansLower.includes(o.label.toLowerCase()) || ansLower.includes(o.text.toLowerCase().substring(0, 20)))
+  }
+  // Last resort: if the answer is a number (1,2,3,4), map to options by index
+  if (!matched) {
+    const ansNum = parseInt(answerLetter)
+    if (!isNaN(ansNum) && ansNum >= 1 && ansNum <= options.length) {
+      matched = options[ansNum - 1]
+    }
+  }
+  
+  return matched ? { question, options, matched } : null
 }

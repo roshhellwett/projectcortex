@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ProjectCortex",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "AI-powered productivity assistant. Summarize, fact-check, find correct MCQ answers, and ask anything about any page.",
   "author": "roshhellwett",
   "homepage_url": "https://github.com/roshhellwett/projectcortex",

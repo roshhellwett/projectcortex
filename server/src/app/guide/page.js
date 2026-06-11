@@ -221,8 +221,8 @@ export default function Guide() {
           </div>
         </div>
         <div style={{ maxWidth: '1080px', margin: '32px auto 0 auto', paddingTop: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', fontSize: '12px', flexWrap: 'wrap', gap: '8px' }}>
-          <span>© 2026 Zenith Open Source Projects. All rights reserved.</span>
-          <span>Designed for Enterprise</span>
+          <span>&copy; {new Date().getFullYear()} ProjectCortex.</span>
+          <span>Idea of <a href="https://github.com/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none' }}>roshhellwett</a></span>
         </div>
       </footer>
     </main>

@@ -409,7 +409,16 @@
 </head>
 
 <body>
-    <div class="container">
+    <div id="lockOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="background: var(--surface); padding: 40px; border-radius: 16px; border: 1px solid var(--border); text-align: center; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+            <div style="width: 60px; height: 60px; background: rgba(255,0,0,0.1); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h2 style="font-size: 20px; color: #fff; margin-bottom: 12px;">Activation Required</h2>
+            <p style="color: #aaa; line-height: 1.6; margin-bottom: 24px; font-size: 14px;">Please activate your license key from the extension popup before configuring API settings.</p>
+        </div>
+    </div>
+    <div class="container" id="mainContainer">
         <div class="logo">
             <div class="logo-icon">
                 <img src="icons/logo.png" alt="Logo"

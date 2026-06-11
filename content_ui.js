@@ -424,8 +424,20 @@ function wireActionButtons() {
     })
 
     document.getElementById('pm-action-activate')?.addEventListener('click', () => {
-      const key = document.getElementById('pm-license-input')?.value?.trim();
-      if (!key) return showError('Please enter a license key');
+      const inputEl = document.getElementById('pm-license-input');
+      const key = inputEl?.value?.trim();
+      
+      // Reset invalid state
+      if (inputEl) {
+        inputEl.classList.remove('pm-invalid');
+        void inputEl.offsetWidth; // trigger reflow
+      }
+
+      if (!key) {
+        if (inputEl) inputEl.classList.add('pm-invalid');
+        return showError('Please enter a license key');
+      }
+      
       showState('loading');
       setLoadingLabel('Verifying license...');
       chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
@@ -434,6 +446,8 @@ function wireActionButtons() {
           // Re-init completely to unlock features
           init();
         } else {
+          showState('locked'); // Go back to locked state
+          if (inputEl) inputEl.classList.add('pm-invalid'); // Shake it
           showError(res?.error || 'Activation failed');
         }
       });

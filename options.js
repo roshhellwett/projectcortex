@@ -111,6 +111,14 @@ function updateKeyHint() {
 }
 
 (async function init() {
+    chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+        if (res && res.locked) {
+            document.getElementById('lockOverlay').style.display = 'flex';
+            document.getElementById('mainContainer').style.filter = 'blur(10px)';
+            document.getElementById('mainContainer').style.pointerEvents = 'none';
+        }
+    });
+
     await loadSettings().catch(() => { });
 
     providerEl.addEventListener('change', () => {

@@ -136,6 +136,7 @@ async function checkUpdate() {
         console.error('Failed to check for updates:', e);
     }
 }
+checkUpdate();
 
 async function loadSettings() {
     currentSiteHostname = await getCurrentHostname();
@@ -218,7 +219,6 @@ async function loadSettings() {
 
     updateUI();
     updateKeyHint();
-    checkUpdate();
 }
 
 function updateUI() {

@@ -43,9 +43,7 @@ export async function POST(req) {
       return NextResponse.json({ error: 'License has been revoked' }, { status: 403 });
     }
 
-    if (license.status === 'expired') {
-      return NextResponse.json({ error: 'License has expired' }, { status: 403 });
-    }
+
 
     // 2. Triple-Layer Validation: Does hardware ID match the database record?
     if (license.install_id && hwid !== license.install_id) {

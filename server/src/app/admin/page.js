@@ -19,7 +19,8 @@ const Icons = {
   Search: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>,
   Copy: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>,
   ChevronLeft: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>,
-  ChevronRight: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  ChevronRight: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>,
+  Refresh: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
 };
 
 function AdminModal({ isOpen, onClose, title, description, children }) {
@@ -46,6 +47,7 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const [autoRefresh, setAutoRefresh] = useState(0);
   const itemsPerPage = 12;
 
   const [modalState, setModalState] = useState({ isOpen: false, type: null, payload: null, inputVal: '' });
@@ -55,8 +57,8 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(''), 3000);
   };
 
-  const fetchLicenses = async () => {
-    setLoading(true);
+  const fetchLicenses = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res = await fetch('/api/admin', {
         headers: { Authorization: `Bearer ${password}` }
@@ -73,8 +75,17 @@ export default function AdminDashboard() {
     } catch (err) {
       setError('Failed to connect to server. Check your network.');
     }
-    setLoading(false);
+    if (!silent) setLoading(false);
   };
+
+  useEffect(() => {
+    if (autoRefresh > 0 && loggedIn) {
+      const interval = setInterval(() => {
+        fetchLicenses(true);
+      }, autoRefresh * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh, loggedIn, password]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -262,7 +273,22 @@ export default function AdminDashboard() {
             <h1 style={{ margin: '0 0 8px 0', fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: '800', letterSpacing: '-0.03em' }}>Command Center</h1>
             <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '16px' }}>Enterprise DRM Management & Metrics Dashboard</p>
           </div>
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select 
+                value={autoRefresh} 
+                onChange={e => setAutoRefresh(Number(e.target.value))} 
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', padding: '10px 16px', borderRadius: '10px', outline: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: '600' }}
+              >
+                <option value="0">Auto-Refresh: Off</option>
+                <option value="5">Every 5s</option>
+                <option value="15">Every 15s</option>
+                <option value="60">Every 1m</option>
+              </select>
+              <button onClick={() => fetchLicenses(false)} title="Manual Refresh" style={{ padding: '10px', background: 'var(--surface)', color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.color='#fff'} onMouseLeave={e => e.currentTarget.style.color='var(--text-secondary)'}>
+                <Icons.Refresh />
+              </button>
+            </div>
             <button className="premium-button" onClick={() => openModal('GENERATE', null, '5')} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Icons.Key /> Generate Keys
             </button>

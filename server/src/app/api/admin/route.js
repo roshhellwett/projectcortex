@@ -24,24 +24,35 @@ export async function GET(req) {
   const [
     { data: licenses, error: err1 },
     { data: logs, error: err2 },
-    { data: feedback, error: err3 }
+    { data: feedback, error: err3 },
+    { data: settings, error: err4 }
   ] = await Promise.all([
     supabase.from('licenses').select('*').order('created_at', { ascending: false }),
     supabase.from('api_logs').select('*').order('created_at', { ascending: false }).limit(1000),
-    supabase.from('user_feedback').select('*').order('created_at', { ascending: false }).limit(1000)
+    supabase.from('user_feedback').select('*').order('created_at', { ascending: false }).limit(1000),
+    supabase.from('app_settings').select('*').eq('id', 'latest_version').single()
   ]);
 
   if (err1 || err2 || err3) {
     return NextResponse.json({ error: (err1 || err2 || err3).message }, { status: 500 });
   }
   
-  return NextResponse.json({ licenses, logs: logs || [], feedback: feedback || [] });
+  const latestVersion = settings?.value || '6.0.0';
+  
+  return NextResponse.json({ licenses, logs: logs || [], feedback: feedback || [], latestVersion });
 }
 
 export async function POST(req) {
   if (!isAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { action, id, ids, count, days, status } = await req.json();
+  const { action, id, ids, count, days, status, version } = await req.json();
+
+  if (action === 'set_version') {
+    if (!version) return NextResponse.json({ error: 'Missing version' }, { status: 400 });
+    const { error } = await supabase.from('app_settings').upsert({ id: 'latest_version', value: version });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true, version });
+  }
 
   if (action === 'generate') {
     const safeCount = Math.min(Math.max(parseInt(count) || 5, 1), 100);

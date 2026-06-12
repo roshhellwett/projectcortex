@@ -46,6 +46,7 @@ export default function EnterpriseAdminDashboard() {
   const [licenses, setLicenses] = useState([]);
   const [logs, setLogs] = useState([]);
   const [feedback, setFeedback] = useState([]);
+  const [latestVersion, setLatestVersion] = useState('6.0.0');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState('');
@@ -80,6 +81,7 @@ export default function EnterpriseAdminDashboard() {
         setLicenses(data.licenses || []);
         setLogs(data.logs || []);
         setFeedback(data.feedback || []);
+        if (data.latestVersion) setLatestVersion(data.latestVersion);
         setLoggedIn(true);
         setError('');
       } else {
@@ -141,6 +143,7 @@ export default function EnterpriseAdminDashboard() {
       } 
       else if (type === 'REVOKE') { action = 'revoke'; bodyData = { id: payload }; } 
       else if (type === 'DELETE') { action = 'delete'; bodyData = { id: payload }; }
+      else if (type === 'SET_VERSION') { action = 'set_version'; bodyData = { version: inputVal }; }
       else if (type === 'RESET_HWID') { action = 'reset_hwid'; bodyData = { id: payload }; }
       else if (type === 'SET_STATUS') { action = 'set_status'; bodyData = { id: payload, status: selectVal }; }
       else if (type === 'BULK_REVOKE') { action = 'bulk_revoke'; bodyData = { ids: Array.from(selectedIds) }; }
@@ -363,6 +366,18 @@ export default function EnterpriseAdminDashboard() {
                   <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#facc15' }}>{stats.avgRating}</div>
                 </div>
               </div>
+
+              <h2 style={{ fontSize: '20px', marginBottom: '16px', fontWeight: 'bold' }}>System Configuration</h2>
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '4px' }}>Latest OTA Extension Version</div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Current Version: <span style={{ fontFamily: 'monospace', color: '#60a5fa', background: 'rgba(96,165,250,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{latestVersion}</span></div>
+                  <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '400px', lineHeight: 1.4 }}>If this version is higher than the user's installed version, they will see an Update banner in their extension settings.</p>
+                </div>
+                <button className="pm-action-btn" onClick={() => openModal('SET_VERSION', null, latestVersion)} style={{ padding: '10px 20px', background: 'var(--primary)', color: '#fff', margin: 0 }}>
+                  Update Version
+                </button>
+              </div>
             </div>
           )}
 
@@ -571,7 +586,8 @@ export default function EnterpriseAdminDashboard() {
           modalState.type === 'DELETE' ? 'Delete License' : 
           modalState.type === 'BULK_DELETE' ? 'Bulk Delete Unused' : 
           modalState.type === 'RESET_HWID' ? 'Reset Hardware ID' : 
-          modalState.type === 'SET_STATUS' ? 'Override Status' : ''
+          modalState.type === 'SET_STATUS' ? 'Override Status' :
+          modalState.type === 'SET_VERSION' ? 'Set Latest OTA Version' : ''
         }
         description={
           modalState.type === 'GENERATE' ? 'Enter the number of unused licenses to securely generate into the database.' :
@@ -579,16 +595,21 @@ export default function EnterpriseAdminDashboard() {
           modalState.type?.includes('REVOKE') ? 'Are you absolutely sure? The user(s) will be instantly locked out on their next network check.' :
           modalState.type?.includes('DELETE') ? 'Are you sure you want to permanently delete unused key(s)?' :
           modalState.type === 'RESET_HWID' ? 'This clears the install_id lock. The user can enter this key on a new device to lock it again.' :
-          modalState.type === 'SET_STATUS' ? 'Forcefully change the database status of this license.' : ''
+          modalState.type === 'SET_STATUS' ? 'Forcefully change the database status of this license.' :
+          modalState.type === 'SET_VERSION' ? 'Enter the new version string (e.g. 7.0.0). Extension clients on older versions will be prompted to update.' : ''
         }
       >
-        {(modalState.type === 'GENERATE' || modalState.type?.includes('EXTEND')) && (
+        {(modalState.type === 'GENERATE' || modalState.type?.includes('EXTEND') || modalState.type === 'SET_VERSION') && (
           <input 
-            type="number" 
-            className="premium-input" 
+            type={modalState.type === 'SET_VERSION' ? "text" : "number"} 
+            className="premium-input"
             value={modalState.inputVal}
             onChange={e => setModalState({ ...modalState, inputVal: e.target.value })}
-            style={{ marginBottom: '24px' }}
+            placeholder={
+              modalState.type === 'GENERATE' ? "Number of keys (max 1000)" : 
+              modalState.type === 'SET_VERSION' ? "e.g. 7.0.0" : "Days to extend"
+            }
+            style={{ padding: '12px', fontSize: '14px', width: '100%', marginBottom: '24px' }}
             autoFocus
           />
         )}

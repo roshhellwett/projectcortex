@@ -116,6 +116,27 @@ function getRawHWID() {
     }
 }
 
+async function checkUpdate() {
+    try {
+        const manifest = chrome.runtime.getManifest();
+        const currentVersion = manifest.version;
+        const res = await fetch('http://localhost:3000/api/version').catch(() => fetch('https://projectcortex.vercel.app/api/version'));
+        if (res.ok) {
+            const data = await res.json();
+            if (data.version && data.version > currentVersion) {
+                const updatePanel = $('updatePanel');
+                if (updatePanel) {
+                    updatePanel.style.display = 'block';
+                    const newVersionStr = $('newVersionStr');
+                    if (newVersionStr) newVersionStr.textContent = data.version;
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Failed to check for updates:', e);
+    }
+}
+
 async function loadSettings() {
     currentSiteHostname = await getCurrentHostname();
     const data = await getStorage(['apiKey', 'model', 'apiProvider', 'customEndpoint', 'customModel', 'activeWindowsWhitelist', 'copyPasteWhitelist']);
@@ -197,6 +218,7 @@ async function loadSettings() {
 
     updateUI();
     updateKeyHint();
+    checkUpdate();
 }
 
 function updateUI() {

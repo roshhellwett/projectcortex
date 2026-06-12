@@ -42,14 +42,20 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1300px;
         }
 
         .grid-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 32px;
             align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -516,7 +522,9 @@
                         This only runs on sites you enable here. Refresh the page after saving to apply the utility.
                     </div>
                 </div>
+            </div>
 
+            <div class="grid-column">
                 <div class="section">
                     <div class="section-title">API Configuration</div>
 
@@ -658,21 +666,20 @@
                         <input type="file" id="importFile" accept=".json" style="display: none;" />
                     </div>
                 </div>
-
-                <div class="credits">
-                    <div>Zenith Open Source Projects</div>
-                    <span>Developer - roshhellwett</span>
-                    <div style="margin-top:8px;font-size:11px;color:#666;">
-                        Support: <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
-                        · <a href="https://t.me/roshhellwett" target="_blank" style="color: #00D1FF; text-decoration: none;">Telegram</a>
-                    </div>
-                    <div style="margin-top:6px;font-size:11px;color:#666;">
-                        Install ID: <span id="optionsCreditsInstallId" style="font-family: monospace; color: #888; user-select: all;">...</span>
-                    </div>
-                    <div style="margin-top:6px;color:#555;font-size:10px;letter-spacing:0.04em;text-transform:none;">&copy; 2026
-                        Zenith — All rights reserved</div>
-                </div>
             </div>
+        </div>
+
+        <div class="credits" style="text-align: center; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 24px;">
+            <div style="font-size: 13px; font-weight: 600; color: #fff;">Zenith Open Source Projects</div>
+            <span style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-top: 4px;">Developer - roshhellwett</span>
+            <div style="margin-top:8px;font-size:11px;color:#666;">
+                Support: <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
+                · <a href="https://t.me/roshhellwett" target="_blank" style="color: #00D1FF; text-decoration: none;">Telegram</a>
+            </div>
+            <div style="margin-top:6px;font-size:11px;color:#666;">
+                Install ID: <span id="optionsCreditsInstallId" style="font-family: monospace; color: #888; user-select: all;">...</span>
+            </div>
+            <div style="margin-top:6px;color:#555;font-size:10px;letter-spacing:0.04em;">&copy; 2026 Zenith — All rights reserved</div>
         </div>
     </div>
 

@@ -332,14 +332,20 @@ function createBubble() {
       if(e.target.id !== 'pm-bubble-input') e.preventDefault() 
     })
 
-    _bubble.querySelector('#pm-bubble-input')?.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && e.target.value.trim()) {
-        const query = e.target.value.trim()
-        e.target.value = ''
-        hideBubble()
-        runAsk(query)
-      }
-    })
+    const bubbleInput = _bubble.querySelector('#pm-bubble-input')
+    if (bubbleInput) {
+      bubbleInput.addEventListener('keydown', e => {
+        e.stopPropagation()
+        if (e.key === 'Enter' && e.target.value.trim()) {
+          const query = e.target.value.trim()
+          e.target.value = ''
+          hideBubble()
+          runAsk(query)
+        }
+      })
+      bubbleInput.addEventListener('keyup', e => e.stopPropagation())
+      bubbleInput.addEventListener('keypress', e => e.stopPropagation())
+    }
 
     _bubble.querySelector('#pm-bubble-correct')?.addEventListener('click', () => {
       hideBubble()
@@ -591,6 +597,21 @@ function wireActionButtons() {
     });
 
     document.getElementById('pm-close-btn')?.addEventListener('click', closePanel)
+    const bubbleInput = document.getElementById('pm-bubble-input')
+    if (bubbleInput) {
+      bubbleInput.addEventListener('keydown', e => e.stopPropagation())
+      bubbleInput.addEventListener('keyup', e => e.stopPropagation())
+      bubbleInput.addEventListener('keypress', e => e.stopPropagation())
+    }
+    const askInput = document.getElementById('pm-ask-input')
+    if (askInput) {
+      askInput.addEventListener('keydown', e => {
+        e.stopPropagation()
+        if (e.key === 'Enter') runAsk(e.target.value)
+      })
+      askInput.addEventListener('keyup', e => e.stopPropagation())
+      askInput.addEventListener('keypress', e => e.stopPropagation())
+    }
     document.getElementById('pm-back-btn')?.addEventListener('click', () => {
       if (_isLocked) { showState('locked'); return; }
       showState('welcome')

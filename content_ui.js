@@ -298,6 +298,7 @@ function buildPanelHTML() {
           <div id="pm-error-msg"></div>
           <div style="display: flex; gap: 8px; justify-content: center; margin-top: 16px;">
             <button class="pm-back-btn" id="pm-error-back-btn" aria-label="Go back from error" style="margin: 0;">\u2190 Back</button>
+            <button class="pm-back-btn" id="pm-error-retry" aria-label="Retry last action" style="margin: 0;">\u21BB Retry</button>
             <button class="pm-back-btn" id="pm-error-settings-btn" aria-label="Open Settings" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
           </div>
           <div style="margin-top: 14px; font-size: 11px; color: #666; text-align: center;">Need help? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a></div>
@@ -622,13 +623,14 @@ function wireActionButtons() {
     })
     document.getElementById('pm-error-retry')?.addEventListener('click', () => {
       if (_isLocked) return showState('locked');
-      if (!_lastAction) return
-      showState('loading')
+      if (!_lastAction) return showState('welcome')
       const a = _lastAction
       if (a.name === 'correct_answers') runCorrectAnswers()
       else if (a.name === 'factcheck') runFactCheck()
       else if (a.name === 'summarize') runSummarize()
+      else if (a.name === 'define') runDefine()
       else if (a.name === 'ask' && a.question) runAsk(a.question)
+      else showState('welcome')
     })
   } catch (_) {}
 }

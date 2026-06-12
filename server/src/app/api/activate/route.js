@@ -102,6 +102,13 @@ export async function POST(req) {
       });
     }
 
+    if (license.status === 'expired') {
+      if (license.install_id && license.install_id !== installId) {
+        return NextResponse.json({ error: 'License was activated on a different device' }, { status: 403 });
+      }
+      return NextResponse.json({ error: 'License key has expired. Contact support for renewal.' }, { status: 403 });
+    }
+
     return NextResponse.json({ error: 'License is not valid for activation' }, { status: 403 });
 
   } catch (error) {

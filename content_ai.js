@@ -142,12 +142,8 @@ function handleAIError(err) {
     showError('API key is invalid or expired. Please check your settings, then try again. Need help? zenithprojects@icloud.com')
     return
   }
-  if (/quota|insufficient/i.test(msg)) {
-    showError('Your API provider quota has been exhausted. Please add credits to your account or switch providers.')
-    return
-  }
   if (/rate limit|too many|overloaded|busy/i.test(msg)) {
-    showError('The AI provider is currently overloaded or you have hit a rate limit. The extension automatically tried to wait and backoff, but it was unsuccessful. Please try again in a few minutes.')
+    showError('The AI provider is currently overloaded or you have hit a rate limit. Please try again in a few minutes.')
     return
   }
   if (/access denied|403/i.test(msg)) {

@@ -83,7 +83,6 @@ function cleanup() {
   _panel = null
   _panelPos = null
   _busy = false
-  _busy = false
   _lastAction = null
 }
 

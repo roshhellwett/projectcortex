@@ -43,10 +43,14 @@ function getRawHWID() {
       
       return 'hw_' + Math.abs(hash).toString(16) + 'c' + cores;
   } catch (e) {
-      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-          return 'hw_' + crypto.randomUUID().replace(/-/g, '');
+      const fallbackStr = (typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown_agent');
+      let hash = 0;
+      for (let i = 0; i < fallbackStr.length; i++) {
+          const char = fallbackStr.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash;
       }
-      return 'hw_fallback_' + Date.now();
+      return 'hw_fb_' + Math.abs(hash).toString(16);
   }
 }
 

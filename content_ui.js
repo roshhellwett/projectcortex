@@ -248,10 +248,12 @@ function buildPanelHTML() {
       <div id="pm-state-welcome" class="pm-state">
         <div class="pm-section-label">Quick Actions</div>
         <div class="pm-actions-grid">
-          <button class="pm-action-btn" id="pm-action-summarize" aria-label="Summarize Page">\uD83D\uDCC4 Summarize Page</button>
-          <button class="pm-action-btn" id="pm-action-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>
           <button class="pm-action-btn" id="pm-action-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>
-          <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings">\u2699\uFE0F Settings</button>
+          <button class="pm-action-btn" id="pm-action-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>
+          <button class="pm-action-btn" id="pm-action-summarize" aria-label="Summarize">\uD83D\uDCC4 Summarize</button>
+          <button class="pm-action-btn" id="pm-action-define" aria-label="Define">\uD83D\uDCD6 Define</button>
+        </div>
+        <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings">\u2699\uFE0F Settings</button>
         </div>
         <div class="pm-divider"></div>
         <div class="pm-section-label">Ask About Page</div>
@@ -319,12 +321,26 @@ function createBubble() {
     _bubble = document.createElement('div')
     _bubble.id = 'pagemind-bubble'
     _bubble.innerHTML =
+      '<div style="padding: 0 4px"><input type="text" id="pm-bubble-input" placeholder="Ask anything..." autocomplete="off"></div>' +
       '<button id="pm-bubble-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>' +
       '<button id="pm-bubble-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>' +
-      '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>'
+      '<button id="pm-bubble-define" aria-label="Define">\uD83D\uDCD6 Define</button>' +
+      '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>' +
+      '<button id="pm-bubble-hide" aria-label="Hide">\u2205 Hide</button>'
     document.body.appendChild(_bubble)
     
-    _bubble.addEventListener('mousedown', e => { e.preventDefault() })
+    _bubble.addEventListener('mousedown', e => { 
+      if(e.target.id !== 'pm-bubble-input') e.preventDefault() 
+    })
+
+    _bubble.querySelector('#pm-bubble-input')?.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        const query = e.target.value.trim()
+        e.target.value = ''
+        hideBubble()
+        runAsk(query)
+      }
+    })
 
     _bubble.querySelector('#pm-bubble-correct')?.addEventListener('click', () => {
       hideBubble()
@@ -334,9 +350,16 @@ function createBubble() {
       hideBubble()
       runFactCheck()
     })
+    _bubble.querySelector('#pm-bubble-define')?.addEventListener('click', () => {
+      hideBubble()
+      runDefine()
+    })
     _bubble.querySelector('#pm-bubble-summarize')?.addEventListener('click', () => {
       hideBubble()
       runSummarize()
+    })
+    _bubble.querySelector('#pm-bubble-hide')?.addEventListener('click', () => {
+      hideBubble()
     })
   } catch (_) {}
 }
@@ -480,9 +503,14 @@ function initDragger() {
 
 function wireActionButtons() {
   try {
-    document.getElementById('pm-action-summarize')?.addEventListener('click', runSummarize)
-    document.getElementById('pm-action-factcheck')?.addEventListener('click', runFactCheck)
-    document.getElementById('pm-action-correct')?.addEventListener('click', runCorrectAnswers)
+    const btnCorrect = document.getElementById('pm-action-correct')
+    const btnFactcheck = document.getElementById('pm-action-factcheck')
+    const btnSummarize = document.getElementById('pm-action-summarize')
+    const btnDefine = document.getElementById('pm-action-define')
+    if (btnCorrect) btnCorrect.addEventListener('click', () => { runCorrectAnswers() })
+    if (btnFactcheck) btnFactcheck.addEventListener('click', () => { runFactCheck() })
+    if (btnSummarize) btnSummarize.addEventListener('click', () => { runSummarize() })
+    if (btnDefine) btnDefine.addEventListener('click', () => { runDefine() })
     document.getElementById('pm-action-settings')?.addEventListener('click', () => {
       chrome.runtime.sendMessage({
         type: 'OPEN_OPTIONS',

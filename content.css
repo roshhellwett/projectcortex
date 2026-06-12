@@ -39,9 +39,9 @@
     left: -430px;
     transform: translateY(-50%);
     z-index: 2147483646 !important;
-    width: 420px !important;
+    width: 380px !important;
     max-width: calc(100vw - 32px) !important;
-    max-height: 85vh !important;
+    max-height: 80vh !important;
     background: var(--pm-surface) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     backdrop-filter: blur(20px) !important;
@@ -253,23 +253,31 @@
 
 #pagemind-panel .pm-actions-grid {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
-    margin-bottom: 18px !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
 }
 
 #pagemind-panel .pm-action-btn {
-    background: var(--pm-surface-hover) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
     border: 1px solid var(--pm-border) !important;
-    border-radius: var(--pm-radius-sm) !important;
     color: var(--pm-text) !important;
+    padding: 10px 14px !important;
+    border-radius: var(--pm-radius-sm) !important;
     font-size: 12px !important;
-    font-weight: 600 !important;
-    padding: 13px 10px !important;
+    font-weight: 500 !important;
     cursor: pointer !important;
-    transition: all 0.18s ease !important;
-    margin: 0 !important;
-    line-height: 1.3 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    transition: all 0.2s var(--pm-transition) !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+}
+
+#pagemind-panel #pm-action-settings {
+    width: 100% !important;
+    justify-content: center !important;
 }
 
 #pagemind-panel #pm-action-activate {
@@ -738,75 +746,82 @@
 }
 
 #pagemind-bubble {
-    position: fixed !important;
+    position: absolute !important;
     z-index: 2147483647 !important;
-    display: none !important;
-    align-items: center !important;
-    gap: 4px !important;
-    background: rgba(16, 16, 16, 0.96) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    backdrop-filter: blur(12px) !important;
-    border: 1px solid var(--pm-border) !important;
-    border-radius: var(--pm-radius-sm) !important;
-    padding: 5px !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: #1c1c1c !important;
+    border: 1px solid #333 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    padding: 6px !important;
+    gap: 2px !important;
+    opacity: 0 !important;
+    transform: translateY(10px) !important;
+    transition: opacity 0.2s, transform 0.2s !important;
+    pointer-events: none !important;
+    width: 220px !important;
     max-width: calc(100vw - 20px) !important;
-    flex-wrap: wrap !important;
 }
 
 #pagemind-bubble.visible {
-    display: flex !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
     animation: pmBubbleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
 }
 
 @keyframes pmBubbleIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.85) translateY(10px);
-        filter: blur(4px);
-    }
-    60% {
-        opacity: 1;
-        transform: scale(1.05) translateY(-2px);
-        filter: blur(0px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+#pm-bubble-input {
+    width: 100% !important;
+    background: transparent !important;
+    border: 1px solid #444 !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+}
+
+#pm-bubble-input:focus {
+    border-color: #666 !important;
 }
 
 #pagemind-bubble button {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 5px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    border-radius: 7px !important;
-    color: #bbb !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    padding: 6px 10px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #e0e0e0 !important;
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+    text-align: left !important;
+    border-radius: 6px !important;
     cursor: pointer !important;
-    transition: all 0.12s !important;
-    white-space: nowrap !important;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
     margin: 0 !important;
+    transition: background 0.15s !important;
 }
 
 #pagemind-bubble button:hover {
     background: rgba(255, 255, 255, 0.08) !important;
-    border-color: #444 !important;
     color: #fff !important;
 }
 
 #pagemind-bubble button:focus-visible {
     outline: 2px solid #666 !important;
-    outline-offset: 1px !important;
 }
 
 #pagemind-bubble button:active {
-    transform: scale(0.94) !important;
+    background: rgba(255, 255, 255, 0.12) !important;
 }
 
 #pagemind-panel .pm-inline-code {

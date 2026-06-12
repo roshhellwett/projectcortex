@@ -268,11 +268,41 @@ var runSummarize = guard(async function () {
     const response = await callAIAction(
       settings,
       'summarize',
-      'Summarize the following content in a clear, structured way:\n\n' + truncated,
-      'You are an expert summarizer. Create a concise, well-structured summary highlighting key points, main ideas, and important details. Use clear paragraphs and bullet points where appropriate.'
+      'Summarize the following content:\n\n' + truncated,
+      'You are a hyper-concise summarizer. Provide the absolute minimum text necessary to convey the main idea. Be extremely direct and to the point. No fluff, no introductory filler. Use 1-3 short bullet points max.'
     )
-    const note = wasTruncated ? '\n\n---\nNote: The content was longer than what was sent to the AI. The summary may not cover everything.' : ''
+    const note = wasTruncated ? '\n\n---\n*Content truncated.*' : ''
     showGenericResult(label + ' Summary', response + note)
+  } catch (err) {
+    handleAIError(err)
+  }
+})
+
+var runDefine = guard(async function () {
+  if (_isLocked) { openPanel(); showState('locked'); return; }
+  _lastAction = { name: 'define' }
+  const selectedText = getDeepSelectionText()
+
+  if (!selectedText) {
+    showError('Please select a word or phrase to define.')
+    return
+  }
+
+  openPanel()
+  showState('loading')
+  startThinking('Defining')
+
+  const settings = await getSettings()
+  setLoadingSub(`${settings.apiProvider} · ${settings.model}`)
+
+  try {
+    const response = await callAIAction(
+      settings,
+      'define',
+      `Define this term or phrase concisely:\n\n"${selectedText}"`,
+      'You are a dictionary assistant. Provide an extremely concise definition of the term. No conversational filler. 1-2 sentences maximum.'
+    )
+    showGenericResult('Definition', response)
   } catch (err) {
     handleAIError(err)
   }
@@ -305,7 +335,7 @@ var runFactCheck = guard(async function () {
       settings,
       'factcheck',
       `Fact-check this claim:\n\n"${selectedText}"${contextHint}`,
-      'You are a fact-checking expert. Analyze claims and provide verdicts with evidence and reasoning. Be objective and cite sources when possible.'
+      'You are a direct fact-checking assistant. Start immediately with TRUE, FALSE, or MIXED, followed by a 1-2 sentence maximum explanation. Be extremely concise. No conversational padding.'
     )
     showGenericResult('Fact Check', response)
   } catch (err) {
@@ -340,9 +370,9 @@ var runAsk = guard(async function (question) {
       settings,
       'ask',
       pageContext,
-      'You are a helpful AI assistant. Answer questions accurately based on the provided context. If the answer is not in the context, say so.'
+      'You are a hyper-concise AI assistant. Provide extremely direct, to-the-point answers without any introductory filler, conversational padding, or unnecessary elaboration. 1-3 sentences maximum unless absolutely required.'
     )
-    const note = wasTruncated ? '\n\n---\nNote: The page content was longer than what was sent to the AI. The answer may not reflect the full page.' : ''
+    const note = wasTruncated ? '\n\n---\n*Context truncated.*' : ''
     showGenericResult('Answer', response + note)
   } catch (err) {
     handleAIError(err)

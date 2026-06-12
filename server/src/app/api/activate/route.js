@@ -35,19 +35,23 @@ export async function POST(req) {
     }
 
     
-    if (license.status === 'active') {
-      if (license.install_id !== installId) {
+    if (license.status === 'active' || license.status === 'expired') {
+      if (license.install_id && license.install_id !== installId) {
         return NextResponse.json({ error: 'License key is already used on another device' }, { status: 403 });
       }
 
-      
       if (new Date() > new Date(license.expires_at)) {
-        
-        await supabase.from('licenses').update({ status: 'expired' }).eq('id', license.id);
+        if (license.status !== 'expired') {
+          await supabase.from('licenses').update({ status: 'expired' }).eq('id', license.id);
+        }
         return NextResponse.json({ error: 'License key has expired' }, { status: 403 });
       }
 
-      
+      if (license.status === 'expired') {
+        // Auto-correct status if marked expired but time hasn't passed
+        await supabase.from('licenses').update({ status: 'active' }).eq('id', license.id);
+      }
+
       const token = signActivationToken({
         id: license.id,
         licenseKey: license.license_key,
@@ -65,7 +69,6 @@ export async function POST(req) {
       });
     }
 
-    
     if (license.status === 'unused') {
       const now = new Date();
       const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); 
@@ -100,13 +103,6 @@ export async function POST(req) {
         activatedAt: now.toISOString(),
         licenseKey: license.license_key
       });
-    }
-
-    if (license.status === 'expired') {
-      if (license.install_id && license.install_id !== installId) {
-        return NextResponse.json({ error: 'License was activated on a different device' }, { status: 403 });
-      }
-      return NextResponse.json({ error: 'License key has expired. Contact support for renewal.' }, { status: 403 });
     }
 
     return NextResponse.json({ error: 'License is not valid for activation' }, { status: 403 });

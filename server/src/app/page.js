@@ -62,14 +62,14 @@ export default function Home() {
           <a href="#how-it-works" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>How it Works</a>
           <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Pricing</a>
           <a href="/guide" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Setup Guide</a>
-          <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
+          <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ textDecoration: 'none' }}>
             <button className="premium-button" style={{ fontSize: '14px', padding: '10px 22px' }}>
               Download
             </button>
           </a>
         </div>
         <div className="mobile-cta" style={{ display: 'none' }}>
-          <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
+          <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ textDecoration: 'none' }}>
             <button className="premium-button" style={{ fontSize: '13px', padding: '8px 16px' }}>Download</button>
           </a>
         </div>
@@ -92,7 +92,7 @@ export default function Home() {
         </p>
         
         <div className="animate-fade-up delay-300" style={{ display: 'flex', gap: '14px', marginTop: '36px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
+          <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ textDecoration: 'none' }}>
             <button className="premium-button glow-btn" style={{ fontSize: '17px', padding: '16px 36px' }}>
               Download Free
             </button>
@@ -209,7 +209,7 @@ export default function Home() {
       <section style={{ textAlign: 'center', padding: '80px 5% 100px 5%', background: 'var(--surface)' }}>
         <h2 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', fontWeight: '700', marginBottom: '20px', letterSpacing: '-0.02em', color: 'var(--foreground)' }}>Ready to work smarter?</h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', marginBottom: '32px' }}>Download ProjectCortex and experience the difference.</p>
-        <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ textDecoration: 'none' }}>
+        <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ textDecoration: 'none' }}>
           <button className="premium-button glow-btn" style={{ fontSize: '17px', padding: '16px 40px' }}>
             Download Free
           </button>
@@ -232,7 +232,7 @@ export default function Home() {
               <a href="#features" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Features</a>
               <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Pricing</a>
               <a href="/guide" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Setup Guide</a>
-              <a href="https://github.com/roshhellwett/projectcortex/archive/refs/heads/main.zip" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Download</a>
+              <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Download</a>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <strong style={{ color: 'var(--foreground)', fontSize: '13px', letterSpacing: '0.02em' }}>Contact</strong>

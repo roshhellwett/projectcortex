@@ -641,17 +641,15 @@ function showStatus(type, msg) {
 function fitToScreen() {
     const wrapper = document.querySelector('.dashboard-wrapper');
     if (!wrapper) return;
-    wrapper.style.zoom = 1; 
     
-    setTimeout(() => {
-        const contentHeight = wrapper.scrollHeight;
-        const windowHeight = window.innerHeight - 48; 
-        
-        if (contentHeight > windowHeight) {
-            const scale = windowHeight / contentHeight;
-            wrapper.style.zoom = scale;
-        }
-    }, 10);
+    wrapper.style.zoom = 1; 
+    const contentHeight = wrapper.scrollHeight;
+    const windowHeight = window.innerHeight - 48; 
+    
+    if (contentHeight > windowHeight) {
+        const scale = windowHeight / contentHeight;
+        wrapper.style.zoom = scale;
+    }
 }
 
 window.addEventListener('resize', fitToScreen);

@@ -9,10 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ProjectCortex — Settings</title>
     <style>
+        
         :root {
-            --bg: #0a0a0a;
-            --surface: #121212;
-            --surface-raised: #1a1a1a;
+            --bg: #050505;
+            --surface: #101010;
+            --surface-raised: #181818;
             --border: #262626;
             --border-highlight: #333333;
             --text: #ededed;
@@ -33,268 +34,235 @@
             color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
             font-size: 14px;
-            min-height: 100vh;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1600px;
-            padding: 0 20px;
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-            align-items: start;
-        }
-
-        @media (max-width: 1024px) {
-            .grid-layout {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 40px;
-        }
-
-        .logo-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--surface-raised);
-            border: 1px solid var(--border);
-            border-top-color: var(--border-highlight);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-outer);
+            height: 100vh;
             overflow: hidden;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
         }
 
-        .logo-icon img {
-            width: 28px;
-            height: 28px;
+        .dashboard-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            max-width: 1800px;
+            gap: 24px;
+        }
+
+        /* --- LEFT SIDEBAR --- */
+        .sidebar-left {
+            width: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 0;
+            box-shadow: var(--shadow-outer);
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo {
+            margin-bottom: 48px;
+        }
+        .sidebar-logo img {
+            width: 32px;
+            height: 32px;
             object-fit: contain;
         }
 
-        .logo-name {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--accent);
-            text-transform: uppercase;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            align-items: center;
         }
 
-        .logo-tag {
-            font-size: 11px;
+        .nav-item {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--text-muted);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .logo-poweredby {
-            font-size: 9px;
-            color: #555;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-top: 2px;
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
         }
 
-        .section {
+        .nav-item.active {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d1ff, #3a00ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 13px;
+            box-shadow: 0 4px 10px rgba(0, 209, 255, 0.3);
+            border: 2px solid var(--surface);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .content-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
+            border-radius: 24px;
+            padding: 40px 48px;
+            overflow-y: auto;
             box-shadow: var(--shadow-outer);
         }
 
+        .content-header {
+            margin-bottom: 40px;
+        }
+        .content-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+        .content-header p {
+            color: var(--text-muted);
+            font-size: 15px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* --- RIGHT SIDEBAR --- */
+        .sidebar-right {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            background: transparent;
+            overflow-y: auto;
+            gap: 20px;
+            padding-right: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-highlight); border-radius: 4px; }
+
+        /* --- SHARED COMPONENTS --- */
+        .section {
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .section:hover { border-color: #444; transform: translateY(-2px); }
+
         .section-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.15em;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
-            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02);
         }
 
-        .field {
-            margin-bottom: 20px;
-        }
-
-        .field:last-child {
-            margin-bottom: 0;
-        }
+        .field { margin-bottom: 24px; }
+        .field:last-child { margin-bottom: 0; }
 
         label {
             display: block;
             font-size: 13px;
             font-weight: 600;
+            margin-bottom: 8px;
             color: var(--text);
-            margin-bottom: 10px;
             letter-spacing: 0.02em;
         }
 
-        input[type="text"],
-        input[type="password"],
-        select {
+        select, input[type="text"], input[type="password"] {
             width: 100%;
-            background: #000000;
-            border: 1px solid var(--border);
-            border-bottom-color: var(--border-highlight);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 13px;
             padding: 12px 14px;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
             outline: none;
             transition: all 0.2s ease;
-            font-family: inherit;
             box-shadow: var(--shadow-inner);
         }
-
-        input:focus,
-        select:focus {
-            border-color: #444;
-            border-bottom-color: #555;
+        select:focus, input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #555;
+            box-shadow: 0 0 0 1px #555, var(--shadow-inner);
         }
 
-        input::placeholder {
-            color: #555;
-        }
-
-        select option {
-            background: var(--surface);
-            color: var(--text);
-        }
-
-        .hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-
-        .hint a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 500;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .hint a:hover {
-            border-bottom-color: var(--accent);
-        }
-
-        .row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-top: 24px;
-        }
+        .hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; line-height: 1.4; }
+        .hint a { color: #00D1FF; text-decoration: none; }
+        .hint a:hover { text-decoration: underline; }
 
         .btn {
+            background: var(--surface-raised);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-top-color: var(--border-highlight);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 13px;
-            font-weight: 600;
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-            font-family: inherit;
             box-shadow: var(--shadow-outer);
         }
+        .btn:hover { background: #222; border-color: #444; }
+        .btn-save { background: #fff; color: #000; border: none; box-shadow: 0 4px 12px rgba(255,255,255,0.15); }
+        .btn-save:hover { background: #e0e0e0; border-color: transparent; }
 
-        .btn:hover {
-            background: var(--surface-raised);
-            border-color: #444;
-            color: var(--accent);
-            transform: translateY(-1px);
-        }
+        .row { display: flex; gap: 16px; align-items: center; }
 
-        .btn:active {
-            transform: translateY(1px);
-            box-shadow: var(--shadow-inner);
-            border-top-color: var(--border);
-        }
-
-        .btn-save {
-            background: #181818;
-            color: var(--accent);
-        }
-
-        #status {
-            font-size: 13px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            display: none;
-            margin-top: 16px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-inner);
-            background: #000;
-            text-align: center;
-            font-weight: 500;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        #status.ok {
-            border-color: #2a3d2e;
-            color: #8be9a8;
-            display: block;
-        }
-
-        #status.err {
-            border-color: #4a2525;
-            color: #ff8b8b;
-            display: block;
-        }
-
-        .custom-ep-wrap {
-            display: none;
-            margin-top: 16px;
-        }
-
-        .custom-ep-wrap.visible {
-            display: block;
+        .content-footer {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .eye-btn {
@@ -306,130 +274,81 @@
             padding: 0 8px;
             transition: color 0.2s;
         }
-
-        .eye-btn:hover {
-            color: var(--accent);
-        }
-
-        .input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-wrap input {
-            padding-right: 40px;
-        }
-
-        .input-wrap .eye-btn {
-            position: absolute;
-            right: 8px;
-        }
+        .eye-btn:hover { color: var(--accent); }
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .input-wrap input { padding-right: 40px; }
+        .input-wrap .eye-btn { position: absolute; right: 8px; }
 
         .toggle-container {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px;
+            padding: 16px 20px;
             background: #080808;
             border: 1px solid var(--border);
-            border-bottom-color: var(--border-highlight);
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 16px;
             box-shadow: var(--shadow-inner);
         }
-
-        .toggle-left {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .toggle-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .toggle-hint {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
+        .toggle-left { display: flex; flex-direction: column; gap: 4px; }
+        .toggle-label { font-size: 14px; font-weight: 600; color: var(--text); }
+        .toggle-hint { font-size: 12px; color: var(--text-muted); }
 
         .toggle-switch {
             position: relative;
-            width: 44px;
-            height: 24px;
+            width: 48px;
+            height: 26px;
             background: #000;
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 13px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
             padding: 2px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
         }
-
-        .toggle-switch.active {
-            background: #1a1a1a;
-            border-color: #444;
-        }
-
+        .toggle-switch.active { background: #1a1a1a; border-color: #444; }
         .toggle-circle {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             background: #444;
             border-radius: 50%;
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
         }
-
-        .toggle-switch.active .toggle-circle {
-            transform: translateX(20px);
-            background: var(--accent);
-            box-shadow: 0 1px 4px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-        }
+        .toggle-switch.active .toggle-circle { transform: translateX(22px); background: var(--accent); }
 
         .info-box {
-            background: #0a0a0a;
+            background: #080808;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 14px 16px;
+            border-radius: 12px;
+            padding: 16px;
             font-size: 12px;
             color: var(--text-muted);
             line-height: 1.6;
             margin-top: 16px;
-            box-shadow: var(--shadow-inner);
+        }
+        .info-box strong { color: var(--text); font-weight: 600; }
+
+        @media (max-width: 1024px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            .dashboard-wrapper { flex-direction: column; height: auto; padding-bottom: 40px; }
+            body { overflow: auto; height: auto; }
+            .sidebar-left { width: 100%; flex-direction: row; justify-content: space-between; padding: 16px 24px; border-radius: 16px; margin-bottom: 0; }
+            .sidebar-logo { margin-bottom: 0; }
+            .nav-menu { flex-direction: row; width: auto; gap: 8px; }
+            .sidebar-right { width: 100%; flex-direction: row; flex-wrap: wrap; }
+            .sidebar-right > * { flex: 1; min-width: 300px; margin-bottom: 0; }
+            .content-main { padding: 32px 24px; }
         }
 
-        .info-box strong {
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        .credits {
-            margin: 26px 0 8px;
-            padding-top: 18px;
-            border-top: 1px solid var(--border);
-            color: #666;
-            text-align: center;
-            font-size: 11px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            line-height: 1.8;
-        }
-
-        .credits span {
-            color: #8a8a8a;
-            letter-spacing: 0.04em;
-            text-transform: none;
-        }
     </style>
 </head>
 
 <body>
-    <div id="loadingOverlay" style="position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease;">
+
+<div id="loadingOverlay" style="position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease;">
         <div style="width: 30px; height: 30px; border: 2px solid #333; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;"></div>
         <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
     </div>
@@ -465,27 +384,41 @@
             </div>
         </div>
     </div>
-    <div class="container" id="mainContainer" style="opacity: 0; transition: opacity 0.4s ease, filter 0.4s ease;">
-        <div class="logo">
-            <div class="logo-icon">
-                <img src="icons/logo.png" alt="Logo"
-                    onerror="this.style.display='none'; document.getElementById('fallbackLogo2').style.display='block';" />
-                <svg id="fallbackLogo2" style="display:none;" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                    stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    
+
+    <div class="dashboard-wrapper" id="mainContainer" style="opacity: 0; transition: opacity 0.4s ease, filter 0.4s ease;">
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar-left">
+            <div class="sidebar-logo">
+                <img src="icons/logo.png" alt="Logo" onerror="this.style.display='none'; document.getElementById('fallbackLogo2').style.display='block';" />
+                <svg id="fallbackLogo2" style="display:none;" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
             </div>
-            <div>
-                <div class="logo-name">Cortex</div>
-                <div class="logo-tag">Settings</div>
-                <div class="logo-poweredby">Powered by Zenith</div>
+            <nav class="nav-menu">
+                <div class="nav-item active" title="Settings">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </div>
+                <div class="nav-item" title="Help / Support" onclick="window.open('mailto:zenithprojects@icloud.com')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="user-avatar" id="optionsCreditsInstallId" style="font-size: 11px;">ZN</div>
+                <div style="font-size:10px; color:#555; margin-top:24px; font-weight:600;">&copy;26</div>
             </div>
-        </div>
+        </aside>
 
-        <div class="grid-layout">
-            <!-- COLUMN 1: API & Models (Core Settings) -->
-            <div class="grid-column">
-                <div class="section">
+        <!-- MAIN CONTENT -->
+        <main class="content-main">
+            <header class="content-header">
+                <h1>Settings & Preferences</h1>
+                <p>Configure your intelligence providers and web utilities to personalize your experience.</p>
+            </header>
+
+            <div class="cards-grid">
+                <div class="grid-column">
+                    <div class="section">
                     <div class="section-title">API Configuration</div>
 
                     <div class="field">
@@ -517,8 +450,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="section">
+                    <div class="section">
                     <div class="section-title">Model Selection</div>
                     <div class="field">
                         <label>AI Model</label>
@@ -564,6 +496,68 @@
             <!-- COLUMN 2: Updates & Utilities -->
             <div class="grid-column">
                 <div id="updatePanel" style="display: block; background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.15); transition: all 0.3s ease;">
+                    <div style="display: flex; align-items: flex-start; gap: 16px;">
+                        <div id="updateIconBox" style="background: rgba(74, 222, 128, 0.2); color: #4ade80; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s ease;">
+                            <svg id="updateIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 id="updateTitle" style="color: #4ade80; margin: 0 0 8px 0; font-size: 16px; font-weight: 700; transition: color 0.3s ease;">Extension Up to Date</h3>
+                            <p id="updateDesc" style="color: #a7f3d0; font-size: 13px; line-height: 1.5; margin: 0 0 16px 0; transition: color 0.3s ease;">
+                                You are running the latest version of ProjectCortex. Your configuration is fully synchronized and secure.
+                            </p>
+                            <a id="updateLink" href="#" style="text-decoration: none; pointer-events: none;">
+                                <button id="updateBtn" class="btn" style="background: #2a3d2e; color: #4ade80; border: 1px solid #4ade80; font-weight: bold; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2); opacity: 0.7; transition: all 0.3s ease;" disabled>
+                                    Up to Date
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-column">
+                    <div class="section">
+                    <div class="section-title">Window Control</div>
+
+                    <div class="toggle-container">
+                        <div class="toggle-left">
+                            <div class="toggle-label">Always Active Window</div>
+                            <div class="toggle-hint">Keep this site active in background</div>
+                        </div>
+                        <div class="toggle-switch" id="activeWindowToggle">
+                            <div class="toggle-circle"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>What does this do?</strong><br>
+                        When enabled, prevents this website from detecting when the tab is in the background. Useful for music
+                        players, timers, and streaming services.
+                    </div>
+                </div>
+                    <div class="section">
+                    <div class="section-title">Page Utilities</div>
+
+                    <div class="toggle-container">
+                        <div class="toggle-left">
+                            <div class="toggle-label">Enable Copy & Paste</div>
+                            <div class="toggle-hint">Allow selection, copy, paste, and right-click on <span
+                                    id="siteLabel">current site</span></div>
+                        </div>
+                        <div class="toggle-switch" id="copyPasteToggle">
+                            <div class="toggle-circle"></div>
+                        </div>
+                </div>
+            </div>
+
+            <div class="content-footer">
+                <button class="btn btn-save" id="saveBtn" aria-label="Save your settings">Save Settings</button>
+                <button class="btn" id="testBtn" aria-label="Test your API connection">🧪 Test Connection</button>
+                <div id="status" style="margin-left: 12px;"></div>
+            </div>
+        </main>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="sidebar-right">
+            <div id="updatePanel" style="display: block; background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.15); transition: all 0.3s ease;">
                     <div style="display: flex; align-items: flex-start; gap: 16px;">
                         <div id="updateIconBox" style="background: rgba(74, 222, 128, 0.2); color: #4ade80; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s ease;">
                             <svg id="updateIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -653,8 +647,34 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="section" style="margin-top: 32px; border-color: #333; background: #0c0c0c;">
+            <div class="section" style="background: linear-gradient(145deg, #151515, #0a0a0a); border: 1px solid var(--border-highlight);">
+                    <div class="section-title" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
+                        License Details
+                        <span id="licenseBadge" style="font-size: 11px; padding: 4px 8px; border-radius: 12px; background: rgba(74, 222, 128, 0.15); color: #4ade80; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Active</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <label style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Activation ID</label>
+                        <div style="background: #000; border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; color: var(--accent); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-inner);">
+                            <span id="dispLicenseKey" style="letter-spacing: 0.05em;">••••••••-••••-••••-••••</span>
+                            <button id="copyLicenseBtn" title="Copy" style="background: none; border: none; color: #888; cursor: pointer; padding: 4px; transition: color 0.2s;">📋</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 16px;">
+                        <div style="flex: 1; background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 8px; box-shadow: var(--shadow-inner); display: flex; flex-direction: column; align-items: flex-start;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Days Remaining</div>
+                            <div style="display: flex; align-items: baseline; gap: 6px;">
+                                <span id="dispDaysLeft" style="font-size: 28px; font-weight: 700; color: #fff; line-height: 1;">--</span>
+                                <span style="font-size: 13px; color: #888; font-weight: 500;">days</span>
+                            </div>
+                        </div>
+                        <div style="flex: 1; background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 8px; box-shadow: var(--shadow-inner); display: flex; flex-direction: column; align-items: flex-start;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Activated On</div>
+                            <div id="dispActivatedAt" style="font-size: 15px; font-weight: 500; color: #fff; margin-top: auto; line-height: 1.4;">--</div>
+                        </div>
+                    </div>
+            <div class="section" style="margin-top: 32px; border-color: #333; background: #0c0c0c;">
                     <div class="section-title" style="color: #fff;">Data Backup & Sync</div>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
                         Export your Identity, License Key, and API settings to a secure backup file. This is crucial for:
@@ -670,21 +690,7 @@
                         <input type="file" id="importFile" accept=".json" style="display: none;" />
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="credits" style="text-align: center; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 24px;">
-            <div style="font-size: 13px; font-weight: 600; color: #fff;">Zenith Open Source Projects</div>
-            <span style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-top: 4px;">Developer - roshhellwett</span>
-            <div style="margin-top:8px;font-size:11px;color:#666;">
-                Support: <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
-                · <a href="https://t.me/roshhellwett" target="_blank" style="color: #00D1FF; text-decoration: none;">Telegram</a>
-            </div>
-            <div style="margin-top:6px;font-size:11px;color:#666;">
-                Install ID: <span id="optionsCreditsInstallId" style="font-family: monospace; color: #888; user-select: all;">...</span>
-            </div>
-            <div style="margin-top:6px;color:#555;font-size:10px;letter-spacing:0.04em;">&copy; 2026 Zenith — All rights reserved</div>
-        </div>
+        </aside>
     </div>
 
     <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: rgba(0, 209, 255, 0.15); border: 1px solid rgba(0, 209, 255, 0.4); color: #fff; padding: 12px 24px; border-radius: 30px; font-weight: 600; font-size: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0, 209, 255, 0.2); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; z-index: 9999; display: flex; align-items: center; gap: 8px;">
@@ -694,5 +700,5 @@
 
     <script src="options.js"></script>
 </body>
-
 </html>
+

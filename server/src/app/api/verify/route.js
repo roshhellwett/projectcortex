@@ -19,13 +19,20 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing token' }, { status: 400 });
     }
 
+    if (!hwid) {
+      return NextResponse.json({ error: 'Hardware ID missing' }, { status: 400 });
+    }
+
     const payload = verifyActivationToken(token);
     if (!payload) {
       return NextResponse.json({ error: 'Invalid or malformed token' }, { status: 403 });
     }
 
-    
-    
+    // 1. Triple-Layer Validation: Does hardware ID match the signed token?
+    if (payload.installId && hwid !== payload.installId) {
+      return NextResponse.json({ error: 'Hardware Mismatch (Token).' }, { status: 403 });
+    }
+
     const { data: license } = await supabase
       .from('licenses')
       .select('status, expires_at, license_key, activated_at, install_id')
@@ -36,8 +43,9 @@ export async function POST(req) {
       return NextResponse.json({ error: 'License has been revoked' }, { status: 403 });
     }
 
-    if (hwid && license.install_id && hwid !== license.install_id) {
-      return NextResponse.json({ error: 'Hardware Mismatch. Please activate this device.' }, { status: 403 });
+    // 2. Triple-Layer Validation: Does hardware ID match the database record?
+    if (license.install_id && hwid !== license.install_id) {
+      return NextResponse.json({ error: 'Hardware Mismatch (Database). Please activate this device.' }, { status: 403 });
     }
 
     

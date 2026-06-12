@@ -215,8 +215,7 @@ export default function Guide() {
             </p>
           </div>
         </div>
-          </div>
-        </div>
+
       </section>
 
       {}

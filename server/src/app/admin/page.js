@@ -31,7 +31,7 @@ function AdminModal({ isOpen, onClose, title, description, children }) {
   if (!isOpen) return null;
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
-      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '440px', padding: '32px', background: '#0a0a0a', border: '1px solid var(--border)', borderRadius: '16px', boxShadow: '0 24px 48px rgba(0,0,0,0.5)' }}>
+      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '440px', padding: '24px', background: '#0a0a0a', border: '1px solid var(--border)', borderRadius: '16px', boxShadow: '0 24px 48px rgba(0,0,0,0.5)' }}>
         <h3 style={{ margin: '0 0 8px 0', fontSize: '22px', fontWeight: 'bold' }}>{title}</h3>
         {description && <p style={{ color: 'var(--text-secondary)', fontSize: '14px', margin: '0 0 24px 0', lineHeight: 1.5 }}>{description}</p>}
         {children}
@@ -71,7 +71,8 @@ export default function EnterpriseAdminDashboard() {
   const fetchData = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const res = await fetch('/api/admin', {
+      const res = await fetch(`/api/admin?t=${Date.now()}`, {
+        cache: 'no-store',
         headers: { Authorization: `Bearer ${password}` }
       });
       const data = await res.json();
@@ -129,12 +130,12 @@ export default function EnterpriseAdminDashboard() {
 
     try {
       if (type === 'GENERATE') {
-        const count = parseInt(inputVal, 10);
+        const count = inputVal.trim() === '' ? 5 : parseInt(inputVal, 10);
         if (isNaN(count) || count < 1 || count > 1000) return showToast('Invalid number of keys.');
         action = 'generate'; bodyData = { count };
       } 
       else if (type === 'EXTEND') {
-        const days = parseInt(inputVal, 10);
+        const days = inputVal.trim() === '' ? 7 : parseInt(inputVal, 10);
         if (isNaN(days) || days < 1 || days > 365) return showToast('Invalid days.');
         action = 'extend'; bodyData = { id: payload, days };
       } 
@@ -145,7 +146,7 @@ export default function EnterpriseAdminDashboard() {
       else if (type === 'BULK_REVOKE') { action = 'bulk_revoke'; bodyData = { ids: Array.from(selectedIds) }; }
       else if (type === 'BULK_DELETE') { action = 'bulk_delete'; bodyData = { ids: Array.from(selectedIds) }; }
       else if (type === 'BULK_EXTEND') { 
-        const days = parseInt(inputVal, 10);
+        const days = inputVal.trim() === '' ? 7 : parseInt(inputVal, 10);
         if (isNaN(days) || days < 1 || days > 365) return showToast('Invalid days.');
         action = 'bulk_extend'; bodyData = { ids: Array.from(selectedIds), days }; 
       }
@@ -335,31 +336,31 @@ export default function EnterpriseAdminDashboard() {
           
           {activeTab === 'overview' && (
             <div className="animate-fade-up">
-              <h2 style={{ fontSize: '24px', marginBottom: '24px', fontWeight: 'bold' }}>System Overview</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '48px' }}>
-                <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Total Licenses</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#fff' }}>{stats.total}</div>
+              <h2 style={{ fontSize: '24px', marginBottom: '16px', fontWeight: 'bold' }}>System Overview</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+                <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '4px' }}>Total Licenses</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#fff' }}>{stats.total}</div>
                 </div>
-                <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Active Users</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#4ade80' }}>{stats.active}</div>
+                <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '4px' }}>Active Users</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#4ade80' }}>{stats.active}</div>
                 </div>
-                <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Unused Keys</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#60a5fa' }}>{stats.unused}</div>
+                <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '4px' }}>Unused Keys</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#60a5fa' }}>{stats.unused}</div>
                 </div>
-                <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Expired / Revoked</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#ef4444' }}>{stats.expired + stats.revoked}</div>
+                <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '4px' }}>Expired / Revoked</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ef4444' }}>{stats.expired + stats.revoked}</div>
                 </div>
-                <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Total API Events</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#c084fc' }}>{stats.totalLogs}</div>
+                <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '4px' }}>Total API Events</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#c084fc' }}>{stats.totalLogs}</div>
                 </div>
-                <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px' }}>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Avg Feedback Rating</div>
-                  <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#facc15' }}>{stats.avgRating}</div>
+                <div className="glass-panel" style={{ padding: '16px', borderRadius: '12px' }}>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '13px', marginBottom: '4px' }}>Avg Feedback Rating</div>
+                  <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#facc15' }}>{stats.avgRating}</div>
                 </div>
               </div>
             </div>
@@ -410,26 +411,26 @@ export default function EnterpriseAdminDashboard() {
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
-                        <th style={{ padding: '16px', width: '40px' }}>
+                        <th style={{ padding: '10px 16px', width: '40px' }}>
                           <input type="checkbox" checked={currentLicenses.length > 0 && selectedIds.size === currentLicenses.length} onChange={toggleSelectAll} style={{ cursor: 'pointer' }}/>
                         </th>
-                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>License Key</th>
-                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Status</th>
-                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Install ID (HWID)</th>
-                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Activation / Expiry</th>
-                        <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Actions</th>
+                        <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>License Key</th>
+                        <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Status</th>
+                        <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Install ID (HWID)</th>
+                        <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Activation / Expiry</th>
+                        <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600', textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {currentLicenses.length === 0 ? (
-                        <tr><td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>No licenses found.</td></tr>
+                        <tr><td colSpan="6" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>No licenses found.</td></tr>
                       ) : (
                         currentLicenses.map(lic => (
                           <tr key={lic.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                            <td style={{ padding: '16px' }}>
+                            <td style={{ padding: '10px 16px' }}>
                               <input type="checkbox" checked={selectedIds.has(lic.id)} onChange={() => toggleSelectOne(lic.id)} style={{ cursor: 'pointer' }}/>
                             </td>
-                            <td style={{ padding: '16px', fontFamily: 'monospace', color: '#fff' }}>
+                            <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: '#fff' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 {lic.license_key}
                                 <button onClick={() => copyKey(lic.license_key)} style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}>
@@ -437,7 +438,7 @@ export default function EnterpriseAdminDashboard() {
                                 </button>
                               </div>
                             </td>
-                            <td style={{ padding: '16px' }}>
+                            <td style={{ padding: '10px 16px' }}>
                               <span style={{
                                 padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase',
                                 background: lic.status === 'active' ? 'rgba(74, 222, 128, 0.1)' : lic.status === 'unused' ? 'rgba(96, 165, 250, 0.1)' : lic.status === 'expired' ? 'rgba(250, 204, 21, 0.1)' : 'rgba(239, 68, 68, 0.1)',
@@ -447,20 +448,20 @@ export default function EnterpriseAdminDashboard() {
                                 {lic.status}
                               </span>
                             </td>
-                            <td style={{ padding: '16px', fontFamily: 'monospace', color: 'var(--text-secondary)', fontSize: '12px' }}>
+                            <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: 'var(--text-secondary)', fontSize: '12px' }}>
                               {lic.install_id ? (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lic.install_id}</span>
                                 </div>
                               ) : '-'}
                             </td>
-                            <td style={{ padding: '16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            <td style={{ padding: '10px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
                               <div>{lic.activated_at ? new Date(lic.activated_at).toLocaleDateString() : 'Never'}</div>
                               <div style={{ color: lic.status === 'active' ? '#4ade80' : 'inherit' }}>
                                 {lic.expires_at ? new Date(lic.expires_at).toLocaleDateString() : '-'}
                               </div>
                             </td>
-                            <td style={{ padding: '16px', textAlign: 'right' }}>
+                            <td style={{ padding: '10px 16px', textAlign: 'right' }}>
                               <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                                 <button className="pm-action-btn" onClick={() => openModal('SET_STATUS', lic.id, '', lic.status)} title="Override Status" style={{ padding: '6px', margin: 0 }}><Icons.MoreVertical /></button>
                                 {lic.install_id && <button className="pm-action-btn" onClick={() => openModal('RESET_HWID', lic.id)} title="Reset HWID" style={{ padding: '6px 10px', fontSize: '11px', margin: 0 }}>Reset ID</button>}
@@ -499,20 +500,20 @@ export default function EnterpriseAdminDashboard() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Timestamp</th>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Install ID</th>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Action Type</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Timestamp</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Install ID</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Action Type</th>
                     </tr>
                   </thead>
                   <tbody>
                     {logs.length === 0 ? (
-                      <tr><td colSpan="3" style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>No API logs recorded yet. (Future proofing ready)</td></tr>
+                      <tr><td colSpan="3" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>No API logs recorded yet. (Future proofing ready)</td></tr>
                     ) : (
                       logs.slice(0, 50).map(log => (
                         <tr key={log.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                          <td style={{ padding: '16px', color: 'var(--text-secondary)', fontSize: '13px' }}>{new Date(log.created_at).toLocaleString()}</td>
-                          <td style={{ padding: '16px', fontFamily: 'monospace', color: '#fff', fontSize: '12px' }}>{log.install_id || 'Unknown'}</td>
-                          <td style={{ padding: '16px' }}><span style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}>{log.action_type}</span></td>
+                          <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontSize: '13px' }}>{new Date(log.created_at).toLocaleString()}</td>
+                          <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: '#fff', fontSize: '12px' }}>{log.install_id || 'Unknown'}</td>
+                          <td style={{ padding: '10px 16px' }}><span style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}>{log.action_type}</span></td>
                         </tr>
                       ))
                     )}
@@ -529,22 +530,22 @@ export default function EnterpriseAdminDashboard() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', width: '140px' }}>Date</th>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', width: '140px' }}>Install ID</th>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600', width: '80px' }}>Rating</th>
-                      <th style={{ padding: '16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Message</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600', width: '140px' }}>Date</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600', width: '140px' }}>Install ID</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600', width: '80px' }}>Rating</th>
+                      <th style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontWeight: '600' }}>Message</th>
                     </tr>
                   </thead>
                   <tbody>
                     {feedback.length === 0 ? (
-                      <tr><td colSpan="4" style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>No feedback submitted yet. (Future proofing ready)</td></tr>
+                      <tr><td colSpan="4" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>No feedback submitted yet. (Future proofing ready)</td></tr>
                     ) : (
                       feedback.map(fb => (
                         <tr key={fb.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                          <td style={{ padding: '16px', color: 'var(--text-secondary)', fontSize: '13px' }}>{new Date(fb.created_at).toLocaleDateString()}</td>
-                          <td style={{ padding: '16px', fontFamily: 'monospace', color: '#fff', fontSize: '12px' }}>{fb.install_id || 'Unknown'}</td>
-                          <td style={{ padding: '16px' }}><span style={{ color: fb.rating >= 4 ? '#4ade80' : fb.rating <= 2 ? '#ef4444' : '#facc15', fontWeight: 'bold' }}>{fb.rating}/5</span></td>
-                          <td style={{ padding: '16px', color: '#ddd', fontSize: '13px' }}>{fb.message}</td>
+                          <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontSize: '13px' }}>{new Date(fb.created_at).toLocaleDateString()}</td>
+                          <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: '#fff', fontSize: '12px' }}>{fb.install_id || 'Unknown'}</td>
+                          <td style={{ padding: '10px 16px' }}><span style={{ color: fb.rating >= 4 ? '#4ade80' : fb.rating <= 2 ? '#ef4444' : '#facc15', fontWeight: 'bold' }}>{fb.rating}/5</span></td>
+                          <td style={{ padding: '10px 16px', color: '#ddd', fontSize: '13px' }}>{fb.message}</td>
                         </tr>
                       ))
                     )}

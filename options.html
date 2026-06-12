@@ -33,8 +33,7 @@
             color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
             font-size: 14px;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
             padding: 24px;
             display: flex;
             justify-content: center;
@@ -43,7 +42,7 @@
         .dashboard-wrapper {
             display: flex;
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             max-width: 1800px;
             gap: 24px;
         }
@@ -109,19 +108,22 @@
             align-items: center;
         }
 
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00d1ff, #3a00ff);
+        .sidebar-branding {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            text-transform: uppercase;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 13px;
-            box-shadow: 0 4px 10px rgba(0, 209, 255, 0.3);
-            border: 2px solid var(--surface);
+            gap: 12px;
+            opacity: 0.7;
+        }
+        .sidebar-branding span.highlight {
+            color: var(--accent);
         }
 
         /* --- MAIN CONTENT --- */
@@ -133,7 +135,6 @@
             border: 1px solid var(--border);
             border-radius: 24px;
             padding: 40px 48px;
-            overflow-y: auto;
             box-shadow: var(--shadow-outer);
         }
 
@@ -165,7 +166,6 @@
             display: flex;
             flex-direction: column;
             background: transparent;
-            overflow-y: auto;
             gap: 20px;
             padding-right: 8px;
             flex-shrink: 0;
@@ -395,13 +395,15 @@
                 <div class="nav-item active" title="Settings">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 </div>
-                <div class="nav-item" title="Help / Support" onclick="window.open('mailto:zenithprojects@icloud.com')">
+                <div class="nav-item" title="Help / Support" onclick="window.location.href='mailto:zenithprojects@icloud.com'">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 </div>
             </nav>
             <div class="sidebar-bottom">
-                <div class="user-avatar" id="optionsCreditsInstallId" style="font-size: 11px;">ZN</div>
-                <div style="font-size:10px; color:#555; margin-top:24px; font-weight:600;">&copy;26</div>
+                <div class="sidebar-branding">
+                    <span>PROJECT</span>
+                    <span class="highlight">CORTEX</span>
+                </div>
             </div>
         </aside>
 

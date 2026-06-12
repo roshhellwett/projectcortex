@@ -254,7 +254,6 @@ function buildPanelHTML() {
           <button class="pm-action-btn" id="pm-action-define" aria-label="Define">\uD83D\uDCD6 Define</button>
         </div>
         <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings">\u2699\uFE0F Settings</button>
-        </div>
         <div class="pm-divider"></div>
         <div class="pm-section-label">Ask About Page</div>
         <p class="pm-welcome-hint">Type a question related to this page in the field below.</p>

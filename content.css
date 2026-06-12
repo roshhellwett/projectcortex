@@ -533,10 +533,10 @@
     font-size: 13px !important;
     color: #ddd !important;
     font-weight: 500 !important;
-    margin: 0 0 14px 0 !important;
-    padding: 0 0 13px 0 !important;
+    margin: 0 0 10px 0 !important;
+    padding: 0 0 10px 0 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-    line-height: 1.6 !important;
+    line-height: 1.5 !important;
 }
 
 #pagemind-panel .pm-options-list {
@@ -550,11 +550,11 @@
 #pagemind-panel .pm-option {
     display: flex !important;
     align-items: flex-start !important;
-    gap: 10px !important;
+    gap: 8px !important;
     background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid var(--pm-border-light) !important;
-    border-radius: 9px !important;
-    padding: 11px 13px !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
     margin: 0 !important;
     transition: all 0.15s !important;
 }
@@ -609,8 +609,8 @@
 #pagemind-panel .pm-answer-card {
     background: rgba(20, 120, 60, 0.08) !important;
     border: 1px solid rgba(40, 180, 90, 0.3) !important;
-    border-radius: 10px !important;
-    padding: 14px 16px !important;
+    border-radius: 8px !important;
+    padding: 10px 12px !important;
     margin: 0 !important;
     box-shadow: 0 0 0 1px rgba(40, 180, 90, 0.15) inset !important;
 }

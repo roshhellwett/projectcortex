@@ -9,11 +9,45 @@
 
 const API_BASE = 'https://projectcortex.vercel.app';
 
-function generateUUID() {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return 'hw_' + crypto.randomUUID().replace(/-/g, '');
+function getRawHWID() {
+  try {
+      let gl;
+      if (typeof OffscreenCanvas !== 'undefined') {
+          const canvas = new OffscreenCanvas(1, 1);
+          gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      } else if (typeof document !== 'undefined') {
+          const canvas = document.createElement('canvas');
+          gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      }
+
+      let renderer = 'unknown_renderer';
+      let vendor = 'unknown_vendor';
+      
+      if (gl) {
+          const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+          if (debugInfo) {
+              renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'unknown';
+              vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'unknown';
+          }
+      }
+
+      const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 2;
+      const rawString = `${vendor}||${renderer}||${cores}`;
+      
+      let hash = 0;
+      for (let i = 0; i < rawString.length; i++) {
+          const char = rawString.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash;
+      }
+      
+      return 'hw_' + Math.abs(hash).toString(16) + 'c' + cores;
+  } catch (e) {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+          return 'hw_' + crypto.randomUUID().replace(/-/g, '');
+      }
+      return 'hw_fallback_' + Date.now();
   }
-  return 'hw_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 export async function getAuthState() {
@@ -51,8 +85,10 @@ export async function checkAuthStatus() {
   let currentInstallId = state.installId;
 
   // Ensure installId exists
-  if (!currentInstallId) {
-    currentInstallId = generateUUID();
+  // Ensure installId exists and matches hardware
+  const hwid = getRawHWID();
+  if (!currentInstallId || currentInstallId !== hwid) {
+    currentInstallId = hwid;
     // Save to both sync and local to survive cache wipes
     chrome.storage.sync.set({ installId: currentInstallId });
     chrome.storage.local.set({ installId: currentInstallId });
@@ -70,7 +106,7 @@ export async function checkAuthStatus() {
       const res = await fetch(`${API_BASE}/api/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: state.authToken })
+        body: JSON.stringify({ token: state.authToken, hwid: currentInstallId })
       });
       const data = await res.json();
       
@@ -111,13 +147,8 @@ export async function checkAuthStatus() {
 }
 
 export async function activateLicense(licenseKey) {
-  const state = await getAuthState();
-  const installId = state.installId;
+  let installId = getRawHWID();
   
-  if (!installId) {
-    return { success: false, error: 'Install ID missing. Please refresh the page.' };
-  }
-
   try {
     const res = await fetch(`${API_BASE}/api/activate`, {
       method: 'POST',

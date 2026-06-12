@@ -13,7 +13,7 @@ import { verifyActivationToken } from '@/lib/auth';
 
 export async function POST(req) {
   try {
-    const { token } = await req.json();
+    const { token, hwid } = await req.json();
 
     if (!token) {
       return NextResponse.json({ error: 'Missing token' }, { status: 400 });
@@ -28,12 +28,16 @@ export async function POST(req) {
     
     const { data: license } = await supabase
       .from('licenses')
-      .select('status, expires_at, license_key, activated_at')
+      .select('status, expires_at, license_key, activated_at, install_id')
       .eq('id', payload.id)
       .single();
 
     if (!license || license.status === 'revoked') {
       return NextResponse.json({ error: 'License has been revoked' }, { status: 403 });
+    }
+
+    if (hwid && license.install_id && hwid !== license.install_id) {
+      return NextResponse.json({ error: 'Hardware Mismatch. Please activate this device.' }, { status: 403 });
     }
 
     

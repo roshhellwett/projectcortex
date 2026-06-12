@@ -71,6 +71,47 @@ function parseJwt(token) {
     }
 }
 
+function getRawHWID() {
+    try {
+        let gl;
+        if (typeof OffscreenCanvas !== 'undefined') {
+            const canvas = new OffscreenCanvas(1, 1);
+            gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        } else if (typeof document !== 'undefined') {
+            const canvas = document.createElement('canvas');
+            gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        }
+
+        let renderer = 'unknown_renderer';
+        let vendor = 'unknown_vendor';
+        
+        if (gl) {
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (debugInfo) {
+                renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'unknown';
+                vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'unknown';
+            }
+        }
+
+        const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 2;
+        const rawString = `${vendor}||${renderer}||${cores}`;
+        
+        let hash = 0;
+        for (let i = 0; i < rawString.length; i++) {
+            const char = rawString.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        
+        return 'hw_' + Math.abs(hash).toString(16) + 'c' + cores;
+    } catch (e) {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return 'hw_' + crypto.randomUUID().replace(/-/g, '');
+        }
+        return 'hw_fallback_' + Date.now();
+    }
+}
+
 async function loadSettings() {
     currentSiteHostname = await getCurrentHostname();
     const data = await getStorage(['apiKey', 'model', 'apiProvider', 'customEndpoint', 'customModel', 'activeWindowsWhitelist', 'copyPasteWhitelist']);
@@ -356,11 +397,11 @@ function updateKeyHint() {
             const syncData = await getStorage(null);
             const localData = await getLocalStorage(null);
             
-            const secureKeys = ['installId', 'authToken', 'licenseKey', 'expiresAt', 'activatedAt', 'lastVerifyTime'];
-            secureKeys.forEach(k => {
-                if (syncData) delete syncData[k];
-                if (localData) delete localData[k];
-            });
+            // Note: We deliberately EXPORT installId, authToken, and licenseKey now.
+            // Since installId is tied to the physical hardware HWID, users can easily 
+            // restore on a different browser (e.g. Edge) on the SAME device, but if 
+            // they share the file to a friend (different hardware), the HWID will differ
+            // and the backend will block it with "Hardware Mismatch".
 
             const backup = { sync: syncData, local: localData };
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });

@@ -9,8 +9,7 @@
 
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { verifyActivationToken } from '@/lib/auth';
-import jwt from 'jsonwebtoken';
+import { verifyActivationToken, signActivationToken } from '@/lib/auth';
 
 export async function POST(req) {
   try {
@@ -59,10 +58,12 @@ export async function POST(req) {
 
     
     
-    const freshToken = jwt.sign(
-      { id: payload.id, seed: payload.seed, expiresAt: license.expires_at },
-      process.env.JWT_SECRET || 'fallback_secret_only_for_dev_cortex_2026'
-    );
+    const freshToken = signActivationToken({
+      id: payload.id,
+      seed: payload.seed,
+      expiresAt: license.expires_at,
+      installId: hwid
+    });
 
     
     return NextResponse.json({ 

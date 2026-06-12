@@ -11,6 +11,7 @@ import {
   GROQ_URL, OPENROUTER_URL, MODELS, ACTION_CONFIG, DEFAULT_ACTION,
   TIMEOUT_MS, MAX_RETRIES, RETRY_BASES, PROVIDER_GROQ, PROVIDER_OPENROUTER, PROVIDER_CUSTOM
 } from './bg_config.js';
+import { quickAuthCheck } from './bg_auth.js';
 
 export const resolveEndpoint = (apiProvider, customEndpoint) => {
   if (apiProvider === PROVIDER_OPENROUTER) return OPENROUTER_URL;
@@ -134,6 +135,12 @@ export async function handleAIRequest(payload, sendResponse) {
 
   if (!apiKey) {
     safeRespond({ error: 'NO_KEY' });
+    return;
+  }
+
+  const authState = await quickAuthCheck();
+  if (authState.locked) {
+    safeRespond({ error: 'AUTH_REQUIRED' });
     return;
   }
 

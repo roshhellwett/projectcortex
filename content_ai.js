@@ -122,6 +122,11 @@ function handleAIError(err) {
     }
   }
 
+  if (msg === 'AUTH_REQUIRED') {
+    _isLocked = true;
+    showState('locked');
+    return;
+  }
   if (msg === '__NO_KEY__') {
     showError('No API key configured. Open Settings to add one, then click Retry.')
     return

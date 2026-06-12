@@ -57,7 +57,7 @@ function getRawHWID() {
 export async function getAuthState() {
   return new Promise(resolve => {
     chrome.storage.sync.get(['installId', 'authToken', 'licenseKey', 'expiresAt', 'activatedAt'], syncData => {
-      chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime', 'licenseKey', 'expiresAt', 'activatedAt'], localData => {
+      chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime', 'lastSuccessfulVerify', 'licenseKey', 'expiresAt', 'activatedAt'], localData => {
         // Prioritize sync storage for identity/auth. Fallback to local.
         const merged = {
           installId: syncData.installId || localData.installId,
@@ -65,7 +65,8 @@ export async function getAuthState() {
           licenseKey: syncData.licenseKey || localData.licenseKey,
           expiresAt: syncData.expiresAt || localData.expiresAt,
           activatedAt: syncData.activatedAt || localData.activatedAt,
-          lastVerifyTime: localData.lastVerifyTime
+          lastVerifyTime: localData.lastVerifyTime,
+          lastSuccessfulVerify: localData.lastSuccessfulVerify
         };
         // Keep local cache up to date if sync had it but local was cleared
         if (syncData.installId && !localData.installId) {
@@ -88,18 +89,21 @@ export async function checkAuthStatus() {
   
   let currentInstallId = state.installId;
 
-  // Ensure installId exists
-  // Ensure installId exists and matches hardware
   const hwid = getRawHWID();
   if (!currentInstallId || currentInstallId !== hwid) {
     currentInstallId = hwid;
-    // Save to both sync and local to survive cache wipes
     chrome.storage.sync.set({ installId: currentInstallId });
     chrome.storage.local.set({ installId: currentInstallId });
   }
 
   if (!currentInstallId || !state.authToken) {
     return { locked: true, reason: 'NO_TOKEN', installId: currentInstallId || null };
+  }
+
+  if (state.expiresAt && new Date() > new Date(state.expiresAt)) {
+    chrome.storage.local.remove(['authToken']);
+    chrome.storage.sync.remove(['authToken']);
+    return { locked: true, reason: 'EXPIRED', installId: currentInstallId };
   }
 
   const now = Date.now();
@@ -116,6 +120,7 @@ export async function checkAuthStatus() {
       
       if (!res.ok) {
         chrome.storage.local.remove(['authToken']);
+        chrome.storage.sync.remove(['authToken']);
         chrome.tabs.query({}, (tabs) => {
           tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
         });
@@ -127,7 +132,6 @@ export async function checkAuthStatus() {
         chrome.storage.sync.set({ authToken: data.token });
       }
       
-      // Update license metadata if available
       if (data.licenseKey) {
         const licenseData = {
           licenseKey: data.licenseKey,
@@ -138,16 +142,31 @@ export async function checkAuthStatus() {
         chrome.storage.sync.set(licenseData);
       }
 
-      chrome.storage.local.set({ lastVerifyTime: now, seed: data.seed });
+      chrome.storage.local.set({ lastVerifyTime: now, lastSuccessfulVerify: now, seed: data.seed });
       return { locked: false, seed: data.seed, installId: currentInstallId };
       
     } catch (e) {
-      console.warn('Cortex Auth: Offline, relying on cached token.', e);
+      const lastSuccess = state.lastSuccessfulVerify || lastVerify || 0;
+      const OFFLINE_GRACE_MS = 24 * 60 * 60 * 1000;
+      if (now - lastSuccess > OFFLINE_GRACE_MS) {
+        chrome.storage.local.remove(['authToken']);
+        chrome.storage.sync.remove(['authToken']);
+        return { locked: true, reason: 'OFFLINE_EXPIRED', installId: currentInstallId };
+      }
       return { locked: false, offline: true, installId: currentInstallId };
     }
   }
 
   return { locked: false, installId: currentInstallId };
+}
+
+export async function quickAuthCheck() {
+  const state = await getAuthState();
+  if (!state.authToken || !state.installId) return { locked: true };
+  if (state.expiresAt && new Date() > new Date(state.expiresAt)) return { locked: true };
+  const lastSuccess = state.lastSuccessfulVerify || state.lastVerifyTime || 0;
+  if (Date.now() - lastSuccess > 24 * 60 * 60 * 1000) return { locked: true };
+  return { locked: false };
 }
 
 export async function activateLicense(licenseKey) {

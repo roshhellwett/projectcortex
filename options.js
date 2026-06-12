@@ -126,9 +126,48 @@ async function checkUpdate() {
             if (data.version && data.version > currentVersion) {
                 const updatePanel = $('updatePanel');
                 if (updatePanel) {
-                    updatePanel.style.display = 'block';
-                    const newVersionStr = $('newVersionStr');
-                    if (newVersionStr) newVersionStr.textContent = data.version;
+                    updatePanel.style.background = 'rgba(239, 68, 68, 0.1)';
+                    updatePanel.style.border = '1px solid #ef4444';
+                    updatePanel.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.15)';
+                    
+                    const updateIconBox = $('updateIconBox');
+                    if (updateIconBox) {
+                        updateIconBox.style.background = 'rgba(239, 68, 68, 0.2)';
+                        updateIconBox.style.color = '#ef4444';
+                    }
+                    
+                    const updateIcon = $('updateIcon');
+                    if (updateIcon) updateIcon.innerHTML = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>';
+                    
+                    const updateTitle = $('updateTitle');
+                    if (updateTitle) {
+                        updateTitle.style.color = '#ef4444';
+                        updateTitle.innerHTML = `Critical Update Available (${data.version})`;
+                    }
+                    
+                    const updateDesc = $('updateDesc');
+                    if (updateDesc) {
+                        updateDesc.style.color = '#ffb3b3';
+                        updateDesc.innerHTML = 'A new version of ProjectCortex is available. To ensure uninterrupted service, please update immediately.<br><br><strong style="color: #fff;">Important:</strong> Before updating, you MUST export your settings backup below. You will need to import it after installing the new version to restore your license and configuration.';
+                    }
+                    
+                    const updateLink = $('updateLink');
+                    if (updateLink) {
+                        updateLink.href = 'https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b';
+                        updateLink.target = '_blank';
+                        updateLink.style.pointerEvents = 'auto';
+                    }
+                    
+                    const updateBtn = $('updateBtn');
+                    if (updateBtn) {
+                        updateBtn.style.background = '#ef4444';
+                        updateBtn.style.color = '#fff';
+                        updateBtn.style.border = 'none';
+                        updateBtn.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
+                        updateBtn.style.opacity = '1';
+                        updateBtn.disabled = false;
+                        updateBtn.textContent = 'Download Update (ZIP)';
+                    }
                 }
             }
         }

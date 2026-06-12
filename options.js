@@ -636,3 +636,30 @@ function showStatus(type, msg) {
     clearTimeout(statusEl._timer);
     statusEl._timer = setTimeout(() => { statusEl.className = ''; }, 5000);
 }
+
+// --- DYNAMIC SCALING LOGIC ---
+function fitToScreen() {
+    const wrapper = document.querySelector('.dashboard-wrapper');
+    if (!wrapper) return;
+    wrapper.style.zoom = 1; // reset before measuring
+    
+    setTimeout(() => {
+        const contentHeight = wrapper.scrollHeight;
+        const windowHeight = window.innerHeight - 48; // Account for 24px body padding top/bottom
+        
+        if (contentHeight > windowHeight) {
+            const scale = windowHeight / contentHeight;
+            wrapper.style.zoom = scale;
+        }
+    }, 10);
+}
+
+window.addEventListener('resize', fitToScreen);
+window.addEventListener('load', fitToScreen);
+
+// Setup MutationObserver to rescale if content changes dynamically
+const observer = new MutationObserver(fitToScreen);
+if (document.body) {
+    observer.observe(document.body, { childList: true, subtree: true });
+}
+fitToScreen();

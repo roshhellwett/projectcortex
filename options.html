@@ -632,32 +632,5 @@
     </div>
 
     <script src="options.js"></script>
-    <script>
-        function fitToScreen() {
-            const wrapper = document.querySelector('.dashboard-wrapper');
-            if (!wrapper) return;
-            wrapper.style.zoom = 1;
-            
-            // Allow a small tick for rendering
-            setTimeout(() => {
-                const contentHeight = wrapper.scrollHeight;
-                const windowHeight = window.innerHeight - 48; // Account for 24px body padding top/bottom
-                
-                if (contentHeight > windowHeight) {
-                    const scale = windowHeight / contentHeight;
-                    wrapper.style.zoom = scale;
-                }
-            }, 10);
-        }
-        
-        window.addEventListener('resize', fitToScreen);
-        window.addEventListener('load', fitToScreen);
-        
-        // Setup MutationObserver to rescale if content changes dynamically (e.g., license status loaded)
-        const observer = new MutationObserver(fitToScreen);
-        observer.observe(document.body, { childList: true, subtree: true });
-        
-        fitToScreen();
-    </script>
 </body>
 </html>

@@ -228,7 +228,7 @@ export default function EnterpriseAdminDashboard() {
           <div style={{ display: 'inline-flex', width: '64px', height: '64px', background: 'var(--primary)', borderRadius: '16px', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 32px var(--primary-light)' }}>
             <Icons.Database />
           </div>
-          <h2 style={{ margin: '0 0 12px 0', fontSize: '28px', fontWeight: '800', letterSpacing: '-0.02em' }}>Enterprise God Mode</h2>
+          <h2 style={{ margin: '0 0 12px 0', fontSize: '28px', fontWeight: '800', letterSpacing: '-0.02em' }}>Enterprise Dashboard</h2>
           <p style={{ color: 'var(--text-secondary)', margin: '0 0 32px 0', fontSize: '15px' }}>Master authentication required to access database controls.</p>
           
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -574,14 +574,14 @@ export default function EnterpriseAdminDashboard() {
         }
         description={
           modalState.type === 'GENERATE' ? 'Enter the number of unused licenses to securely generate into the database.' :
-          modalState.type.includes('EXTEND') ? 'Enter the number of days to extend expiry by.' :
-          modalState.type.includes('REVOKE') ? 'Are you absolutely sure? The user(s) will be instantly locked out on their next network check.' :
-          modalState.type.includes('DELETE') ? 'Are you sure you want to permanently delete unused key(s)?' :
+          modalState.type?.includes('EXTEND') ? 'Enter the number of days to extend expiry by.' :
+          modalState.type?.includes('REVOKE') ? 'Are you absolutely sure? The user(s) will be instantly locked out on their next network check.' :
+          modalState.type?.includes('DELETE') ? 'Are you sure you want to permanently delete unused key(s)?' :
           modalState.type === 'RESET_HWID' ? 'This clears the install_id lock. The user can enter this key on a new device to lock it again.' :
           modalState.type === 'SET_STATUS' ? 'Forcefully change the database status of this license.' : ''
         }
       >
-        {(modalState.type === 'GENERATE' || modalState.type.includes('EXTEND')) && (
+        {(modalState.type === 'GENERATE' || modalState.type?.includes('EXTEND')) && (
           <input 
             type="number" 
             className="premium-input" 
@@ -609,7 +609,7 @@ export default function EnterpriseAdminDashboard() {
           <button 
             onClick={executeAction} 
             className="premium-button" 
-            style={{ background: modalState.type.includes('REVOKE') || modalState.type.includes('DELETE') ? '#ef4444' : 'var(--primary)', color: '#fff', minWidth: '120px' }}
+            style={{ background: modalState.type?.includes('REVOKE') || modalState.type?.includes('DELETE') ? '#ef4444' : 'var(--primary)', color: '#fff', minWidth: '120px' }}
             disabled={loading}
           >
             {loading ? 'Processing...' : 'Confirm'}

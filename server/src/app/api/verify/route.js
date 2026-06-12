@@ -28,7 +28,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid or malformed token' }, { status: 403 });
     }
 
-    // 1. Triple-Layer Validation: Does hardware ID match the signed token?
     if (payload.installId && hwid !== payload.installId) {
       return NextResponse.json({ error: 'Hardware Mismatch (Token).' }, { status: 403 });
     }
@@ -43,14 +42,10 @@ export async function POST(req) {
       return NextResponse.json({ error: 'License has been revoked' }, { status: 403 });
     }
 
-
-
-    // 2. Triple-Layer Validation: Does hardware ID match the database record?
     if (license.install_id && hwid !== license.install_id) {
       return NextResponse.json({ error: 'Hardware Mismatch (Database). Please activate this device.' }, { status: 403 });
     }
 
-    
     if (new Date() > new Date(license.expires_at)) {
       if (license.status !== 'expired') {
         supabase.from('licenses').update({ status: 'expired' }).eq('id', payload.id).then();
@@ -58,8 +53,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'License has expired' }, { status: 403 });
     }
 
-    
-    
     const freshToken = signActivationToken({
       id: payload.id,
       seed: payload.seed,
@@ -67,7 +60,6 @@ export async function POST(req) {
       installId: hwid
     });
 
-    
     return NextResponse.json({ 
       success: true, 
       expiresAt: license.expires_at, 

@@ -10,7 +10,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-
 function isAuthorized(req) {
   const authHeader = req.headers.get('authorization');
   const adminPassword = process.env.ADMIN_PASSWORD;
@@ -36,9 +35,9 @@ export async function GET(req) {
   if (err1 || err2 || err3) {
     return NextResponse.json({ error: (err1 || err2 || err3).message }, { status: 500 });
   }
-  
+
   const latestVersion = settings?.value || '6.0.0';
-  
+
   return NextResponse.json({ licenses, logs: logs || [], feedback: feedback || [], latestVersion });
 }
 
@@ -91,7 +90,7 @@ export async function POST(req) {
     const { data: lic } = await supabase.from('licenses').select('expires_at, status').eq('id', id).single();
     if (!lic) return NextResponse.json({ error: 'License not found' }, { status: 404 });
     if (lic.status === 'revoked') return NextResponse.json({ error: 'Cannot extend a revoked license' }, { status: 400 });
-    
+
     const base = (lic.expires_at && new Date(lic.expires_at) > new Date()) ? new Date(lic.expires_at) : new Date();
     const newExpiry = new Date(base.getTime() + safeDays * 24 * 60 * 60 * 1000);
     const updateData = { expires_at: newExpiry.toISOString() };
@@ -134,7 +133,7 @@ export async function POST(req) {
     const safeDays = Math.min(Math.max(parseInt(days) || 7, 1), 365);
     const { data: lics, error: fetchErr } = await supabase.from('licenses').select('id, expires_at, status').in('id', ids);
     if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
-    
+
     const updates = lics.map(lic => {
       if (lic.status === 'revoked') return null;
       const base = (lic.expires_at && new Date(lic.expires_at) > new Date()) ? new Date(lic.expires_at) : new Date();

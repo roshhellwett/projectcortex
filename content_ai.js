@@ -112,7 +112,7 @@ function guard(fn) {
 
 function handleAIError(err) {
   const msg = err.message || ''
-  
+
   const settingsBtn = document.getElementById('pm-error-settings-btn');
   if (settingsBtn) {
     if (msg === '__NO_KEY__' || /auth|unauthorized|invalid key|key.*reject/i.test(msg) || /model.*not found|does not exist/i.test(msg)) {
@@ -247,8 +247,7 @@ var runSummarize = guard(async function () {
 
   const selectedText = getDeepSelectionText()
   let pageText = selectedText;
-  
-  // If the user selected very little text (like a stray click), fallback to summarizing the entire page.
+
   if (!pageText || pageText.trim().length < 10) {
     pageText = getCleanText(document.body);
   }

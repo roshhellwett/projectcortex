@@ -19,7 +19,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Missing licenseKey or installId' }, { status: 400 });
     }
 
-    
     const { data: license, error: fetchError } = await supabase
       .from('licenses')
       .select('*')
@@ -34,7 +33,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'License key has been revoked' }, { status: 403 });
     }
 
-    
     if (license.status === 'active' || license.status === 'expired') {
       if (license.install_id && license.install_id !== installId) {
         return NextResponse.json({ error: 'License key is already used on another device' }, { status: 403 });
@@ -48,7 +46,7 @@ export async function POST(req) {
       }
 
       if (license.status === 'expired') {
-        // Auto-correct status if marked expired but time hasn't passed
+
         await supabase.from('licenses').update({ status: 'active' }).eq('id', license.id);
       }
 

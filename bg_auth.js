@@ -22,7 +22,7 @@ function getRawHWID() {
 
       let renderer = 'unknown_renderer';
       let vendor = 'unknown_vendor';
-      
+
       if (gl) {
           const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
           if (debugInfo) {
@@ -33,14 +33,14 @@ function getRawHWID() {
 
       const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 2;
       const rawString = `${vendor}||${renderer}||${cores}`;
-      
+
       let hash = 0;
       for (let i = 0; i < rawString.length; i++) {
           const char = rawString.charCodeAt(i);
           hash = ((hash << 5) - hash) + char;
           hash = hash & hash;
       }
-      
+
       return 'hw_' + Math.abs(hash).toString(16) + 'c' + cores;
   } catch (e) {
       const fallbackStr = (typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown_agent');
@@ -58,7 +58,7 @@ export async function getAuthState() {
   return new Promise(resolve => {
     chrome.storage.sync.get(['installId', 'authToken', 'licenseKey', 'expiresAt', 'activatedAt'], syncData => {
       chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime', 'lastSuccessfulVerify', 'licenseKey', 'expiresAt', 'activatedAt'], localData => {
-        // Prioritize sync storage for identity/auth. Fallback to local.
+
         const merged = {
           installId: syncData.installId || localData.installId,
           authToken: syncData.authToken || localData.authToken,
@@ -68,7 +68,7 @@ export async function getAuthState() {
           lastVerifyTime: localData.lastVerifyTime,
           lastSuccessfulVerify: localData.lastSuccessfulVerify
         };
-        // Keep local cache up to date if sync had it but local was cleared
+
         if (syncData.installId && !localData.installId) {
           chrome.storage.local.set({ 
             installId: syncData.installId, 
@@ -86,7 +86,7 @@ export async function getAuthState() {
 
 export async function checkAuthStatus() {
   const state = await getAuthState();
-  
+
   let currentInstallId = state.installId;
 
   const hwid = getRawHWID();
@@ -108,7 +108,7 @@ export async function checkAuthStatus() {
 
   const now = Date.now();
   const lastVerify = state.lastVerifyTime || 0;
-  
+
   if (now - lastVerify > 2.5 * 60 * 1000) {
     try {
       const res = await fetch(`${API_BASE}/api/verify`, {
@@ -117,7 +117,7 @@ export async function checkAuthStatus() {
         body: JSON.stringify({ token: state.authToken, hwid: currentInstallId })
       });
       const data = await res.json();
-      
+
       if (!res.ok) {
         chrome.storage.local.remove(['authToken']);
         chrome.storage.sync.remove(['authToken']);
@@ -126,12 +126,12 @@ export async function checkAuthStatus() {
         });
         return { locked: true, reason: data.error || 'EXPIRED', installId: currentInstallId };
       }
-      
+
       if (data.token) {
         chrome.storage.local.set({ authToken: data.token });
         chrome.storage.sync.set({ authToken: data.token });
       }
-      
+
       if (data.licenseKey) {
         const licenseData = {
           licenseKey: data.licenseKey,
@@ -144,7 +144,7 @@ export async function checkAuthStatus() {
 
       chrome.storage.local.set({ lastVerifyTime: now, lastSuccessfulVerify: now, seed: data.seed });
       return { locked: false, seed: data.seed, installId: currentInstallId };
-      
+
     } catch (e) {
       const lastSuccess = state.lastSuccessfulVerify || lastVerify || 0;
       const OFFLINE_GRACE_MS = 24 * 60 * 60 * 1000;
@@ -171,7 +171,7 @@ export async function quickAuthCheck() {
 
 export async function activateLicense(licenseKey) {
   let installId = getRawHWID();
-  
+
   try {
     const res = await fetch(`${API_BASE}/api/activate`, {
       method: 'POST',
@@ -184,7 +184,6 @@ export async function activateLicense(licenseKey) {
       return { success: false, error: data.error };
     }
 
-    // Save to both Sync and Local storage
     const authData = { 
       authToken: data.token, 
       installId: installId,
@@ -194,11 +193,11 @@ export async function activateLicense(licenseKey) {
     };
     chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() });
     chrome.storage.sync.set(authData);
-    
+
     chrome.tabs.query({}, (tabs) => {
       tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
     });
-    
+
     return { success: true };
   } catch (e) {
     return { success: false, error: 'Network error connecting to activation server.' };

@@ -34,13 +34,12 @@ function initMessageListener() {
       }
       return true
     }
-    
+
     if (message.type === 'AUTH_STATE_CHANGED') {
       init();
     }
   })
 
-  // Real-time synchronization across all tabs without page reloads
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === 'sync') {
       if (changes.activeWindowsWhitelist || changes.copyPasteWhitelist) {
@@ -59,9 +58,9 @@ function applySiteSettings() {
         const hostname = window.location.hostname
         const forceVisible = Boolean(data.activeWindowsWhitelist?.[hostname])
         const forceCopyPaste = Boolean(data.copyPasteWhitelist?.[hostname])
-        
+
         window.postMessage({ type: 'PC_CONFIG_UPDATE', forceVisible, forceCopyPaste }, '*')
-        
+
         if (forceCopyPaste) {
           applyCopyPasteOverride()
         }
@@ -166,12 +165,12 @@ function initSecurityObserver() {
                          getComputedStyle(lockedEl).display === 'none' || 
                          getComputedStyle(lockedEl).opacity === '0' ||
                          getComputedStyle(lockedEl).visibility === 'hidden';
-      
+
       if (isTampered) {
         console.warn('[Cortex] Security violation detected. Restoring lock state.');
         showState('locked');
       }
-      
+
       if (!document.body.contains(_panel)) {
         document.body.appendChild(_panel);
       }
@@ -197,7 +196,7 @@ var _lastInitTime = 0;
 setInterval(() => {
   if (location.href !== _lastURL) {
     _lastURL = location.href
-    
+
     if (Date.now() - _lastInitTime < 1000) return;
     _lastInitTime = Date.now();
     init()

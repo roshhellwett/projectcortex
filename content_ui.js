@@ -76,7 +76,7 @@ function typeHtml(el, htmlString, speed) {
   let charIndex = 0
   let lastTime = 0
   let decodedText = ''
-  
+
   const delay = speed || (htmlString.length > 800 ? 5 : htmlString.length > 300 ? 10 : 20)
 
   function frame(time) {
@@ -91,7 +91,7 @@ function typeHtml(el, htmlString, speed) {
         charIndex = 0
         continue
       }
-      
+
       if (charIndex === 0) {
         const textarea = document.createElement('textarea')
         textarea.innerHTML = part
@@ -328,7 +328,7 @@ function createBubble() {
       '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>' +
       '<button id="pm-bubble-hide" aria-label="Hide">\u2205 Hide</button>'
     document.body.appendChild(_bubble)
-    
+
     _bubble.addEventListener('mousedown', e => { 
       if(e.target.id !== 'pm-bubble-input') e.preventDefault() 
     })
@@ -535,8 +535,7 @@ function wireActionButtons() {
       const inputEl = document.getElementById('pm-license-input');
       const errorEl = document.getElementById('pm-license-error');
       const key = inputEl?.value?.trim();
-      
-      
+
       if (inputEl) {
         inputEl.classList.remove('pm-invalid');
         void inputEl.offsetWidth; 
@@ -557,7 +556,7 @@ function wireActionButtons() {
       if (!key) {
         return showInlineError('Please enter a license key.');
       }
-      
+
       const activateBtn = document.getElementById('pm-action-activate');
       activateBtn.textContent = 'Verifying...';
       activateBtn.disabled = true;
@@ -568,7 +567,7 @@ function wireActionButtons() {
         chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key, rawHWID }, res => {
           activateBtn.textContent = 'Activate License';
           activateBtn.disabled = false;
-          
+
           if (chrome.runtime.lastError) {
             errorEl.textContent = 'Extension backend unreachable. Please reload the page.';
             errorEl.style.display = 'block';
@@ -722,8 +721,7 @@ function initSelectionListeners() {
       hideBubble()
       closePanel()
     }
-    
-    // Alt+A (or Option+A on Mac) to toggle the Cortex Panel globally
+
     if (e.altKey && e.key.toLowerCase() === 'a') {
       e.preventDefault()
       const panel = document.getElementById('pagemind-panel')

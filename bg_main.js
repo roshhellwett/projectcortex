@@ -14,7 +14,6 @@ const extractHostname = url => {
   try { return new URL(url).hostname; } catch { return ''; }
 };
 
-// Set up periodic auth check
 chrome.alarms.create('authCheck', { periodInMinutes: 2.5 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'authCheck') {

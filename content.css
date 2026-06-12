@@ -9,27 +9,29 @@
  */
 
 :root {
-    --pm-surface: rgba(14, 14, 14, 0.98);
-    --pm-surface-hover: rgba(255, 255, 255, 0.04);
-    --pm-border: #2a2a2a;
-    --pm-border-light: rgba(255, 255, 255, 0.06);
-    --pm-text: #ccc;
-    --pm-text-muted: #555;
-    --pm-text-bright: #fff;
-    --pm-accent-green: rgba(40, 180, 90, 0.35);
-    --pm-accent-green-bg: rgba(20, 120, 60, 0.12);
-    --pm-radius: 14px;
-    --pm-radius-sm: 10px;
-    --pm-radius-xs: 7px;
-    --pm-shadow: 0 24px 80px rgba(0, 0, 0, 0.9);
-    --pm-transition: cubic-bezier(0.22, 1, 0.36, 1);
+    --pm-surface: rgba(18, 18, 20, 0.85);
+    --pm-surface-hover: rgba(255, 255, 255, 0.08);
+    --pm-border: rgba(255, 255, 255, 0.12);
+    --pm-border-light: rgba(255, 255, 255, 0.08);
+    --pm-text: #e2e8f0;
+    --pm-text-muted: #94a3b8;
+    --pm-text-bright: #ffffff;
+    --pm-accent-primary: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+    --pm-accent-glow: rgba(168, 85, 247, 0.4);
+    --pm-accent-green: #10b981;
+    --pm-accent-green-bg: rgba(16, 185, 129, 0.15);
+    --pm-radius: 18px;
+    --pm-radius-sm: 12px;
+    --pm-radius-xs: 8px;
+    --pm-shadow: 0 30px 90px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--pm-border) inset;
+    --pm-transition: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 #pagemind-panel,
 #pagemind-panel *,
 #pagemind-bubble,
 #pagemind-bubble * * {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    font-family: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     box-sizing: border-box !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -43,11 +45,11 @@
     max-width: calc(100vw - 32px) !important;
     max-height: 80vh !important;
     background: var(--pm-surface) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid var(--pm-border) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    border: none !important;
     border-radius: var(--pm-radius) !important;
-    box-shadow: var(--pm-shadow), 0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
+    box-shadow: var(--pm-shadow) !important;
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
@@ -120,24 +122,27 @@
 }
 
 #pagemind-panel .pm-logo-text {
-    font-size: 13px !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    letter-spacing: 0.1em !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    background: var(--pm-accent-primary) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    letter-spacing: 0.05em !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
 #pagemind-panel .pm-badge {
     font-size: 8px !important;
-    font-weight: 700 !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    color: #888 !important;
-    border: 1px solid #333 !important;
+    font-weight: 800 !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     border-radius: 4px !important;
     padding: 2px 7px !important;
     margin: 0 !important;
     letter-spacing: 0.05em !important;
+    box-shadow: 0 0 10px var(--pm-accent-glow) !important;
 }
 
 #pagemind-panel .pm-header-actions {
@@ -242,13 +247,15 @@
 }
 
 #pagemind-panel .pm-section-label {
-    font-size: 9px !important;
-    font-weight: 700 !important;
-    color: #555 !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    background: var(--pm-accent-primary) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
     text-transform: uppercase !important;
     margin: 0 0 12px 0 !important;
     padding: 0 !important;
-    letter-spacing: 0.18em !important;
+    letter-spacing: 0.15em !important;
 }
 
 #pagemind-panel .pm-actions-grid {
@@ -259,18 +266,18 @@
 }
 
 #pagemind-panel .pm-action-btn {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid var(--pm-border) !important;
-    color: var(--pm-text) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--pm-text-bright) !important;
     padding: 10px 14px !important;
     border-radius: var(--pm-radius-sm) !important;
     font-size: 12px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
-    transition: all 0.2s var(--pm-transition) !important;
+    transition: all 0.3s var(--pm-transition) !important;
     white-space: nowrap !important;
     text-align: left !important;
 }
@@ -750,10 +757,12 @@
     z-index: 2147483647 !important;
     display: flex !important;
     flex-direction: column !important;
-    background: #1c1c1c !important;
-    border: 1px solid #333 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    background: var(--pm-surface) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    border: none !important;
+    border-radius: var(--pm-radius) !important;
+    box-shadow: var(--pm-shadow) !important;
     padding: 6px !important;
     gap: 2px !important;
     opacity: 0 !important;
@@ -778,9 +787,9 @@
 
 #pm-bubble-input {
     width: 100% !important;
-    background: transparent !important;
-    border: 1px solid #444 !important;
-    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: var(--pm-radius-sm) !important;
     color: #fff !important;
     padding: 10px 12px !important;
     font-size: 13px !important;
@@ -797,11 +806,12 @@
 #pagemind-bubble button {
     background: transparent !important;
     border: none !important;
-    color: #e0e0e0 !important;
+    color: var(--pm-text-bright) !important;
     font-size: 13px !important;
+    font-weight: 500 !important;
     padding: 10px 12px !important;
     text-align: left !important;
-    border-radius: 6px !important;
+    border-radius: var(--pm-radius-sm) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;

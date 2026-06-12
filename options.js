@@ -84,7 +84,7 @@ function getRawHWID() {
 
         let renderer = 'unknown_renderer';
         let vendor = 'unknown_vendor';
-        
+
         if (gl) {
             const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
             if (debugInfo) {
@@ -95,14 +95,14 @@ function getRawHWID() {
 
         const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 2;
         const rawString = `${vendor}||${renderer}||${cores}`;
-        
+
         let hash = 0;
         for (let i = 0; i < rawString.length; i++) {
             const char = rawString.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash;
         }
-        
+
         return 'hw_' + Math.abs(hash).toString(16) + 'c' + cores;
     } catch (e) {
         const fallbackStr = (typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown_agent');
@@ -129,35 +129,35 @@ async function checkUpdate() {
                     updatePanel.style.background = 'rgba(239, 68, 68, 0.1)';
                     updatePanel.style.border = '1px solid #ef4444';
                     updatePanel.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.15)';
-                    
+
                     const updateIconBox = $('updateIconBox');
                     if (updateIconBox) {
                         updateIconBox.style.background = 'rgba(239, 68, 68, 0.2)';
                         updateIconBox.style.color = '#ef4444';
                     }
-                    
+
                     const updateIcon = $('updateIcon');
                     if (updateIcon) updateIcon.innerHTML = '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>';
-                    
+
                     const updateTitle = $('updateTitle');
                     if (updateTitle) {
                         updateTitle.style.color = '#ef4444';
                         updateTitle.innerHTML = `Critical Update Available (${data.version})`;
                     }
-                    
+
                     const updateDesc = $('updateDesc');
                     if (updateDesc) {
                         updateDesc.style.color = '#ffb3b3';
                         updateDesc.innerHTML = 'A new version of ProjectCortex is available. To ensure uninterrupted service, please update immediately.<br><br><strong style="color: #fff;">Important:</strong> Before updating, you MUST export your settings backup below. You will need to import it after installing the new version to restore your license and configuration.';
                     }
-                    
+
                     const updateLink = $('updateLink');
                     if (updateLink) {
                         updateLink.href = 'https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b';
                         updateLink.target = '_blank';
                         updateLink.style.pointerEvents = 'auto';
                     }
-                    
+
                     const updateBtn = $('updateBtn');
                     if (updateBtn) {
                         updateBtn.style.background = '#ef4444';
@@ -182,7 +182,7 @@ async function loadSettings() {
     const data = await getStorage(['apiKey', 'model', 'apiProvider', 'customEndpoint', 'customModel', 'activeWindowsWhitelist', 'copyPasteWhitelist']);
 
     const localData = await getLocalStorage(['licenseKey', 'expiresAt', 'activatedAt', 'authToken']);
-    
+
     let displayLicenseKey = localData.licenseKey;
     if (!displayLicenseKey && localData.authToken) {
         const payload = parseJwt(localData.authToken);
@@ -210,13 +210,13 @@ async function loadSettings() {
         const d = new Date(displayActivatedAt);
         $('dispActivatedAt').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     }
-    
+
     if ($('copyLicenseBtn') && !$('copyLicenseBtn').dataset.bound) {
         $('copyLicenseBtn').dataset.bound = 'true';
         $('copyLicenseBtn').addEventListener('click', async () => {
             if ($('dispLicenseKey').textContent.includes('•')) return;
             await navigator.clipboard.writeText($('dispLicenseKey').textContent);
-            
+
             const toast = $('toast');
             if (toast) {
                 const originalHtml = toast.innerHTML;
@@ -296,7 +296,7 @@ function updateKeyHint() {
                 if (lockIdEl) lockIdEl.textContent = res.installId;
                 if (creditsIdEl) creditsIdEl.textContent = res.installId;
             }
-            
+
             const lockOverlay = document.getElementById('lockOverlay');
             const mainContainer = document.getElementById('mainContainer');
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -311,7 +311,7 @@ function updateKeyHint() {
                 mainContainer.style.opacity = '1';
                 mainContainer.style.filter = 'none';
             }
-            
+
             if (loadingOverlay) {
                 loadingOverlay.style.opacity = '0';
                 setTimeout(() => loadingOverlay.style.display = 'none', 400);
@@ -346,7 +346,7 @@ function updateKeyHint() {
             chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key, rawHWID: rawHWID }, res => {
                 activateBtn.textContent = 'Activate License';
                 activateBtn.disabled = false;
-                
+
                 if (chrome.runtime.lastError) {
                     authStatus.style.color = '#ff4444';
                     authStatus.textContent = 'Extension backend unreachable. Please reload the extension.';
@@ -461,12 +461,6 @@ function updateKeyHint() {
         try {
             const syncData = await getStorage(null);
             const localData = await getLocalStorage(null);
-            
-            // Note: We deliberately EXPORT installId, authToken, and licenseKey now.
-            // Since installId is tied to the physical hardware HWID, users can easily 
-            // restore on a different browser (e.g. Edge) on the SAME device, but if 
-            // they share the file to a friend (different hardware), the HWID will differ
-            // and the backend will block it with "Hardware Mismatch".
 
             const backup = { sync: syncData, local: localData };
             const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -637,15 +631,14 @@ function showStatus(type, msg) {
     statusEl._timer = setTimeout(() => { statusEl.className = ''; }, 5000);
 }
 
-
 function fitToScreen() {
     const wrapper = document.querySelector('.dashboard-wrapper');
     if (!wrapper) return;
-    
+
     wrapper.style.zoom = 1; 
     const contentHeight = wrapper.scrollHeight;
     const windowHeight = window.innerHeight - 48; 
-    
+
     if (contentHeight > windowHeight) {
         const scale = windowHeight / contentHeight;
         wrapper.style.zoom = scale;
@@ -654,7 +647,6 @@ function fitToScreen() {
 
 window.addEventListener('resize', fitToScreen);
 window.addEventListener('load', fitToScreen);
-
 
 const observer = new MutationObserver(fitToScreen);
 if (document.body) {

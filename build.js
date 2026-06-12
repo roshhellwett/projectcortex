@@ -30,7 +30,7 @@ const obfuscationOptions = {
   log: false,
   numbersToExpressions: true,
   renameGlobals: false,
-  selfDefending: false, 
+  selfDefending: true, 
   simplify: true,
   splitStrings: true,
   splitStringsChunkLength: 10,
@@ -120,6 +120,9 @@ filesToObfuscate.forEach(file => {
     if (file === 'bg_auth.js') {
       obfuscatedCode = obfuscatedCode.replace(/\bwindow\b/g, 'globalThis');
     }
+
+    const header = code.split('\n').slice(0, 9).join('\n');
+    obfuscatedCode = header + '\n' + obfuscatedCode;
 
     fs.writeFileSync(path.join(distDir, file), obfuscatedCode, 'utf8');
     console.log(`Successfully obfuscated ${file}`);

@@ -746,7 +746,7 @@
 }
 
 #pagemind-bubble {
-    position: absolute !important;
+    position: fixed !important;
     z-index: 2147483647 !important;
     display: flex !important;
     flex-direction: column !important;

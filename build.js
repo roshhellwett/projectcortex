@@ -65,7 +65,13 @@ allFiles.forEach(file => {
     file !== 'package.json' && 
     file !== 'package-lock.json'
   ) {
-    fs.copyFileSync(path.join(__dirname, file), path.join(distDir, file));
+    const code = fs.readFileSync(path.join(__dirname, file), 'utf8');
+    const header = code.split('\n').slice(0, 9).join('\n');
+    let rest = code.split('\n').slice(9).join('\n');
+    rest = rest.replace(/\/\*[\s\S]*?\*\//g, '');
+    rest = rest.replace(/(?<![:"'])\/\/.*/g, '');
+    rest = rest.replace(/^\s*[\r\n]/gm, '');
+    fs.writeFileSync(path.join(distDir, file), header + '\n' + rest, 'utf8');
   }
 });
 

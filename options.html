@@ -42,7 +42,8 @@
 
         .container {
             width: 100%;
-            max-width: 1300px;
+            max-width: 1600px;
+            padding: 0 20px;
         }
 
         .grid-layout {
@@ -482,48 +483,7 @@
         </div>
 
         <div class="grid-layout">
-            <div class="grid-column">
-                <div class="section">
-                    <div class="section-title">Window Control</div>
-
-                    <div class="toggle-container">
-                        <div class="toggle-left">
-                            <div class="toggle-label">Always Active Window</div>
-                            <div class="toggle-hint">Keep this site active in background</div>
-                        </div>
-                        <div class="toggle-switch" id="activeWindowToggle">
-                            <div class="toggle-circle"></div>
-                        </div>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>What does this do?</strong><br>
-                        When enabled, prevents this website from detecting when the tab is in the background. Useful for music
-                        players, timers, and streaming services.
-                    </div>
-                </div>
-
-                <div class="section">
-                    <div class="section-title">Page Utilities</div>
-
-                    <div class="toggle-container">
-                        <div class="toggle-left">
-                            <div class="toggle-label">Enable Copy & Paste</div>
-                            <div class="toggle-hint">Allow selection, copy, paste, and right-click on <span
-                                    id="siteLabel">current site</span></div>
-                        </div>
-                        <div class="toggle-switch" id="copyPasteToggle">
-                            <div class="toggle-circle"></div>
-                        </div>
-                    </div>
-
-                    <div class="info-box">
-                        <strong>Designed to stay out of the way.</strong><br>
-                        This only runs on sites you enable here. Refresh the page after saving to apply the utility.
-                    </div>
-                </div>
-            </div>
-
+            <!-- COLUMN 1: API & Models (Core Settings) -->
             <div class="grid-column">
                 <div class="section">
                     <div class="section-title">API Configuration</div>
@@ -601,6 +561,7 @@
                 <div id="status"></div>
             </div>
 
+            <!-- COLUMN 2: Updates & Utilities -->
             <div class="grid-column">
                 <div id="updatePanel" style="display: block; background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(74, 222, 128, 0.15); transition: all 0.3s ease;">
                     <div style="display: flex; align-items: flex-start; gap: 16px;">
@@ -621,6 +582,49 @@
                     </div>
                 </div>
 
+                <div class="section">
+                    <div class="section-title">Window Control</div>
+
+                    <div class="toggle-container">
+                        <div class="toggle-left">
+                            <div class="toggle-label">Always Active Window</div>
+                            <div class="toggle-hint">Keep this site active in background</div>
+                        </div>
+                        <div class="toggle-switch" id="activeWindowToggle">
+                            <div class="toggle-circle"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>What does this do?</strong><br>
+                        When enabled, prevents this website from detecting when the tab is in the background. Useful for music
+                        players, timers, and streaming services.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Page Utilities</div>
+
+                    <div class="toggle-container">
+                        <div class="toggle-left">
+                            <div class="toggle-label">Enable Copy & Paste</div>
+                            <div class="toggle-hint">Allow selection, copy, paste, and right-click on <span
+                                    id="siteLabel">current site</span></div>
+                        </div>
+                        <div class="toggle-switch" id="copyPasteToggle">
+                            <div class="toggle-circle"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Designed to stay out of the way.</strong><br>
+                        This only runs on sites you enable here. Refresh the page after saving to apply the utility.
+                    </div>
+                </div>
+            </div>
+
+            <!-- COLUMN 3: License & Data Management -->
+            <div class="grid-column">
                 <div class="section" style="background: linear-gradient(145deg, #151515, #0a0a0a); border: 1px solid var(--border-highlight);">
                     <div class="section-title" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
                         License Details

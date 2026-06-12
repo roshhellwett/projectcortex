@@ -108,17 +108,4 @@
     };
   } catch (_) {}
   
-  const clearInlineStyles = () => {
-    if (!_forceCopyPaste) return;
-    document.querySelectorAll('[style*="user-select"], [onselectstart], [onmousedown], [oncopy], [oncontextmenu]').forEach(el => {
-      el.style.userSelect = 'auto';
-      el.style.webkitUserSelect = 'auto';
-      el.removeAttribute('onselectstart');
-      el.removeAttribute('onmousedown');
-      el.removeAttribute('oncopy');
-      el.removeAttribute('oncontextmenu');
-    });
-  };
-  window.addEventListener('load', clearInlineStyles);
-  setInterval(clearInlineStyles, 2000);
 })();

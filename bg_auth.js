@@ -9,44 +9,53 @@
 
 const API_BASE = 'https://projectcortex.vercel.app';
 
-const STATIC_SALT = 'ProjectCortex_Secret_Salt_2026';
-
-async function hashHWID(rawHWID) {
-  if (!rawHWID) return null;
-  const msgBuffer = new TextEncoder().encode(rawHWID + '|' + STATIC_SALT);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return 'hw_' + hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
+function generateUUID() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return 'hw_' + crypto.randomUUID().replace(/-/g, '');
+  }
+  return 'hw_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 export async function getAuthState() {
   return new Promise(resolve => {
-    chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime'], data => {
-      resolve(data);
+    chrome.storage.sync.get(['installId', 'authToken', 'licenseKey', 'expiresAt', 'activatedAt'], syncData => {
+      chrome.storage.local.get(['authToken', 'installId', 'lastVerifyTime', 'licenseKey', 'expiresAt', 'activatedAt'], localData => {
+        // Prioritize sync storage for identity/auth. Fallback to local.
+        const merged = {
+          installId: syncData.installId || localData.installId,
+          authToken: syncData.authToken || localData.authToken,
+          licenseKey: syncData.licenseKey || localData.licenseKey,
+          expiresAt: syncData.expiresAt || localData.expiresAt,
+          activatedAt: syncData.activatedAt || localData.activatedAt,
+          lastVerifyTime: localData.lastVerifyTime
+        };
+        // Keep local cache up to date if sync had it but local was cleared
+        if (syncData.installId && !localData.installId) {
+          chrome.storage.local.set({ 
+            installId: syncData.installId, 
+            authToken: syncData.authToken,
+            licenseKey: syncData.licenseKey,
+            expiresAt: syncData.expiresAt,
+            activatedAt: syncData.activatedAt
+          });
+        }
+        resolve(merged);
+      });
     });
   });
 }
 
-export async function checkAuthStatus(rawHWID) {
+export async function checkAuthStatus() {
   const state = await getAuthState();
   
   let currentInstallId = state.installId;
 
-  // Always compute installId if we have rawHWID (to show on lock screen before activation)
-  if (rawHWID) {
-    const computedHWID = await hashHWID(rawHWID);
-    if (computedHWID) {
-      currentInstallId = computedHWID;
-      if (state.installId !== computedHWID) {
-        chrome.storage.local.set({ installId: computedHWID });
-        
-        // If the HWID changed but we have a token, it's a cloned database! Lock it.
-        if (state.authToken && state.installId) {
-           chrome.storage.local.remove(['authToken']);
-           return { locked: true, reason: 'HWID_MISMATCH', installId: computedHWID };
-        }
-      }
-    }
+  // Ensure installId exists
+  if (!currentInstallId) {
+    currentInstallId = generateUUID();
+    // Save to both sync and local to survive cache wipes
+    chrome.storage.sync.set({ installId: currentInstallId });
+    chrome.storage.local.set({ installId: currentInstallId });
   }
 
   if (!currentInstallId || !state.authToken) {
@@ -75,7 +84,20 @@ export async function checkAuthStatus(rawHWID) {
       
       if (data.token) {
         chrome.storage.local.set({ authToken: data.token });
+        chrome.storage.sync.set({ authToken: data.token });
       }
+      
+      // Update license metadata if available
+      if (data.licenseKey) {
+        const licenseData = {
+          licenseKey: data.licenseKey,
+          expiresAt: data.expiresAt,
+          activatedAt: data.activatedAt
+        };
+        chrome.storage.local.set(licenseData);
+        chrome.storage.sync.set(licenseData);
+      }
+
       chrome.storage.local.set({ lastVerifyTime: now, seed: data.seed });
       return { locked: false, seed: data.seed, installId: currentInstallId };
       
@@ -88,10 +110,12 @@ export async function checkAuthStatus(rawHWID) {
   return { locked: false, installId: currentInstallId };
 }
 
-export async function activateLicense(licenseKey, rawHWID) {
-  const installId = await hashHWID(rawHWID);
+export async function activateLicense(licenseKey) {
+  const state = await getAuthState();
+  const installId = state.installId;
+  
   if (!installId) {
-    return { success: false, error: 'Hardware fingerprinting failed. Please refresh the page.' };
+    return { success: false, error: 'Install ID missing. Please refresh the page.' };
   }
 
   try {
@@ -106,11 +130,16 @@ export async function activateLicense(licenseKey, rawHWID) {
       return { success: false, error: data.error };
     }
 
-    chrome.storage.local.set({ 
+    // Save to both Sync and Local storage
+    const authData = { 
       authToken: data.token, 
       installId: installId,
-      lastVerifyTime: Date.now() 
-    });
+      licenseKey: data.licenseKey,
+      expiresAt: data.expiresAt,
+      activatedAt: data.activatedAt
+    };
+    chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() });
+    chrome.storage.sync.set(authData);
     
     chrome.tabs.query({}, (tabs) => {
       tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));

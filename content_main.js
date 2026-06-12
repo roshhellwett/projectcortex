@@ -141,8 +141,7 @@ async function init() {
       handleAuthRes(_cachedAuthRes)
     } else {
       _lastAuthCheck = Date.now()
-      const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
-      chrome.runtime.sendMessage({ type: 'CHECK_AUTH', rawHWID: rawHWID }, res => {
+      chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
         _cachedAuthRes = res
         handleAuthRes(res)
       })

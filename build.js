@@ -14,24 +14,23 @@ const JavaScriptObfuscator = require('javascript-obfuscator');
 const filesToObfuscate = [
   'bg_auth.js',
   'content_ui.js',
-  'content_ai.js',
-  'content_hwid.js'
+  'content_ai.js'
 ];
 
 const obfuscationOptions = {
+  target: 'browser-no-eval',
   compact: true,
   controlFlowFlattening: true,
   controlFlowFlatteningThreshold: 0.75,
   deadCodeInjection: true,
   deadCodeInjectionThreshold: 0.4,
-  debugProtection: true, 
-  debugProtectionInterval: 2000,
+  debugProtection: false, 
   disableConsoleOutput: true,
   identifierNamesGenerator: 'hexadecimal',
   log: false,
   numbersToExpressions: true,
   renameGlobals: false,
-  selfDefending: true, 
+  selfDefending: false, 
   simplify: true,
   splitStrings: true,
   splitStringsChunkLength: 10,
@@ -103,12 +102,25 @@ if (fs.existsSync(path.join(__dirname, 'options.html'))) {
   fs.writeFileSync(path.join(distDir, 'options.html'), minifyHTML(html), 'utf8');
 }
 
+if (fs.existsSync(path.join(__dirname, 'icons'))) {
+  const destIcons = path.join(distDir, 'icons');
+  if (!fs.existsSync(destIcons)) fs.mkdirSync(destIcons);
+  fs.readdirSync(path.join(__dirname, 'icons')).forEach(icon => {
+    fs.copyFileSync(path.join(__dirname, 'icons', icon), path.join(destIcons, icon));
+  });
+}
 
 filesToObfuscate.forEach(file => {
   const filePath = path.join(__dirname, file);
   if (fs.existsSync(filePath)) {
     const code = fs.readFileSync(filePath, 'utf8');
-    const obfuscatedCode = JavaScriptObfuscator.obfuscate(code, obfuscationOptions).getObfuscatedCode();
+    let obfuscatedCode = JavaScriptObfuscator.obfuscate(code, obfuscationOptions).getObfuscatedCode();
+    
+    // Service Worker hotfix for javascript-obfuscator relying on 'window' for global contexts
+    if (file === 'bg_auth.js') {
+      obfuscatedCode = obfuscatedCode.replace(/\bwindow\b/g, 'globalThis');
+    }
+
     fs.writeFileSync(path.join(distDir, file), obfuscatedCode, 'utf8');
     console.log(`Successfully obfuscated ${file}`);
   }

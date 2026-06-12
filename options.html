@@ -42,7 +42,20 @@
 
         .container {
             width: 100%;
-            max-width: 560px;
+            max-width: 900px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
         }
 
         .logo {
@@ -430,6 +443,19 @@
             <div style="margin-top: 16px; font-size: 12px; color: #aaa; text-align: center;">
                 Install ID: <span id="optionsInstallId" style="font-family: monospace; color: #fff; user-select: all;">...</span>
             </div>
+
+            <!-- Cross-Browser Sync Backup -->
+            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+                <div style="font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 8px;">Cross-Browser Sync Backup</div>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 16px; line-height: 1.4; text-align: left;">
+                    Import a backup file from another browser to instantly restore your API settings and domain whitelists.
+                </p>
+                <div style="display: flex; gap: 8px;">
+                    <button id="exportBtnLock" class="btn" style="flex: 1; background: var(--surface-raised); border: 1px solid var(--border); font-size: 12px; padding: 10px;">⬇️ Export</button>
+                    <button id="importBtnLock" class="btn" style="flex: 1; background: var(--surface-raised); border: 1px solid var(--border); font-size: 12px; padding: 10px;">⬆️ Import</button>
+                    <input type="file" id="importFileLock" accept=".json" style="display: none;" />
+                </div>
+            </div>
         </div>
     </div>
     <div class="container" id="mainContainer" style="opacity: 0; transition: opacity 0.4s ease, filter 0.4s ease;">
@@ -449,134 +475,180 @@
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">Window Control</div>
+        <div class="grid-layout">
+            <div class="grid-column">
+                <div class="section">
+                    <div class="section-title">Window Control</div>
 
-            <div class="toggle-container">
-                <div class="toggle-left">
-                    <div class="toggle-label">Always Active Window</div>
-                    <div class="toggle-hint">Keep this site active in background</div>
+                    <div class="toggle-container">
+                        <div class="toggle-left">
+                            <div class="toggle-label">Always Active Window</div>
+                            <div class="toggle-hint">Keep this site active in background</div>
+                        </div>
+                        <div class="toggle-switch" id="activeWindowToggle">
+                            <div class="toggle-circle"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>What does this do?</strong><br>
+                        When enabled, prevents this website from detecting when the tab is in the background. Useful for music
+                        players, timers, and streaming services.
+                    </div>
                 </div>
-                <div class="toggle-switch" id="activeWindowToggle">
-                    <div class="toggle-circle"></div>
+
+                <div class="section">
+                    <div class="section-title">Page Utilities</div>
+
+                    <div class="toggle-container">
+                        <div class="toggle-left">
+                            <div class="toggle-label">Enable Copy & Paste</div>
+                            <div class="toggle-hint">Allow selection, copy, paste, and right-click on <span
+                                    id="siteLabel">current site</span></div>
+                        </div>
+                        <div class="toggle-switch" id="copyPasteToggle">
+                            <div class="toggle-circle"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Designed to stay out of the way.</strong><br>
+                        This only runs on sites you enable here. Refresh the page after saving to apply the utility.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">API Configuration</div>
+
+                    <div class="field">
+                        <label>API Provider</label>
+                        <select id="apiProvider">
+                            <option value="groq">Groq (groq.com) — Free &amp; Fast</option>
+                            <option value="openrouter">OpenRouter (openrouter.ai)</option>
+                            <option value="custom">Custom Endpoint</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>API Key</label>
+                        <div class="input-wrap">
+                            <input type="password" id="apiKey" placeholder="gsk_…  or your custom key" autocomplete="off" />
+                            <button class="eye-btn" id="toggleKey" title="Show/hide key">👁</button>
+                        </div>
+                        <p class="hint">
+                            Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a>
+                        </p>
+                    </div>
+
+                    <div class="custom-ep-wrap" id="customEpWrap">
+                        <div class="field">
+                            <label>Custom Endpoint URL</label>
+                            <input type="text" id="customEndpoint"
+                                placeholder="https://openrouter.ai/api/v1/chat/completions" />
+                            <p class="hint">Must be an OpenAI-compatible <code>/v1/chat/completions</code> endpoint.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Model Selection</div>
+                    <div class="field">
+                        <label>AI Model</label>
+                        <select id="model">
+                            <optgroup label="— Groq (Free Tier) —">
+                                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning
+                                </option>
+                                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
+                                <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
+                                <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
+                            </optgroup>
+                            <optgroup label="— OpenRouter (Free Tier) —">
+                                <option value="openrouter/free">Recommended — Auto-routes to best available free model</option>
+                                <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning & coding (1M ctx)
+                                </option>
+                                <option value="deepseek/deepseek-r1:free">DeepSeek R1 — Chain-of-thought reasoning</option>
+                                <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality
+                                </option>
+                                <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B — Heavy-lift generation</option>
+                                <option value="qwen/qwen3-32b:free">Qwen3 32B — Multilingual & technical</option>
+                                <option value="google/gemma-4-31b:free">Gemma 4 31B — Google-grade precision</option>
+                                <option value="mistralai/mistral-7b-instruct:free">Mistral 7B — Lightweight, fast drafts
+                                </option>
+                                <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 Ultra — High-quality (1M ctx)
+                                </option>
+                            </optgroup>
+                            <option value="custom">Custom model name…</option>
+                        </select>
+                    </div>
+                    <div class="field" id="customModelWrap" style="display:none">
+                        <label>Custom Model Name</label>
+                        <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <button class="btn btn-save" id="saveBtn" aria-label="Save your settings">Save Settings</button>
+                    <button class="btn" id="testBtn" aria-label="Test your API connection">🧪 Test Connection</button>
+                </div>
+                <div id="status"></div>
+            </div>
+
+            <div class="grid-column">
+                <div class="section" style="background: linear-gradient(145deg, #151515, #0a0a0a); border: 1px solid var(--border-highlight);">
+                    <div class="section-title" style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
+                        License Details
+                        <span id="licenseBadge" style="font-size: 11px; padding: 4px 8px; border-radius: 12px; background: rgba(74, 222, 128, 0.15); color: #4ade80; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Active</span>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <label style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Activation ID</label>
+                        <div style="background: #000; border: 1px solid var(--border); padding: 12px 16px; border-radius: 8px; font-family: monospace; font-size: 13px; color: var(--accent); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-inner);">
+                            <span id="dispLicenseKey" style="letter-spacing: 0.05em;">••••••••-••••-••••-••••</span>
+                            <button id="copyLicenseBtn" title="Copy" style="background: none; border: none; color: #888; cursor: pointer; padding: 4px; transition: color 0.2s;">📋</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 16px;">
+                        <div style="flex: 1; background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 8px; box-shadow: var(--shadow-inner); display: flex; flex-direction: column; align-items: flex-start;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Days Remaining</div>
+                            <div style="display: flex; align-items: baseline; gap: 6px;">
+                                <span id="dispDaysLeft" style="font-size: 28px; font-weight: 700; color: #fff; line-height: 1;">--</span>
+                                <span style="font-size: 13px; color: #888; font-weight: 500;">days</span>
+                            </div>
+                        </div>
+                        <div style="flex: 1; background: #000; border: 1px solid var(--border); padding: 16px; border-radius: 8px; box-shadow: var(--shadow-inner); display: flex; flex-direction: column; align-items: flex-start;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Activated On</div>
+                            <div id="dispActivatedAt" style="font-size: 15px; font-weight: 500; color: #fff; margin-top: auto; line-height: 1.4;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 32px;">
+                    <div class="section-title">Cross-Browser Sync Backup</div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                        Easily sync your API Settings, Custom Models, and Domain Whitelists across different browsers (e.g. Chrome to Edge).
+                    </p>
+                    <div class="row" style="gap: 12px; margin-top: 16px;">
+                        <button class="btn" id="exportBtn" style="flex: 1; background: var(--surface-raised); border: 1px solid var(--border);" aria-label="Export Settings Backup">⬇️ Export Backup</button>
+                        <button class="btn" id="importBtn" style="flex: 1; background: var(--surface-raised); border: 1px solid var(--border);" aria-label="Import Settings Backup">⬆️ Import Backup</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" />
+                    </div>
+                </div>
+
+                <div class="credits">
+                    <div>Zenith Open Source Projects</div>
+                    <span>Developer - roshhellwett</span>
+                    <div style="margin-top:8px;font-size:11px;color:#666;">
+                        Support: <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
+                        · <a href="https://t.me/roshhellwett" target="_blank" style="color: #00D1FF; text-decoration: none;">Telegram</a>
+                    </div>
+                    <div style="margin-top:6px;font-size:11px;color:#666;">
+                        Install ID: <span id="optionsCreditsInstallId" style="font-family: monospace; color: #888; user-select: all;">...</span>
+                    </div>
+                    <div style="margin-top:6px;color:#555;font-size:10px;letter-spacing:0.04em;text-transform:none;">&copy; 2026
+                        Zenith — All rights reserved</div>
                 </div>
             </div>
-
-            <div class="info-box">
-                <strong>What does this do?</strong><br>
-                When enabled, prevents this website from detecting when the tab is in the background. Useful for music
-                players, timers, and streaming services.
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Page Utilities</div>
-
-            <div class="toggle-container">
-                <div class="toggle-left">
-                    <div class="toggle-label">Enable Copy & Paste</div>
-                    <div class="toggle-hint">Allow selection, copy, paste, and right-click on <span
-                            id="siteLabel">current site</span></div>
-                </div>
-                <div class="toggle-switch" id="copyPasteToggle">
-                    <div class="toggle-circle"></div>
-                </div>
-            </div>
-
-            <div class="info-box">
-                <strong>Designed to stay out of the way.</strong><br>
-                This only runs on sites you enable here. Refresh the page after saving to apply the utility.
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">API Configuration</div>
-
-            <div class="field">
-                <label>API Provider</label>
-                <select id="apiProvider">
-                    <option value="groq">Groq (groq.com) — Free &amp; Fast</option>
-                    <option value="openrouter">OpenRouter (openrouter.ai)</option>
-                    <option value="custom">Custom Endpoint</option>
-                </select>
-            </div>
-
-            <div class="field">
-                <label>API Key</label>
-                <div class="input-wrap">
-                    <input type="password" id="apiKey" placeholder="gsk_…  or your custom key" autocomplete="off" />
-                    <button class="eye-btn" id="toggleKey" title="Show/hide key">👁</button>
-                </div>
-                <p class="hint">
-                    Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a>
-                </p>
-            </div>
-
-            <div class="custom-ep-wrap" id="customEpWrap">
-                <div class="field">
-                    <label>Custom Endpoint URL</label>
-                    <input type="text" id="customEndpoint"
-                        placeholder="https://openrouter.ai/api/v1/chat/completions" />
-                    <p class="hint">Must be an OpenAI-compatible <code>/v1/chat/completions</code> endpoint.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Model Selection</div>
-            <div class="field">
-                <label>AI Model</label>
-                <select id="model">
-                    <optgroup label="— Groq (Free Tier) —">
-                        <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning
-                        </option>
-                        <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
-                        <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
-                    </optgroup>
-                    <optgroup label="— OpenRouter (Free Tier) —">
-                        <option value="openrouter/free">Recommended — Auto-routes to best available free model</option>
-                        <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning & coding (1M ctx)
-                        </option>
-                        <option value="deepseek/deepseek-r1:free">DeepSeek R1 — Chain-of-thought reasoning</option>
-                        <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality
-                        </option>
-                        <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B — Heavy-lift generation</option>
-                        <option value="qwen/qwen3-32b:free">Qwen3 32B — Multilingual & technical</option>
-                        <option value="google/gemma-4-31b:free">Gemma 4 31B — Google-grade precision</option>
-                        <option value="mistralai/mistral-7b-instruct:free">Mistral 7B — Lightweight, fast drafts
-                        </option>
-                        <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 Ultra — High-quality (1M ctx)
-                        </option>
-                    </optgroup>
-                    <option value="custom">Custom model name…</option>
-                </select>
-            </div>
-            <div class="field" id="customModelWrap" style="display:none">
-                <label>Custom Model Name</label>
-                <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
-            </div>
-        </div>
-
-        <div class="row">
-            <button class="btn btn-save" id="saveBtn" aria-label="Save your settings">Save Settings</button>
-            <button class="btn" id="testBtn" aria-label="Test your API connection">🧪 Test Connection</button>
-        </div>
-
-        <div id="status"></div>
-
-        <div class="credits">
-            <div>Zenith Open Source Projects</div>
-            <span>Developer - roshhellwett</span>
-            <div style="margin-top:8px;font-size:11px;color:#666;">
-                Support: <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
-                · <a href="https://t.me/roshhellwett" target="_blank" style="color: #00D1FF; text-decoration: none;">Telegram</a>
-            </div>
-            <div style="margin-top:6px;font-size:11px;color:#666;">
-                Install ID: <span id="optionsCreditsInstallId" style="font-family: monospace; color: #888; user-select: all;">...</span>
-            </div>
-            <div style="margin-top:6px;color:#555;font-size:10px;letter-spacing:0.04em;text-transform:none;">&copy; 2026
-                Zenith — All rights reserved</div>
         </div>
     </div>
 
@@ -585,7 +657,6 @@
         Settings Saved Successfully
     </div>
 
-    <script src="content_hwid.js"></script>
     <script src="options.js"></script>
 </body>
 

@@ -24,12 +24,12 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'CHECK_AUTH') {
-    checkAuthStatus(message.rawHWID).then(sendResponse);
+    checkAuthStatus().then(sendResponse);
     return true;
   }
 
   if (message.type === 'ACTIVATE_LICENSE') {
-    activateLicense(message.licenseKey, message.rawHWID).then(sendResponse);
+    activateLicense(message.licenseKey).then(sendResponse);
     return true;
   }
 

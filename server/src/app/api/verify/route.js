@@ -28,7 +28,7 @@ export async function POST(req) {
     
     const { data: license } = await supabase
       .from('licenses')
-      .select('status, expires_at, license_key')
+      .select('status, expires_at, license_key, activated_at')
       .eq('id', payload.id)
       .single();
 
@@ -53,7 +53,14 @@ export async function POST(req) {
     );
 
     
-    return NextResponse.json({ success: true, expiresAt: license.expires_at, seed: payload.seed, token: freshToken });
+    return NextResponse.json({ 
+      success: true, 
+      expiresAt: license.expires_at, 
+      activatedAt: license.activated_at,
+      licenseKey: license.license_key,
+      seed: payload.seed, 
+      token: freshToken 
+    });
 
   } catch (error) {
     console.error('Verify Error:', error);

@@ -56,7 +56,13 @@ export async function POST(req) {
         seed: process.env.AI_CRYPTO_SEED || 'default_seed_777' 
       });
 
-      return NextResponse.json({ success: true, token, expiresAt: license.expires_at });
+      return NextResponse.json({ 
+        success: true, 
+        token, 
+        expiresAt: license.expires_at,
+        activatedAt: license.activated_at,
+        licenseKey: license.license_key
+      });
     }
 
     
@@ -87,7 +93,13 @@ export async function POST(req) {
         seed: process.env.AI_CRYPTO_SEED || 'default_seed_777'
       });
 
-      return NextResponse.json({ success: true, token, expiresAt: expiresAt.toISOString() });
+      return NextResponse.json({ 
+        success: true, 
+        token, 
+        expiresAt: expiresAt.toISOString(),
+        activatedAt: now.toISOString(),
+        licenseKey: license.license_key
+      });
     }
 
     return NextResponse.json({ error: 'License is not valid for activation' }, { status: 403 });

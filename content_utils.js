@@ -40,48 +40,18 @@ function getDeepSelectionText() {
 
 function getCleanText(el) {
   if (!el) return ''
-  const clone = el.cloneNode(true)
   
-  // 1. Remove definitively non-content tags
-  clone.querySelectorAll('#pagemind-panel, #pagemind-bubble, script, style, noscript, nav, footer, aside, header, form, iframe, canvas, svg').forEach(n => n.remove())
+  // Phase 12 Optimization: Replaced heavy cloneNode and recursive querySelectorAll
+  // with browser's native C++ innerText engine. This natively ignores hidden elements,
+  // scripts, styles, and perfectly computes block-level newlines instantly.
+  let text = el.innerText || el.textContent || ''
 
-  // 2. Remove common junk based on class/id heuristics
-  const junkRegex = /comment|menu|nav|footer|header|sidebar|ad-|promo|sponsor|cookie|popup|modal|banner|share|social|newsletter/i
-  const allEls = clone.querySelectorAll('*')
-  allEls.forEach(n => {
-    const classStr = typeof n.className === 'string' ? n.className : ''
-    const idStr = n.id || ''
-    // If it strongly matches a junk container, remove it
-    if (junkRegex.test(classStr) || junkRegex.test(idStr)) {
-      if (n.tagName !== 'ARTICLE' && n.tagName !== 'MAIN') { // Don't remove the main article if it happens to match a generic regex
-        n.remove()
-      }
-    }
-  })
-
-  // 3. Normalize inputs
-  clone.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(n => {
-    const span = document.createElement('span')
-    span.textContent = '[ ] '
-    if (n.parentNode) n.parentNode.replaceChild(span, n)
-  })
-
-  // 4. Ensure proper spacing for block elements
-  clone.querySelectorAll('div, p, li, h1, h2, h3, h4, h5, h6, tr, section, article').forEach(n => {
-    n.appendChild(document.createTextNode('\n'))
-  })
-  clone.querySelectorAll('br').forEach(n => {
-    if (n.parentNode) n.parentNode.replaceChild(document.createTextNode('\n'), n)
-  })
-
-  return (
-    (clone.innerText || clone.textContent || '')
-      .replace(/[\u200B-\u200D\uFEFF]/g, '')
-      .replace(/\r/g, '')
-      .replace(/[ \t]+\n/g, '\n')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim()
-  )
+  return text
+    .replace(/[\u200B-\u200D\uFEFF]/g, '')
+    .replace(/\r/g, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 }
 
 function esc(text) {
@@ -124,7 +94,9 @@ function parseMarkdown(text) {
 function getPageContext(el) {
   let container = el
   while (container && container.parentElement && !/^(MAIN|ARTICLE|BODY)$/i.test(container.tagName)) {
-    const len = (container.innerText || container.textContent || '').length
+    // Phase 15 Optimization: Use ONLY textContent to check length. Calling innerText in a
+    // while loop forces synchronous layout reflows (Layout Thrashing) and freezes the browser on SPAs.
+    const len = (container.textContent || '').length
     if (len > 3000) break
     container = container.parentElement
   }

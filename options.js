@@ -58,9 +58,73 @@ async function getCurrentHostname() {
     }
 }
 
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+}
+
 async function loadSettings() {
     currentSiteHostname = await getCurrentHostname();
     const data = await getStorage(['apiKey', 'model', 'apiProvider', 'customEndpoint', 'customModel', 'activeWindowsWhitelist', 'copyPasteWhitelist']);
+
+    const localData = await getLocalStorage(['licenseKey', 'expiresAt', 'activatedAt', 'authToken']);
+    
+    let displayLicenseKey = localData.licenseKey;
+    if (!displayLicenseKey && localData.authToken) {
+        const payload = parseJwt(localData.authToken);
+        if (payload && payload.licenseKey) {
+            displayLicenseKey = payload.licenseKey;
+        }
+    }
+
+    if (displayLicenseKey && $('dispLicenseKey')) {
+        $('dispLicenseKey').textContent = displayLicenseKey;
+    }
+
+    if (localData.expiresAt && $('dispDaysLeft')) {
+        const days = Math.max(0, Math.ceil((new Date(localData.expiresAt) - new Date()) / (1000 * 60 * 60 * 24)));
+        $('dispDaysLeft').textContent = days;
+    }
+
+    let displayActivatedAt = localData.activatedAt;
+    if (!displayActivatedAt && localData.expiresAt) {
+        const exp = new Date(localData.expiresAt);
+        displayActivatedAt = new Date(exp.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    }
+
+    if (displayActivatedAt && $('dispActivatedAt')) {
+        const d = new Date(displayActivatedAt);
+        $('dispActivatedAt').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    
+    if ($('copyLicenseBtn') && !$('copyLicenseBtn').dataset.bound) {
+        $('copyLicenseBtn').dataset.bound = 'true';
+        $('copyLicenseBtn').addEventListener('click', async () => {
+            if ($('dispLicenseKey').textContent.includes('•')) return;
+            await navigator.clipboard.writeText($('dispLicenseKey').textContent);
+            
+            const toast = $('toast');
+            if (toast) {
+                const originalHtml = toast.innerHTML;
+                toast.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> License Key Copied`;
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) translateY(100px)';
+                    setTimeout(() => toast.innerHTML = originalHtml, 400);
+                }, 2000);
+            }
+        });
+    }
 
     if (data.apiKey) keyEl.value = data.apiKey;
     if (data.customEndpoint) endpointEl.value = data.customEndpoint;
@@ -286,6 +350,62 @@ function updateKeyHint() {
             showStatus('err', `⚠ Save failed: ${e.message}`);
         }
     });
+
+    async function handleExport() {
+        try {
+            const syncData = await getStorage(null);
+            const localData = await getLocalStorage(null);
+            
+            const secureKeys = ['installId', 'authToken', 'licenseKey', 'expiresAt', 'activatedAt', 'lastVerifyTime'];
+            secureKeys.forEach(k => {
+                if (syncData) delete syncData[k];
+                if (localData) delete localData[k];
+            });
+
+            const backup = { sync: syncData, local: localData };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cortex_backup_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showStatus('ok', '✓ Backup exported successfully.');
+        } catch (e) {
+            showStatus('err', `⚠ Export failed: ${e.message}`);
+        }
+    }
+
+    function handleImportClick(fileInputId) {
+        $(fileInputId).click();
+    }
+
+    function handleFileImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            try {
+                const backup = JSON.parse(ev.target.result);
+                if (backup.sync) await setStorage(backup.sync);
+                if (backup.local) await new Promise(res => chrome.storage.local.set(backup.local, res));
+                showStatus('ok', '✓ Backup imported! Reloading...');
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) {
+                showStatus('err', `⚠ Import failed: Invalid backup file.`);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    $('exportBtn').addEventListener('click', handleExport);
+    if ($('exportBtnLock')) $('exportBtnLock').addEventListener('click', handleExport);
+
+    $('importBtn').addEventListener('click', () => handleImportClick('importFile'));
+    if ($('importBtnLock')) $('importBtnLock').addEventListener('click', () => handleImportClick('importFileLock'));
+
+    $('importFile').addEventListener('change', handleFileImport);
+    if ($('importFileLock')) $('importFileLock').addEventListener('change', handleFileImport);
 
     testBtn.addEventListener('click', async () => {
         const apiKey = keyEl.value.trim();

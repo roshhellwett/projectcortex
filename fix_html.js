@@ -1,4 +1,6 @@
-<!-- Copyright (c) 2026 Zenith Open Source Projects -->
+const fs = require('fs');
+
+const fullHtml = `<!-- Copyright (c) 2026 Zenith Open Source Projects -->
 <!-- SPDX-License-Identifier: MIT -->
 
 <!DOCTYPE html>
@@ -606,4 +608,7 @@
 
     <script src="options.js"></script>
 </body>
-</html>
+</html>`;
+
+fs.writeFileSync('options.html', fullHtml);
+console.log('Successfully fixed options.html completely');

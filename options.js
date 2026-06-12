@@ -637,15 +637,15 @@ function showStatus(type, msg) {
     statusEl._timer = setTimeout(() => { statusEl.className = ''; }, 5000);
 }
 
-// --- DYNAMIC SCALING LOGIC ---
+
 function fitToScreen() {
     const wrapper = document.querySelector('.dashboard-wrapper');
     if (!wrapper) return;
-    wrapper.style.zoom = 1; // reset before measuring
+    wrapper.style.zoom = 1; 
     
     setTimeout(() => {
         const contentHeight = wrapper.scrollHeight;
-        const windowHeight = window.innerHeight - 48; // Account for 24px body padding top/bottom
+        const windowHeight = window.innerHeight - 48; 
         
         if (contentHeight > windowHeight) {
             const scale = windowHeight / contentHeight;
@@ -657,7 +657,7 @@ function fitToScreen() {
 window.addEventListener('resize', fitToScreen);
 window.addEventListener('load', fitToScreen);
 
-// Setup MutationObserver to rescale if content changes dynamically
+
 const observer = new MutationObserver(fitToScreen);
 if (document.body) {
     observer.observe(document.body, { childList: true, subtree: true });

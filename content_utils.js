@@ -41,10 +41,7 @@ function getDeepSelectionText() {
 function getCleanText(el) {
   if (!el) return ''
   
-  // Phase 12 Optimization: Replaced heavy cloneNode and recursive querySelectorAll
-  // with browser's native C++ innerText engine. This natively ignores hidden elements,
-  // scripts, styles, and perfectly computes block-level newlines instantly.
-  let text = el.innerText || el.textContent || ''
+  let text = el.textContent || ''
 
   return text
     .replace(/[\u200B-\u200D\uFEFF]/g, '')

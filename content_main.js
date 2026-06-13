@@ -152,59 +152,69 @@ async function init() {
 
 let _securityObserver = null;
 let _securityInterval = null;
+let _enforcingLock = false;
 
 function initSecurityObserver() {
   if (_securityObserver) _securityObserver.disconnect();
   if (_securityInterval) clearInterval(_securityInterval);
 
   const enforceLock = () => {
-    if (_isLocked && _panel) {
-      const lockedEl = document.getElementById('pm-state-locked');
-      const isTampered = !lockedEl || 
-                         !lockedEl.classList.contains('active') || 
-                         getComputedStyle(lockedEl).display === 'none' || 
-                         getComputedStyle(lockedEl).opacity === '0' ||
-                         getComputedStyle(lockedEl).visibility === 'hidden';
+    if (_enforcingLock) return;
+    if (!_isLocked || !_panel) return;
 
-      if (isTampered) {
-        console.warn('[Cortex] Security violation detected. Restoring lock state.');
-        showState('locked');
-      }
+    const lockedEl = document.getElementById('pm-state-locked');
+    const isTampered = !lockedEl || !lockedEl.classList.contains('active');
 
-      if (!document.body.contains(_panel)) {
-        document.body.appendChild(_panel);
+    if (isTampered) {
+      _enforcingLock = true;
+      if (_securityObserver) _securityObserver.disconnect();
+      showState('locked');
+      if (_securityObserver && _panel && document.body.contains(_panel)) {
+        _securityObserver.observe(_panel, { childList: true, subtree: true });
+        _securityObserver.observe(document.body, { childList: true });
       }
+      _enforcingLock = false;
+    }
+
+    if (!document.body.contains(_panel)) {
+      _enforcingLock = true;
+      document.body.appendChild(_panel);
+      _enforcingLock = false;
     }
   };
 
   _securityObserver = new MutationObserver(() => enforceLock());
   if (_panel) {
-    _securityObserver.observe(_panel, { attributes: true, childList: true, subtree: true });
+    _securityObserver.observe(_panel, { childList: true, subtree: true });
     _securityObserver.observe(document.body, { childList: true });
   }
 
-  _securityInterval = setInterval(enforceLock, 1000);
+  _securityInterval = setInterval(enforceLock, 5000);
 }
 
-if (document.readyState === 'loading') {
+if (window !== window.top) {
+  /* Skip full init in iframes — extension UI only runs in the top frame */
+} else if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init)
 } else {
   init()
 }
 
 var _lastInitTime = 0;
-setInterval(() => {
-  if (location.href !== _lastURL) {
-    _lastURL = location.href
+if (window === window.top) {
+  setInterval(() => {
+    if (location.href !== _lastURL) {
+      _lastURL = location.href
 
-    if (Date.now() - _lastInitTime < 1000) return;
-    _lastInitTime = Date.now();
-    init()
-  }
-}, 500)
-window.addEventListener('popstate', () => {
-  if (location.href !== _lastURL) {
-    _lastURL = location.href
-    init()
-  }
-})
+      if (Date.now() - _lastInitTime < 1000) return;
+      _lastInitTime = Date.now();
+      init()
+    }
+  }, 500)
+  window.addEventListener('popstate', () => {
+    if (location.href !== _lastURL) {
+      _lastURL = location.href
+      init()
+    }
+  })
+}

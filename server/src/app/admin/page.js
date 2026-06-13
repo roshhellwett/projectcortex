@@ -266,7 +266,7 @@ export default function EnterpriseAdminDashboard() {
         />
         <div className="ambient-glow" style={{ opacity: 0.5 }}></div>
         <div className="glass-panel animate-fade-up" style={{ padding: '48px', width: '100%', maxWidth: '420px', textAlign: 'center', borderRadius: '24px' }}>
-          <div style={{ display: 'inline-flex', width: '64px', height: '64px', background: 'var(--primary)', borderRadius: '16px', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 32px var(--primary-light)' }}>
+          <div style={{ display: 'inline-flex', width: '64px', height: '64px', background: 'var(--primary)', color: '#000', borderRadius: '16px', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 32px var(--primary-light)' }}>
             <Icons.Database />
           </div>
           <h2 style={{ margin: '0 0 12px 0', fontSize: '28px', fontWeight: '800', letterSpacing: '-0.02em' }}>Enterprise Dashboard</h2>
@@ -315,7 +315,7 @@ export default function EnterpriseAdminDashboard() {
       {/* Top Navigation */}
       <header style={{ padding: '24px 48px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '40px', height: '40px', background: 'var(--primary)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#000', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Icons.Database />
           </div>
           <div>
@@ -375,7 +375,7 @@ export default function EnterpriseAdminDashboard() {
             </button>
           ))}
           <div style={{ marginTop: 'auto', paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
-            <button className="premium-button" onClick={() => openModal('GENERATE')} style={{ width: '100%' }}>
+            <button className="premium-button" onClick={() => openModal('GENERATE')} style={{ width: '100%', boxSizing: 'border-box' }}>
               + Generate Keys
             </button>
           </div>
@@ -415,13 +415,13 @@ export default function EnterpriseAdminDashboard() {
               </div>
 
               <h2 style={{ fontSize: '20px', marginBottom: '16px', fontWeight: 'bold' }}>System Configuration</h2>
-              <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="glass-panel" style={{ padding: '24px', borderRadius: '16px', display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: '#fff', marginBottom: '4px' }}>Latest OTA Extension Version</div>
                   <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Current Version: <span style={{ fontFamily: 'monospace', color: '#60a5fa', background: 'rgba(96,165,250,0.1)', padding: '2px 6px', borderRadius: '4px' }}>{latestVersion}</span></div>
                   <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: 'var(--text-secondary)', maxWidth: '400px', lineHeight: 1.4 }}>If this version is higher than the user's installed version, they will see an Update banner in their extension settings.</p>
                 </div>
-                <button className="pm-action-btn" onClick={() => openModal('SET_VERSION', null, latestVersion)} style={{ padding: '10px 20px', background: 'var(--primary)', color: '#fff', margin: 0 }}>
+                <button className="pm-action-btn" onClick={() => openModal('SET_VERSION', null, latestVersion)} style={{ padding: '10px 20px', background: 'var(--primary)', color: '#000', margin: 0 }}>
                   Update Version
                 </button>
               </div>
@@ -443,7 +443,7 @@ export default function EnterpriseAdminDashboard() {
                 )}
               </div>
 
-              <div className="glass-panel" style={{ padding: '16px', borderRadius: '16px', marginBottom: '24px', display: 'flex', gap: '16px' }}>
+              <div className="glass-panel" style={{ padding: '16px', borderRadius: '16px', marginBottom: '24px', display: 'flex', flexDirection: 'row', gap: '16px' }}>
                 <div style={{ display: 'flex', flex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: '12px', padding: '0 16px', alignItems: 'center', border: '1px solid var(--border)' }}>
                   <Icons.Search />
                   <input 
@@ -468,7 +468,7 @@ export default function EnterpriseAdminDashboard() {
                 </select>
               </div>
 
-              <div className="glass-panel" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+              <div className="glass-panel" style={{ padding: 0, borderRadius: '16px', overflow: 'hidden' }}>
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                     <thead>
@@ -558,7 +558,7 @@ export default function EnterpriseAdminDashboard() {
           {activeTab === 'logs' && (
             <div className="animate-fade-up">
               <h2 style={{ fontSize: '24px', marginBottom: '24px', fontWeight: 'bold' }}>API Usage Logs</h2>
-              <div className="glass-panel" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+              <div className="glass-panel" style={{ padding: 0, borderRadius: '16px', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>
@@ -588,7 +588,7 @@ export default function EnterpriseAdminDashboard() {
           {activeTab === 'feedback' && (
             <div className="animate-fade-up">
               <h2 style={{ fontSize: '24px', marginBottom: '24px', fontWeight: 'bold' }}>User Feedback</h2>
-              <div className="glass-panel" style={{ borderRadius: '16px', overflow: 'hidden' }}>
+              <div className="glass-panel" style={{ padding: 0, borderRadius: '16px', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid var(--border)', background: 'rgba(255,255,255,0.02)' }}>

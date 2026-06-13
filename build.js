@@ -51,9 +51,10 @@ const obfuscationOptions = {
 
 
 const distDir = path.join(__dirname, 'dist');
-if (!fs.existsSync(distDir)) {
-  fs.mkdirSync(distDir);
+if (fs.existsSync(distDir)) {
+  fs.rmSync(distDir, { recursive: true, force: true });
 }
+fs.mkdirSync(distDir);
 
 
 const allFiles = fs.readdirSync(__dirname);

@@ -70,6 +70,8 @@ function applySiteSettings() {
 }
 
 function cleanup() {
+  if (_securityObserver) { _securityObserver.disconnect(); _securityObserver = null; }
+  if (_securityInterval) { clearInterval(_securityInterval); _securityInterval = null; }
   document.querySelectorAll('#pagemind-panel, #pagemind-bubble, #pm-copy-paste-override')
     .forEach(el => el.remove())
   if (_thinkTimer) clearInterval(_thinkTimer)

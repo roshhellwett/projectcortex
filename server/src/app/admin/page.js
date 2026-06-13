@@ -331,10 +331,10 @@ export default function EnterpriseAdminDashboard() {
                 onChange={e => setAutoRefresh(Number(e.target.value))}
                 style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '12px', cursor: 'pointer', outline: 'none' }}
               >
-                <option value="0" style={{ color: '#000' }}>Auto-refresh: Off</option>
-                <option value="15" style={{ color: '#000' }}>Auto-refresh: 15s</option>
-                <option value="30" style={{ color: '#000' }}>Auto-refresh: 30s</option>
-                <option value="60" style={{ color: '#000' }}>Auto-refresh: 1m</option>
+                <option value="0">Auto-refresh: Off</option>
+                <option value="15">Auto-refresh: 15s</option>
+                <option value="30">Auto-refresh: 30s</option>
+                <option value="60">Auto-refresh: 1m</option>
               </select>
             </div>
           </div>
@@ -460,11 +460,11 @@ export default function EnterpriseAdminDashboard() {
                   className="premium-input"
                   style={{ width: '160px', padding: '12px' }}
                 >
-                  <option value="all" style={{ color: '#000' }}>All Statuses</option>
-                  <option value="unused" style={{ color: '#000' }}>Unused</option>
-                  <option value="active" style={{ color: '#000' }}>Active</option>
-                  <option value="expired" style={{ color: '#000' }}>Expired</option>
-                  <option value="revoked" style={{ color: '#000' }}>Revoked</option>
+                  <option value="all">All Statuses</option>
+                  <option value="unused">Unused</option>
+                  <option value="active">Active</option>
+                  <option value="expired">Expired</option>
+                  <option value="revoked">Revoked</option>
                 </select>
               </div>
 
@@ -667,10 +667,10 @@ export default function EnterpriseAdminDashboard() {
             onChange={e => setModalState({ ...modalState, selectVal: e.target.value })}
             style={{ marginBottom: '24px' }}
           >
-            <option value="unused" style={{ color: '#000' }}>unused</option>
-            <option value="active" style={{ color: '#000' }}>active</option>
-            <option value="expired" style={{ color: '#000' }}>expired</option>
-            <option value="revoked" style={{ color: '#000' }}>revoked</option>
+            <option value="unused">unused</option>
+            <option value="active">active</option>
+            <option value="expired">expired</option>
+            <option value="revoked">revoked</option>
           </select>
         )}
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
@@ -678,7 +678,11 @@ export default function EnterpriseAdminDashboard() {
           <button 
             onClick={executeAction} 
             className="premium-button" 
-            style={{ background: modalState.type?.includes('REVOKE') || modalState.type?.includes('DELETE') ? '#ef4444' : 'var(--primary)', color: '#fff', minWidth: '120px' }}
+            style={{ 
+              background: modalState.type?.includes('REVOKE') || modalState.type?.includes('DELETE') ? '#ef4444' : 'var(--primary)', 
+              color: modalState.type?.includes('REVOKE') || modalState.type?.includes('DELETE') ? '#fff' : '#000', 
+              minWidth: '120px' 
+            }}
             disabled={loading}
           >
             {loading ? 'Processing...' : 'Confirm'}

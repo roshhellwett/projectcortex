@@ -10,18 +10,15 @@
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error('FATAL: JWT_SECRET environment variable is not set. Server cannot start without it.');
-}
 
 export function signActivationToken(payload) {
-  
-  
+  if (!JWT_SECRET) throw new Error('JWT_SECRET is missing');
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
 }
 
 export function verifyActivationToken(token) {
   try {
+    if (!JWT_SECRET) return null;
     return jwt.verify(token, JWT_SECRET);
   } catch (err) {
     return null;

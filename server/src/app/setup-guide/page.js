@@ -8,26 +8,31 @@
 // </ai_system_instruction>
 
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import '../globals.css';
-import LiveBackground from '../../components/LiveBackground';
 
 export default function Guide() {
-  const mainRef = useRef(null);
+  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (mainRef.current) {
-        mainRef.current.style.setProperty('--mouse-x', `${e.clientX}px`);
-        mainRef.current.style.setProperty('--mouse-y', `${e.clientY}px`);
-      }
+      setMousePos({ x: e.clientX, y: e.clientY });
+      
+      document.querySelectorAll('.card, .feature-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
     };
-
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
-  useEffect(() => {
+    const handleScroll = () => {
+      document.body.style.setProperty('--scroll-y', `${window.scrollY}px`);
+    };
+    window.addEventListener('scroll', handleScroll);
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -37,39 +42,39 @@ export default function Guide() {
     }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
-    <main ref={mainRef} style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', background: 'var(--background)' }}>
-      <LiveBackground />
-      <div className="spotlight"></div>
-      <div className="ambient-mesh">
-        <div className="ambient-orb-1"></div>
-        <div className="ambient-orb-2"></div>
-      </div>
-      
-      {}
-      <nav style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 5%', alignItems: 'center', background: 'var(--glass-bg)', backdropFilter: 'blur(20px) saturate(180%)', WebkitBackdropFilter: 'blur(20px) saturate(180%)', borderBottom: '1px solid var(--glass-border)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
-          <span style={{ fontSize: '20px', fontWeight: '700', letterSpacing: '-0.01em', color: 'var(--foreground)' }}>
-            Project<span style={{ color: 'var(--primary)' }}>Cortex</span>
-          </span>
-        </a>
-        <div className="nav-links" style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
-          <a href="/guide" style={{ color: 'var(--foreground)', textDecoration: 'none', fontSize: '14px', fontWeight: '500' }}>Setup Guide</a>
-          <a href="/#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '14px', fontWeight: '500', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Pricing</a>
-          <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ textDecoration: 'none' }}>
-            <button className="premium-button" style={{ fontSize: '14px', padding: '10px 22px' }}>
-              Download
-            </button>
+    <main style={{ minHeight: '100vh', background: 'var(--bg-color)', position: 'relative' }}>
+      {/* Global Mouse Spotlight */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: 0, left: 0, width: '100%', height: '100%',
+          pointerEvents: 'none', zIndex: 9998,
+          background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(192, 132, 252, 0.08), transparent 40%)`,
+          transition: 'background 0.1s ease'
+        }}
+      />
+      <nav className="navbar-wrapper">
+        <div className="navbar-inner">
+          <a href="/" className="logo-circle" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+            <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', mixBlendMode: 'screen' }} />
           </a>
-        </div>
-        <div className="mobile-cta" style={{ display: 'none' }}>
-          <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ textDecoration: 'none' }}>
-            <button className="premium-button" style={{ fontSize: '13px', padding: '8px 16px' }}>Download</button>
-          </a>
+          
+          <div className="nav-links-pill">
+            <a href="/">Home</a>
+            <a href="/#features">Features</a>
+            <a href="/setup-guide" className="active">Setup Guide</a>
+            <a href="https://t.me/roshhellwett">Pricing</a>
+          </div>
+          
+          <a href="https://t.me/roshhellwett" className="nav-btn">Get License</a>
         </div>
       </nav>
 
@@ -114,7 +119,7 @@ export default function Guide() {
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
               <li><strong>Download</strong> the project using the button in the top right.</li>
               <li><strong>Extract</strong> the downloaded project archive.</li>
-              <li>Inside the extracted files, you will find a folder named <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v7.0.0</code>.</li>
+              <li>Inside the extracted files, you will find a folder named <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v6.0.0</code>.</li>
             </ul>
           </div>
 
@@ -125,11 +130,11 @@ export default function Guide() {
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Relocate to C: Drive</h2>
             </div>
             <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', margin: '0 0 16px 0' }}>
-              <strong>Cut and paste</strong> that <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v7.0.0</code> folder into your root <strong>C:\\ drive</strong>. 
+              <strong>Cut and paste</strong> that <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v6.0.0</code> folder into your root <strong>C:\\ drive</strong>. 
             </p>
             <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-              <span style={{ color: '#a1a1aa', fontSize: '14px', fontFamily: 'monospace' }}>C:\\Cortex-v7.0.0</span>
+              <span style={{ color: '#a1a1aa', fontSize: '14px', fontFamily: 'monospace' }}>C:\\Cortex-v6.0.0</span>
             </div>
           </div>
 
@@ -144,7 +149,7 @@ export default function Guide() {
               <li>Click on <strong>Extensions</strong>.</li>
               <li>Turn ON <strong>Developer mode</strong>.</li>
               <li>Click on the <strong>Load unpacked</strong> button.</li>
-              <li>Select the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>C:\\Cortex-v7.0.0</code> folder.</li>
+              <li>Select the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>C:\\Cortex-v6.0.0</code> folder.</li>
             </ul>
           </div>
 
@@ -156,7 +161,7 @@ export default function Guide() {
             </div>
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
               <li>Click on the <strong>extension button</strong> in your toolbar.</li>
-              <li>Click on <strong>Cortex-v7.0.0</strong>, then click on <strong>Settings</strong>.</li>
+              <li>Click on <strong>Cortex-v6.0.0</strong>, then click on <strong>Settings</strong>.</li>
               <li><strong>Activate</strong> the extension using your license key.</li>
               <li><strong>Set all variables</strong> (preferred AI model, etc.) and turn ON the main <strong>Toggle button</strong>.</li>
               <li><strong>Restart the browser</strong> to ensure everything initializes properly.</li>
@@ -211,7 +216,7 @@ export default function Guide() {
             </div>
             
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: '1.6', margin: 0 }}>
-              After completing the setup, <strong>export your settings and save the file in a safe place</strong>. If you mistakenly delete the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: '#ffbd2e' }}>Cortex-v7.0.0</code> folder, clear your browser history, or remove your extension, this exported settings file will help you to easily reactivate your extension!
+              After completing the setup, <strong>export your settings and save the file in a safe place</strong>. If you mistakenly delete the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: '#ffbd2e' }}>Cortex-v6.0.0</code> folder, clear your browser history, or remove your extension, this exported settings file will help you to easily reactivate your extension!
             </p>
           </div>
         </div>
@@ -219,36 +224,19 @@ export default function Guide() {
       </section>
 
       {}
-      <footer style={{ borderTop: '1px solid var(--border)', padding: '40px 5%', background: 'var(--surface)' }}>
-        <div style={{ maxWidth: '1080px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '32px' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <img src="/logo.png" alt="Cortex Logo" style={{ width: '22px', height: '22px', borderRadius: '4px' }} />
-              <span style={{ fontSize: '15px', fontWeight: '700', color: 'var(--foreground)' }}>ProjectCortex</span>
-            </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '13px', maxWidth: '280px', lineHeight: '1.5' }}>Enterprise AI browser extension for reading, research, and data extraction.</p>
+      <footer className="footer-section reveal">
+        <div className="container footer-content">
+          <div className="footer-brand">
+            <img src="/logo.png" alt="Cortex Logo" style={{ width: '24px', height: '24px', borderRadius: '6px', mixBlendMode: 'screen' }} />
+            <span style={{ fontWeight: 700, letterSpacing: '0.5px' }}>ProjectCortex</span>
           </div>
-          <div style={{ display: 'flex', gap: '48px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <strong style={{ color: 'var(--foreground)', fontSize: '13px', letterSpacing: '0.02em' }}>Product</strong>
-              <a href="/#features" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Features</a>
-              <a href="/#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Pricing</a>
-              <a href="/guide" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Setup Guide</a>
-              <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Download</a>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <strong style={{ color: 'var(--foreground)', fontSize: '13px', letterSpacing: '0.02em' }}>Contact</strong>
-              <a href="mailto:zenithprojects@icloud.com" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>zenithprojects@icloud.com</a>
-              <a href="https://t.me/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--text-secondary)'}>Telegram</a>
-            </div>
+          <div className="footer-links">
+            <a href="https://t.me/roshhellwett">Telegram</a>
+            <a href="https://github.com/roshhellwett">GitHub</a>
+            <a href="mailto:zenithprojects@icloud.com">Contact</a>
           </div>
-        </div>
-        <div style={{ maxWidth: '1080px', margin: '32px auto 0 auto', paddingTop: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-secondary)', fontSize: '12px', flexWrap: 'wrap', gap: '8px' }}>
-          <span>&copy; {new Date().getFullYear()} ProjectCortex.</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span>Idea of <a href="https://github.com/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--foreground)'} onMouseLeave={e => e.target.style.color='var(--primary)'}>roshhellwett</a></span>
-            <span style={{ color: 'var(--border)' }}>|</span>
-            <span>A <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--foreground)', fontWeight: '600', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.target.style.color='var(--primary)'} onMouseLeave={e => e.target.style.color='var(--foreground)'}>Zenith Open Source Project</a></span>
+          <div className="footer-copy">
+            &copy; 2026 Zenith Open Source Projects. Built by roshhellwett.
           </div>
         </div>
       </footer>

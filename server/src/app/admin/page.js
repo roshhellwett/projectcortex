@@ -62,6 +62,33 @@ export default function EnterpriseAdminDashboard() {
   // Bulk selection
   const [selectedIds, setSelectedIds] = useState(new Set());
 
+  const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+      
+      document.querySelectorAll('.card, .glass-panel, .feature-card').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const handleScroll = () => {
+      document.body.style.setProperty('--scroll-y', `${window.scrollY}px`);
+    };
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const [modalState, setModalState] = useState({ isOpen: false, type: null, payload: null, inputVal: '', selectVal: '' });
 
   const showToast = (msg) => {
@@ -227,6 +254,16 @@ export default function EnterpriseAdminDashboard() {
   if (!loggedIn) {
     return (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        {/* Global Mouse Spotlight */}
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, width: '100%', height: '100%',
+            pointerEvents: 'none', zIndex: 9998,
+            background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(192, 132, 252, 0.08), transparent 40%)`,
+            transition: 'background 0.1s ease'
+          }}
+        />
         <div className="ambient-glow" style={{ opacity: 0.5 }}></div>
         <div className="glass-panel animate-fade-up" style={{ padding: '48px', width: '100%', maxWidth: '420px', textAlign: 'center', borderRadius: '24px' }}>
           <div style={{ display: 'inline-flex', width: '64px', height: '64px', background: 'var(--primary)', borderRadius: '16px', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 32px var(--primary-light)' }}>
@@ -257,6 +294,16 @@ export default function EnterpriseAdminDashboard() {
 
   return (
     <div style={{ minHeight: '100vh', padding: '0', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+      {/* Global Mouse Spotlight */}
+      <div 
+        style={{
+          position: 'fixed',
+          top: 0, left: 0, width: '100%', height: '100%',
+          pointerEvents: 'none', zIndex: 9998,
+          background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(192, 132, 252, 0.08), transparent 40%)`,
+          transition: 'background 0.1s ease'
+        }}
+      />
       <div className="ambient-glow" style={{ top: '-10%', left: '50%', transform: 'translateX(-50%)', opacity: 0.2 }}></div>
       
       {toast && (

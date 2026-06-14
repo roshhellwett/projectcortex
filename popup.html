@@ -16,7 +16,7 @@
 
     body {
       width: 220px;
-      background: #000;
+      background: #080808;
       color: #aaa;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-size: 11px;
@@ -26,10 +26,10 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.03);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
     }
 
     .hdr svg {
@@ -84,10 +84,10 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      color: #ddd;
+      color: #ccc;
       font-size: 11px;
       font-weight: 600;
-      padding: 9px 8px;
+      padding: 10px 8px;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       text-align: center;
@@ -99,6 +99,7 @@
       border-color: rgba(255, 255, 255, 0.2);
       color: #fff;
       transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .btn-primary {
@@ -181,8 +182,8 @@
     </div>
     <div class="loading" id="loading" aria-live="polite" aria-label="Processing"><span
         class="spinner"></span>Processing...</div>
-    <div style="text-align: center; padding: 8px 14px 4px 14px; font-size: 10px; color: #555;">
-      Support: <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
+    <div style="text-align: center; padding: 8px 14px 6px 14px; font-size: 10px; color: #555; border-top: 1px solid rgba(255,255,255,0.04);">
+      <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#66E5FF'" onmouseout="this.style.color='#00D1FF'">zenithprojects@icloud.com</a>
     </div>
   </div>
   <script src="popup.js"></script>

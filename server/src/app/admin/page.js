@@ -30,8 +30,8 @@ const Icons = {
 function AdminModal({ isOpen, onClose, title, description, children }) {
   if (!isOpen) return null;
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)' }}>
-      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '440px', padding: '24px', background: '#0a0a0a', border: '1px solid var(--border)', borderRadius: '16px', boxShadow: '0 24px 48px rgba(0,0,0,0.5)' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', animation: 'fadeIn 0.15s ease' }}>
+      <div className="glass-panel animate-fade-up" style={{ width: '100%', maxWidth: '440px', padding: '28px', background: '#0a0a0a', border: '1px solid var(--border)', borderRadius: '16px', boxShadow: '0 32px 64px rgba(0,0,0,0.6)' }}>
         <h3 style={{ margin: '0 0 8px 0', fontSize: '22px', fontWeight: 'bold' }}>{title}</h3>
         {description && <p style={{ color: 'var(--text-secondary)', fontSize: '14px', margin: '0 0 24px 0', lineHeight: 1.5 }}>{description}</p>}
         {children}
@@ -254,7 +254,6 @@ export default function EnterpriseAdminDashboard() {
   if (!loggedIn) {
     return (
       <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-        {/* Global Mouse Spotlight */}
         <div 
           style={{
             position: 'fixed',
@@ -265,8 +264,8 @@ export default function EnterpriseAdminDashboard() {
           }}
         />
         <div className="ambient-glow" style={{ opacity: 0.5 }}></div>
-        <div className="glass-panel animate-fade-up" style={{ padding: '48px', width: '100%', maxWidth: '420px', textAlign: 'center', borderRadius: '24px' }}>
-          <div style={{ display: 'inline-flex', width: '64px', height: '64px', background: 'var(--primary)', color: '#000', borderRadius: '16px', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 32px var(--primary-light)' }}>
+        <div className="glass-panel animate-fade-up" style={{ padding: '48px', width: '100%', maxWidth: '420px', textAlign: 'center', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ display: 'inline-flex', width: '64px', height: '64px', background: 'var(--primary)', color: '#000', borderRadius: '16px', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 32px rgba(255,255,255,0.15)' }}>
             <Icons.Database />
           </div>
           <h2 style={{ margin: '0 0 12px 0', fontSize: '28px', fontWeight: '800', letterSpacing: '-0.02em' }}>Enterprise Dashboard</h2>
@@ -279,14 +278,18 @@ export default function EnterpriseAdminDashboard() {
               value={password} 
               onChange={e => setPassword(e.target.value)} 
               placeholder="Master Password"
-              style={{ padding: '16px', fontSize: '16px', textAlign: 'center', letterSpacing: '0.2em' }}
+              style={{ padding: '16px', fontSize: '16px', textAlign: 'center', letterSpacing: '0.2em', transition: 'all 0.3s ease' }}
               autoFocus
             />
-            <button type="submit" className="premium-button" disabled={loading} style={{ padding: '16px', fontSize: '16px' }}>
+            <button type="submit" className="premium-button" disabled={loading} style={{ padding: '16px', fontSize: '16px', fontWeight: '700', transition: 'all 0.3s ease' }}>
               {loading ? 'Authenticating...' : 'Access Database'}
             </button>
           </form>
-          {error && <p style={{ color: '#ef4444', marginTop: '20px', fontSize: '14px', background: 'rgba(239, 68, 68, 0.1)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</p>}
+          {error && (
+            <div style={{ color: '#ef4444', marginTop: '20px', fontSize: '14px', background: 'rgba(239, 68, 68, 0.1)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.2)', animation: 'none' }}>
+              {error}
+            </div>
+          )}
         </div>
       </main>
     );
@@ -313,7 +316,7 @@ export default function EnterpriseAdminDashboard() {
       )}
 
       {/* Top Navigation */}
-      <header style={{ padding: '24px 48px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(12px)', position: 'sticky', top: 0, zIndex: 100 }}>
+      <header style={{ padding: '24px 48px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(16px)', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ width: '40px', height: '40px', background: 'var(--primary)', color: '#000', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Icons.Database />
@@ -351,11 +354,11 @@ export default function EnterpriseAdminDashboard() {
 
       <div style={{ display: 'flex', flex: 1 }}>
         {/* Sidebar */}
-        <aside style={{ width: '260px', borderRight: '1px solid var(--border)', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: '8px', background: 'rgba(0,0,0,0.2)' }}>
-          <div className="pm-section-label" style={{ marginBottom: '16px', paddingLeft: '12px' }}>Database Tables</div>
+        <aside style={{ width: '260px', borderRight: '1px solid var(--border)', padding: '32px 24px', display: 'flex', flexDirection: 'column', gap: '6px', background: 'rgba(0,0,0,0.15)' }}>
+          <div className="pm-section-label" style={{ marginBottom: '16px', paddingLeft: '12px', fontSize: '11px', opacity: '0.6' }}>Database Tables</div>
           {[
             { id: 'overview', icon: <Icons.ShieldCheck />, label: 'Overview Metrics' },
-            { id: 'licenses', icon: <Icons.Key />, label: 'Licenses' },
+            { id: 'licenses', icon: <Icons.Key />, label: 'License Keys' },
             { id: 'logs', icon: <Icons.Activity />, label: 'API Usage Logs' },
             { id: 'feedback', icon: <Icons.MessageSquare />, label: 'User Feedback' }
           ].map(tab => (
@@ -367,9 +370,12 @@ export default function EnterpriseAdminDashboard() {
                 background: activeTab === tab.id ? 'rgba(255,255,255,0.08)' : 'transparent',
                 color: activeTab === tab.id ? '#fff' : 'var(--text-secondary)',
                 fontWeight: activeTab === tab.id ? '600' : '500',
-                cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
-                boxShadow: activeTab === tab.id ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
+                cursor: 'pointer', textAlign: 'left', transition: 'all 0.25s ease',
+                boxShadow: activeTab === tab.id ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+                fontSize: '14px'
               }}
+              onMouseEnter={e => { if (activeTab !== tab.id) e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+              onMouseLeave={e => { if (activeTab !== tab.id) e.currentTarget.style.background = 'transparent'; }}
             >
               {tab.icon} {tab.label}
             </button>
@@ -434,7 +440,7 @@ export default function EnterpriseAdminDashboard() {
                 <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>License Management</h2>
                 
                 {selectedIds.size > 0 && (
-                  <div style={{ display: 'flex', gap: '12px', background: 'rgba(59, 130, 246, 0.1)', padding: '8px 16px', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                  <div style={{ display: 'flex', gap: '12px', background: 'rgba(59, 130, 246, 0.1)', padding: '8px 16px', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.2)', animation: 'fadeIn 0.2s ease' }}>
                     <span style={{ alignSelf: 'center', fontSize: '13px', color: '#60a5fa', fontWeight: 'bold', marginRight: '8px' }}>{selectedIds.size} selected</span>
                     <button className="pm-action-btn" onClick={() => openModal('BULK_EXTEND')} style={{ padding: '6px 12px', fontSize: '12px', margin: 0 }}>Extend Expiry</button>
                     <button className="pm-action-btn" onClick={() => openModal('BULK_REVOKE')} style={{ padding: '6px 12px', fontSize: '12px', margin: 0, background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>Revoke</button>
@@ -488,7 +494,9 @@ export default function EnterpriseAdminDashboard() {
                         <tr><td colSpan="6" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>No licenses found.</td></tr>
                       ) : (
                         currentLicenses.map(lic => (
-                          <tr key={lic.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                          <tr key={lic.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s ease' }}
+                              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                             <td style={{ padding: '10px 16px' }}>
                               <input type="checkbox" checked={selectedIds.has(lic.id)} onChange={() => toggleSelectOne(lic.id)} style={{ cursor: 'pointer' }}/>
                             </td>
@@ -572,7 +580,9 @@ export default function EnterpriseAdminDashboard() {
                       <tr><td colSpan="3" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>No API logs recorded yet. (Future proofing ready)</td></tr>
                     ) : (
                       logs.slice(0, 50).map(log => (
-                        <tr key={log.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <tr key={log.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s ease' }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                           <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontSize: '13px' }}>{new Date(log.created_at).toLocaleString()}</td>
                           <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: '#fff', fontSize: '12px' }}>{log.install_id || 'Unknown'}</td>
                           <td style={{ padding: '10px 16px' }}><span style={{ padding: '4px 8px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}>{log.action_type}</span></td>
@@ -603,7 +613,9 @@ export default function EnterpriseAdminDashboard() {
                       <tr><td colSpan="4" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-secondary)' }}>No feedback submitted yet. (Future proofing ready)</td></tr>
                     ) : (
                       feedback.map(fb => (
-                        <tr key={fb.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <tr key={fb.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s ease' }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                           <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontSize: '13px' }}>{new Date(fb.created_at).toLocaleDateString()}</td>
                           <td style={{ padding: '10px 16px', fontFamily: 'monospace', color: '#fff', fontSize: '12px' }}>{fb.install_id || 'Unknown'}</td>
                           <td style={{ padding: '10px 16px' }}><span style={{ color: fb.rating >= 4 ? '#4ade80' : fb.rating <= 2 ? '#ef4444' : '#facc15', fontWeight: 'bold' }}>{fb.rating}/5</span></td>

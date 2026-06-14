@@ -46,6 +46,11 @@ html {
   }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 html::after {
   content: "";
   position: fixed;
@@ -53,10 +58,10 @@ html::after {
   left: 0;
   right: 0;
   bottom: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.08) 2px, rgba(0, 0, 0, 0.08) 4px);
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.4;
 }
 
 ::-webkit-scrollbar {
@@ -87,6 +92,7 @@ html::after {
   --text-main: #ffffff;
   --text-muted: #888888;
   --text-light: #cccccc;
+  --text-secondary: #888888;
 
   --card-bg: #111111;
   --card-border: #222222;
@@ -99,6 +105,13 @@ html::after {
 
   --primary: #ffffff;
   --primary-invert: #000000;
+  --primary-light: rgba(138, 43, 226, 0.1);
+
+  --border: #222222;
+  --foreground: #ffffff;
+
+  --glass-bg: rgba(17, 17, 17, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 @keyframes gridPan {
@@ -245,12 +258,17 @@ section {
   font-size: 14px;
   font-weight: 500;
   border-radius: 999px;
-  transition: background 0.2s;
+  transition: all 0.25s ease;
+  position: relative;
 }
 
-.nav-links-pill a:hover,
+.nav-links-pill a:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
 .nav-links-pill a.active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-btn {
@@ -1121,8 +1139,29 @@ section {
 
 .feature-card:hover {
   transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px) scale(1.02);
-  box-shadow: 0 30px 60px rgba(138, 43, 226, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 60px rgba(138, 43, 226, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.08);
   border-color: rgba(138, 43, 226, 0.4);
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: radial-gradient(600px circle at var(--mouse-x, 0) var(--mouse-y, 0),
+      rgba(255, 255, 255, 0.06),
+      transparent 40%);
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
 }
 
 @keyframes orbFloat1 {

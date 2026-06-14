@@ -42,17 +42,18 @@ export default function LiveBackground() {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
+        this.size = Math.random() * 2 + 0.5;
         this.baseX = this.x;
         this.baseY = this.y;
         this.density = (Math.random() * 30) + 1;
-        this.speedX = (Math.random() - 0.5) * 0.2;
-        this.speedY = (Math.random() - 0.5) * 0.2;
-        this.opacity = Math.random() * 0.5 + 0.1;
+        this.speedX = (Math.random() - 0.5) * 0.15;
+        this.speedY = (Math.random() - 0.5) * 0.15;
+        this.opacity = Math.random() * 0.6 + 0.15;
+        this.hue = Math.random() > 0.6 ? '52, 211, 153' : '138, 43, 226';
       }
 
       draw() {
-        ctx.fillStyle = `rgba(138, 43, 226, ${this.opacity})`;
+        ctx.fillStyle = `rgba(${this.hue}, ${this.opacity})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.closePath();
@@ -103,7 +104,7 @@ export default function LiveBackground() {
 
     const initParticles = () => {
       particles = [];
-      const numberOfParticles = Math.floor((canvas.width * canvas.height) / 8000); 
+      const numberOfParticles = Math.floor((canvas.width * canvas.height) / 7000); 
       for (let i = 0; i < numberOfParticles; i++) {
         particles.push(new Particle());
       }
@@ -113,6 +114,21 @@ export default function LiveBackground() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let i = 0; i < particles.length; i++) {
         particles[i].update();
+      }
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(138, 43, 226, ${0.08 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
       }
       animationFrameId = requestAnimationFrame(animate);
     };

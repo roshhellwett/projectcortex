@@ -268,8 +268,8 @@ var runSummarize = guard(async function () {
     const response = await callAIAction(
       settings,
       'summarize',
-      'Summarize the following content in detail:\n\n' + truncated,
-      'You are an expert analyst. Provide a comprehensive, insightful, and well-structured summary of the content. Highlight the core themes, key takeaways, and essential details using markdown bullet points and paragraphs for readability. Do not output conversational filler.'
+      'Summarize the following content:\n\n' + truncated,
+      'You are a premium AI analyst. Provide a precise, high-impact summary. Distill the core message into a clear overview paragraph, followed by 3-5 punchy, essential bullet points. Eliminate all fluff, avoid excessively long text, and deliver maximum value instantly.'
     )
     const note = wasTruncated ? '\n\n---\n*Content truncated.*' : ''
     showGenericResult(label + ' Summary', response + note)
@@ -299,8 +299,8 @@ var runDefine = guard(async function () {
     const response = await callAIAction(
       settings,
       'define',
-      `Define this term or phrase in detail:\n\n"${selectedText}"`,
-      'You are an expert encyclopedia assistant. Provide a rich, detailed, and comprehensive explanation of the term. Include its primary definition, context, historical or practical significance, and relevant examples. Format your response beautifully using markdown.'
+      `Define this term or phrase:\n\n"${selectedText}"`,
+      'You are a premium AI knowledge assistant. Provide a precise, crystal-clear definition. Explain its core meaning simply, then add brief, high-value context or a practical example. Be concise, engaging, and avoid unnecessary wordiness or long essays.'
     )
     showGenericResult('Definition', response)
   } catch (err) {
@@ -334,8 +334,8 @@ var runFactCheck = guard(async function () {
     const response = await callAIAction(
       settings,
       'factcheck',
-      `Fact-check this claim in detail:\n\n"${selectedText}"${contextHint}`,
-      'You are an expert fact-checking assistant. Start immediately with **TRUE**, **FALSE**, or **MIXED**. Then, provide a detailed, well-researched explanation of why this claim is true or false. Include necessary context, background facts, and nuance. Format your explanation using markdown.'
+      `Fact-check this claim:\n\n"${selectedText}"${contextHint}`,
+      'You are a premium AI fact-checker. Start exactly with **TRUE**, **FALSE**, or **MIXED**. Then provide a highly precise, straight-to-the-point explanation. Give the exact evidence or context needed to verify the claim without writing a long essay. Keep it sharp and definitive.'
     )
     showGenericResult('Fact Check', response)
   } catch (err) {
@@ -370,7 +370,7 @@ var runAsk = guard(async function (question) {
       settings,
       'ask',
       pageContext,
-      'You are a highly intelligent, expert AI assistant. Provide a deep, insightful, and highly detailed answer to the user\'s question. Use markdown formatting (like bolding, lists, and code blocks) to make your response easy to read and comprehensive. Avoid robotic introductory filler.'
+      'You are a premium AI assistant. Provide a highly precise, definitive answer to the user\'s question. Focus on delivering maximum value with zero fluff. Use concise markdown formatting like bolding or short lists to make the answer immediately scannable and satisfying.'
     )
     const note = wasTruncated ? '\n\n---\n*Context truncated.*' : ''
     showGenericResult('Answer', response + note)

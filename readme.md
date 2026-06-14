@@ -2,10 +2,10 @@
   <img src="https://raw.githubusercontent.com/roshhellwett/projectcortex/main/icons/logo128.png" alt="Project Cortex Logo" width="120" />
 </div>
 
-<h1 align="center">ProjectCortex</h1>
+<h1 align="center">ProjectCortex — Intelligence</h1>
 
 <div align="center">
-  <strong>Enterprise-Grade AI Productivity Assistant & Web Platform</strong>
+  <strong>Enterprise-Grade AI Web Assistant & Productivity Platform</strong>
 </div>
 
 <br />
@@ -13,41 +13,68 @@
 <div align="center">
   <img src="https://img.shields.io/github/stars/roshhellwett/projectcortex?style=for-the-badge&color=2196F3" alt="Stars" />
   <img src="https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge&color=1976D2" alt="Manifest V3" />
-  <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/Version-8.0.0-black?style=for-the-badge" alt="Version 8.0.0" />
   <img src="https://img.shields.io/badge/SaaS-Ready-success?style=for-the-badge&color=4ade80" alt="SaaS Ready" />
 </div>
 
 <br />
 
-ProjectCortex is an enterprise-tier Google Chrome extension and fully integrated SaaS platform. Powered by state-of-the-art LLMs via Groq and OpenRouter, ProjectCortex gives users unprecedented control over web content—allowing them to summarize vast documents, fact-check claims against live contexts, and instantly solve complex MCQs.
+ProjectCortex is an enterprise-tier Google Chrome extension and fully integrated AI SaaS platform. Powered by state-of-the-art LLMs via Groq and OpenRouter, ProjectCortex gives users unprecedented control over web content—allowing them to summarize vast documents, fact-check claims against live contexts, define complex terminology, and instantly solve multiple-choice questions.
 
-Built with a stunning, Apple-inspired Next.js frontend, ProjectCortex is fully equipped with zero-touch JWT license management, enterprise obfuscation, and anti-cheat capabilities.
+Currently at **Version 8.0.0**, the extension boasts a stunning, Apple-inspired 10x premium Glassmorphic UI. ProjectCortex is fully equipped with zero-touch JWT license management, enterprise build obfuscation, and anti-cheat capabilities.
 
 ---
 
-## 🚀 Enterprise Features
+## ✨ Premium Features
 
-### 🧠 Advanced AI Tooling
-* **Summarize Page:** Get concise, structured summaries of any webpage or selected text in seconds.
-* **Instant Fact Check:** Select a claim on any page and get an AI-powered fact-check with evidence, reasoning, and source context.
+### 🧠 High-Impact AI Tooling
+* **Summarize Selection:** Get precise, high-impact summaries of any selected text. Distills the core message into a clear overview paragraph with punchy bullet points.
+* **Instant Fact Check:** Select a claim on any page and get an AI-powered fact-check. Returns a definitive **TRUE**, **FALSE**, or **MIXED** verdict alongside the exact evidence needed.
+* **Define:** Select complex terminology and instantly receive a crystal-clear definition with high-value context.
 * **MCQ Solver:** Highlight any multiple-choice question and instantly reveal the correct answer.
-* **Ask About Page:** Type any question related to the current page and get instant answers without losing your workflow.
+* **Ask About Page:** Open the floating intelligence panel and type any question related to the current page to get instant answers without losing your workflow.
+
+### 🎨 10x Design System
+* **Stunning Options Dashboard:** A centered, fluid Vercel-style dashboard layout built with CSS flexbox/grid that looks flawless on any screen size.
+* **Glassmorphic Popup & Floating Bubble:** Beautiful frosted glass UI elements (`backdrop-filter: blur(32px)`), smooth spring animations, and radiant accent gradients (`#6366f1` to `#a855f7`).
+
+### 🛡️ Enterprise Architecture
+* **Hardware-Bound Licensing:** Secure, JWT-based license verification tied to the user's hardware ID (`bg_auth.js`).
+* **Production Build Pipeline:** Custom Node.js build scripts (`build.js`) that securely obfuscate API keys, licensing logic, and premium features into a distributed `dist/` package.
+* **Anti-Cheat Mechanics:** Deeply integrated anti-cheat listeners (`content_anti_cheat.js`) deployed in isolated browser worlds to protect enterprise functionality.
 
 ---
 
-## 📦 Download & Installation
+## 📦 Deployment & Installation
 
-The latest enterprise build is fully compiled, obfuscated, and ready for deployment.
+The latest enterprise build (`Cortex-v8.0.0.zip`) is fully compiled, obfuscated, and ready for deployment.
 
 **[📥 Download ProjectCortex (Latest ZIP)](https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b)**
 
-### Installation Guide:
-1. Download and extract the ZIP file above.
-2. Inside, locate the `projectcortex-main/` or `projectcortex/` folder (this contains the obfuscated, production-ready extension).
-3. Open Chrome and navigate to `chrome://extensions/`.
-4. Turn on **Developer mode** using the toggle switch in the top-right corner.
-5. Click **Load unpacked** and select the `projectcortex-main/` or `projectcortex/` folder.
-6. Click the extension icon to pin Cortex to your toolbar!
+### Local Installation Guide:
+1. Download and extract `Cortex-v8.0.0.zip`.
+2. Open Google Chrome and navigate to `chrome://extensions/`.
+3. Enable **Developer mode** using the toggle switch in the top-right corner.
+4. Click **Load unpacked** and select your extracted `dist/` or unzipped folder.
+5. Click the extension puzzle piece icon to pin Cortex to your toolbar!
+
+---
+
+## 🛠️ Development & Building
+
+To compile the source code into a secure, distribution-ready extension:
+
+```bash
+# 1. Ensure you are in the project root
+cd projectcortex
+
+# 2. Run the build pipeline
+node build.js
+
+# 3. Zip the output for distribution
+# (Windows PowerShell Example)
+Compress-Archive -Force -Path ".\dist\*" -DestinationPath ".\Cortex-v8.0.0.zip"
+```
 
 ---
 

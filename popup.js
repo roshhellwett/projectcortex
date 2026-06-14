@@ -18,7 +18,7 @@ function getHostnameFromUrl(url) {
 
 function setLoading(loading) {
   document.getElementById('loading').classList.toggle('visible', loading);
-  document.querySelectorAll('.btn').forEach(b => b.disabled = loading);
+  document.querySelectorAll('.btn-main, .btn-action').forEach(b => b.disabled = loading);
 }
 
 async function sendAction(tab, action) {

@@ -341,7 +341,7 @@ function createBubble() {
           const query = e.target.value.trim()
           e.target.value = ''
           hideBubble()
-          runAsk(query)
+          window.runAsk(query)
         }
       })
       bubbleInput.addEventListener('keyup', e => e.stopPropagation())
@@ -350,19 +350,19 @@ function createBubble() {
 
     _bubble.querySelector('#pm-bubble-correct')?.addEventListener('click', () => {
       hideBubble()
-      runCorrectAnswers()
+      window.runCorrectAnswers()
     })
     _bubble.querySelector('#pm-bubble-factcheck')?.addEventListener('click', () => {
       hideBubble()
-      runFactCheck()
+      window.runFactCheck()
     })
     _bubble.querySelector('#pm-bubble-define')?.addEventListener('click', () => {
       hideBubble()
-      runDefine()
+      window.runDefine()
     })
     _bubble.querySelector('#pm-bubble-summarize')?.addEventListener('click', () => {
       hideBubble()
-      runSummarize()
+      window.runSummarize()
     })
     _bubble.querySelector('#pm-bubble-hide')?.addEventListener('click', () => {
       hideBubble()
@@ -513,10 +513,10 @@ function wireActionButtons() {
     const btnFactcheck = document.getElementById('pm-action-factcheck')
     const btnSummarize = document.getElementById('pm-action-summarize')
     const btnDefine = document.getElementById('pm-action-define')
-    if (btnCorrect) btnCorrect.addEventListener('click', () => { runCorrectAnswers() })
-    if (btnFactcheck) btnFactcheck.addEventListener('click', () => { runFactCheck() })
-    if (btnSummarize) btnSummarize.addEventListener('click', () => { runSummarize() })
-    if (btnDefine) btnDefine.addEventListener('click', () => { runDefine() })
+    if (btnCorrect) btnCorrect.addEventListener('click', () => { window.runCorrectAnswers() })
+    if (btnFactcheck) btnFactcheck.addEventListener('click', () => { window.runFactCheck() })
+    if (btnSummarize) btnSummarize.addEventListener('click', () => { window.runSummarize() })
+    if (btnDefine) btnDefine.addEventListener('click', () => { window.runDefine() })
     document.getElementById('pm-action-settings')?.addEventListener('click', () => {
       chrome.runtime.sendMessage({
         type: 'OPEN_OPTIONS',
@@ -607,7 +607,11 @@ function wireActionButtons() {
     if (askInput) {
       askInput.addEventListener('keydown', e => {
         e.stopPropagation()
-        if (e.key === 'Enter') runAsk(e.target.value)
+        if (e.key === 'Enter') {
+          const q = e.target.value
+          e.target.value = ''
+          window.runAsk(q)
+        }
       })
       askInput.addEventListener('keyup', e => e.stopPropagation())
       askInput.addEventListener('keypress', e => e.stopPropagation())
@@ -624,11 +628,11 @@ function wireActionButtons() {
       if (_isLocked) return showState('locked');
       if (!_lastAction) return showState('welcome')
       const a = _lastAction
-      if (a.name === 'correct_answers') runCorrectAnswers()
-      else if (a.name === 'factcheck') runFactCheck()
-      else if (a.name === 'summarize') runSummarize()
-      else if (a.name === 'define') runDefine()
-      else if (a.name === 'ask' && a.question) runAsk(a.question)
+      if (a.name === 'correct_answers') window.runCorrectAnswers()
+      else if (a.name === 'factcheck') window.runFactCheck()
+      else if (a.name === 'summarize') window.runSummarize()
+      else if (a.name === 'define') window.runDefine()
+      else if (a.name === 'ask' && a.question) window.runAsk(a.question)
       else showState('welcome')
     })
   } catch (_) {}
@@ -673,13 +677,11 @@ function initAskBar() {
   function handleAsk() {
     const q = askInput.value.trim()
     if (!q) return
-    runAsk(q)
+    askInput.value = ''
+    window.runAsk(q)
   }
 
   askSend?.addEventListener('click', handleAsk)
-  askInput?.addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleAsk()
-  })
 }
 
 function initSelectionListeners() {

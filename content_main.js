@@ -13,10 +13,10 @@ function initMessageListener() {
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'RUN_ACTION') {
-      const actionMap = {
-        correct_answers: runCorrectAnswers,
-        summarize: runSummarize,
-        factcheck: runFactCheck,
+      const actions = {
+        correct_answers: window.runCorrectAnswers,
+        summarize: window.runSummarize,
+        factcheck: window.runFactCheck,
         open_panel: () => {
           const sel = getDeepSelection()
           if (sel && !sel.isCollapsed && sel.toString().trim()) {

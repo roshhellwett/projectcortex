@@ -95,6 +95,7 @@
 
 #pagemind-panel.pm-open {
     opacity: 1 !important;
+    left: 20px;
     pointer-events: all !important;
     animation: pmPanelFadeIn 0.55s var(--pm-spring) forwards !important;
 }

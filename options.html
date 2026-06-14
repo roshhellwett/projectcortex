@@ -3,382 +3,257 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ProjectCortex — Settings</title>
     <style>
         :root {
-            --bg: #07070a;
-            --surface: #0c0c12;
-            --surface-raised: #12121a;
-            --border: rgba(255, 255, 255, 0.06);
-            --border-highlight: rgba(255, 255, 255, 0.1);
-            --text: #ededed;
-            --text-muted: #7a7a8a;
+            --bg: #030305;
+            --surface: #0a0a0f;
+            --surface-raised: #111116;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(168, 85, 247, 0.2);
+            --text: #f0f0f5;
+            --text-muted: #8a8a9a;
             --accent-1: #6366f1;
             --accent-2: #a855f7;
-            --accent-3: #ec4899;
-            --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-            --shadow-inner: inset 0 1px 3px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.03);
-            --shadow-outer: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+            --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+            --radius-md: 12px;
+            --radius-lg: 20px;
             --spring: cubic-bezier(0.22, 1, 0.36, 1);
-            --spring-snap: cubic-bezier(0.175, 0.885, 0.32, 1.275);
             --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes optSpringUp {
-            0% { opacity: 0; transform: translateY(18px) scale(0.96); filter: blur(4px); }
-            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
-
-        @keyframes optShine {
-            to { background-position: 200% center; }
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background: var(--bg);
             color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
             font-size: 14px;
-            height: 100vh;
-            overflow: hidden;
-            padding: 24px;
+            min-height: 100vh;
+            overflow-y: scroll;
             display: flex;
-            justify-content: center;
-            animation: optSpringUp 0.55s var(--spring) forwards;
+            flex-direction: column;
+            align-items: center;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        .dashboard-wrapper {
-            display: flex;
-            width: 100%;
-            min-height: 100%;
-            max-width: 1800px;
-            gap: 24px;
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.07); border-radius: 8px; transition: background 0.3s var(--ease-out); }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.15); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-        /* --- LEFT SIDEBAR --- */
-        .sidebar-left {
-            width: 90px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 32px 0;
-            box-shadow: var(--shadow-outer);
-            flex-shrink: 0;
-            animation: optSpringUp 0.5s var(--spring) 0.05s both;
-            position: relative;
-            overflow: hidden;
-            will-change: transform, opacity;
+        @keyframes springUp {
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .sidebar-left::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent);
+        @keyframes shimmer {
+            to { background-position: 200% center; }
         }
 
-        .sidebar-logo { margin-bottom: 48px; }
-        .sidebar-logo img {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.3));
-            transition: filter 0.3s var(--ease-out);
-        }
-        .sidebar-logo img:hover {
-            filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.5));
-        }
-
-        .nav-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* --- HEADER NAV --- */
+        .header {
             width: 100%;
-            align-items: center;
-        }
-
-        .nav-item {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
-            align-items: center;
             justify-content: center;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s var(--ease-out);
-            position: relative;
-            will-change: transform;
+            padding: 16px 24px;
         }
 
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text);
-            transform: scale(1.08);
-        }
-
-        .nav-item:active {
-            transform: scale(0.92);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.1));
-            color: #c084fc;
-            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.15);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-        }
-
-        .sidebar-bottom {
-            margin-top: auto;
+        .header-content {
+            width: 100%;
+            max-width: 1000px;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: space-between;
         }
 
-        .sidebar-branding {
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            transform: rotate(180deg);
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 0.3em;
-            color: var(--text-muted);
-            text-transform: uppercase;
+        .header-logo {
             display: flex;
             align-items: center;
             gap: 12px;
-            opacity: 0.5;
-            transition: opacity 0.35s var(--ease-out);
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
-        .sidebar-branding:hover {
-            opacity: 0.85;
-        }
-
-        .sidebar-branding span.highlight {
-            background: var(--accent-gradient);
-            background-size: 200% auto;
+        .header-logo img { width: 28px; height: 28px; }
+        
+        .header-logo span.brand {
+            background: linear-gradient(135deg, #fff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: optShine 4s linear infinite;
         }
 
-        /* --- MAIN CONTENT --- */
-        .content-main {
-            flex: 1;
+        .header-actions a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .header-actions a:hover { color: var(--text); }
+
+        /* --- MAIN CONTAINER --- */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 48px 24px 80px;
             display: flex;
             flex-direction: column;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 40px 48px;
-            box-shadow: var(--shadow-outer);
-            animation: optSpringUp 0.5s var(--spring) 0.1s both;
-            position: relative;
-            overflow: hidden;
-            will-change: transform, opacity;
+            gap: 24px;
+            animation: springUp 0.6s var(--spring) forwards;
         }
 
-        .content-main::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.2), transparent);
-        }
-
-        .content-header {
-            margin-bottom: 40px;
-        }
-        .content-header h1 {
-            font-size: 32px;
+        .page-title {
+            font-size: 36px;
             font-weight: 700;
             background: linear-gradient(135deg, #fff, #c084fc);
             background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: optShine 5s linear infinite;
-            letter-spacing: -0.02em;
+            animation: shimmer 5s linear infinite;
+            letter-spacing: -0.03em;
             margin-bottom: 8px;
         }
-        .content-header p {
+
+        .page-desc {
             color: var(--text-muted);
             font-size: 15px;
+            margin-bottom: 24px;
         }
 
-        .cards-grid {
+        /* --- LAYOUT GRID --- */
+        .layout-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.8fr 1fr;
             gap: 24px;
             align-items: start;
         }
 
-        .grid-column {
+        @media (max-width: 850px) {
+            .layout-grid { grid-template-columns: 1fr; }
+        }
+
+        /* --- CARDS --- */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.4s var(--ease-out), border-color 0.4s;
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             gap: 24px;
         }
 
-        /* --- RIGHT SIDEBAR --- */
-        .sidebar-right {
-            width: 380px;
-            display: flex;
-            flex-direction: column;
-            background: transparent;
-            gap: 20px;
-            flex-shrink: 0;
-            animation: optSpringUp 0.5s var(--spring) 0.15s both;
-            will-change: transform, opacity;
-        }
-
-        /* --- SHARED COMPONENTS --- */
-        .section {
-            background: var(--surface-raised);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: transform 0.4s var(--ease-out), border-color 0.35s var(--ease-out), box-shadow 0.4s var(--ease-out);
-            position: relative;
-            overflow: hidden;
-            will-change: transform;
-        }
-
-        .section::before {
+        .card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(168,85,247,0.15), transparent);
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
             opacity: 0;
-            transition: opacity 0.4s var(--ease-out);
+            transition: opacity 0.4s;
         }
 
-        .section:hover {
+        .card:hover {
             border-color: rgba(168, 85, 247, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-lg);
         }
+        .card:hover::before { opacity: 1; }
 
-        .section:hover::before {
-            opacity: 1;
-        }
-
-        .section-title {
+        .card-header {
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.15em;
-            background: var(--accent-gradient);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #c084fc;
             text-transform: uppercase;
-            margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
         }
 
-        .field { margin-bottom: 24px; }
-        .field:last-child { margin-bottom: 0; }
-
+        /* --- FORMS --- */
+        .field { display: flex; flex-direction: column; gap: 8px; }
+        
         label {
-            display: block;
             font-size: 13px;
             font-weight: 600;
-            margin-bottom: 8px;
             color: var(--text);
             letter-spacing: 0.02em;
         }
 
-        select, input[type="text"], input[type="password"], input[type="number"] {
+        input, select {
             width: 100%;
-            padding: 12px 14px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
             color: var(--text);
             font-size: 14px;
             font-family: inherit;
             outline: none;
             transition: all 0.3s var(--ease-out);
-            box-shadow: var(--shadow-inner);
             -webkit-appearance: none;
-            appearance: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
         }
 
         select {
-            padding-right: 36px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            padding-right: 40px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a8a9a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 14px;
+            background-position: right 16px center;
             cursor: pointer;
         }
 
-        select:hover {
-            border-color: rgba(255, 255, 255, 0.12);
+        input:hover, select:hover { border-color: rgba(255, 255, 255, 0.15); }
+        input:focus, select:focus {
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3), inset 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        select:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="number"]:focus {
-            border-color: rgba(168, 85, 247, 0.3);
-            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.2), var(--shadow-inner);
+        select optgroup { background: #111116; color: var(--text-muted); font-weight: 600; }
+        select option { background: #0a0a0f; color: var(--text); }
+
+        .hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .hint a { color: var(--accent-2); text-decoration: none; }
+        
+        .input-wrap { position: relative; display: flex; align-items: center; }
+        .eye-btn {
+            position: absolute; right: 12px;
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; padding: 4px; transition: color 0.2s;
         }
+        .eye-btn:hover { color: var(--text); }
 
-        select optgroup {
-            background: #12121a;
-            color: var(--text-muted);
-            font-style: normal;
-            font-weight: 600;
-            font-size: 12px;
-            padding: 6px 8px;
-        }
-
-        select option {
-            background: #0c0c12;
-            color: var(--text);
-            padding: 8px;
-        }
-
-        .hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; line-height: 1.4; }
-        .hint a { color: rgba(168, 85, 247, 0.8); text-decoration: none; transition: color 0.25s var(--ease-out); }
-        .hint a:hover { color: #c084fc; }
-
+        /* --- BUTTONS --- */
         .btn {
             background: var(--surface-raised);
             color: var(--text);
             border: 1px solid var(--border);
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 13px;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s var(--spring);
@@ -386,510 +261,279 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            box-shadow: var(--shadow-outer);
-            position: relative;
-            overflow: hidden;
-            will-change: transform;
-        }
-
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(168,85,247,0.05), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s var(--ease-out);
-        }
-
-        .btn:hover::after {
-            opacity: 1;
+            box-shadow: var(--shadow-sm);
         }
 
         .btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(168, 85, 247, 0.2);
+            background: rgba(255, 255, 255, 0.08);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            box-shadow: var(--shadow-lg);
         }
+        .btn:active { transform: scale(0.97); }
 
-        .btn:active {
-            transform: scale(0.96);
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
+        .btn-primary {
+            background: var(--accent-gradient);
+            border: none;
             color: #fff;
-            border: none;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
         }
-
-        .btn-save::after {
-            display: none;
-        }
-
-        .btn-save:hover {
+        .btn-primary:hover {
             background: linear-gradient(135deg, #818cf8, #c084fc);
-            box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
-            border: none;
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.5);
         }
 
-        .row { display: flex; gap: 16px; align-items: center; }
-
-        .content-footer {
-            margin-top: 32px;
-            padding-top: 32px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 16px;
+        /* --- TOGGLES --- */
+        .toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border); border-radius: var(--radius-md);
         }
-
-        .eye-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 0 8px;
-            transition: all 0.25s var(--ease-out);
-            display: flex;
-            align-items: center;
-        }
-
-        .eye-btn:hover {
-            color: var(--accent-2);
-            transform: scale(1.12);
-        }
-
-        .eye-btn:active {
-            transform: scale(0.88);
-        }
-
-        .input-wrap { position: relative; display: flex; align-items: center; }
-        .input-wrap input { padding-right: 40px; }
-        .input-wrap .eye-btn { position: absolute; right: 8px; }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-inner);
-            transition: border-color 0.3s var(--ease-out);
-        }
-
-        .toggle-container:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .toggle-left { display: flex; flex-direction: column; gap: 4px; }
+        .toggle-info { display: flex; flex-direction: column; gap: 4px; }
         .toggle-label { font-size: 14px; font-weight: 600; color: var(--text); }
-        .toggle-hint { font-size: 12px; color: var(--text-muted); }
-
         .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 28px;
-            background: rgba(60, 60, 70, 0.6);
-            border: none;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: background 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
-            display: flex;
-            align-items: center;
-            padding: 3px;
-            flex-shrink: 0;
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+            width: 48px; height: 26px; background: rgba(60,60,70,0.6);
+            border-radius: 13px; cursor: pointer; padding: 3px; display: flex;
+            transition: all 0.3s;
         }
-
-        .toggle-switch.active {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3), 0 0 16px rgba(168, 85, 247, 0.25);
-        }
-
+        .toggle-switch.active { background: var(--accent-gradient); }
         .toggle-circle {
-            width: 22px;
-            height: 22px;
-            background: #d0d0d8;
-            border-radius: 50%;
-            transition: transform 0.4s var(--spring-snap), background 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            width: 20px; height: 20px; background: #fff; border-radius: 50%;
+            transition: transform 0.4s var(--spring); box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.active .toggle-circle { transform: translateX(22px); }
+
+        /* --- UPDATE BANNER --- */
+        #updatePanel {
+            display: flex; align-items: flex-start; gap: 16px;
+            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02));
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: var(--radius-lg);
+            padding: 24px; margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(16,185,129,0.15);
+        }
+        #updateIconBox {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(16,185,129,0.2); color: #4ade80;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
 
-        .toggle-switch.active .toggle-circle {
-            transform: translateX(22px);
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 0 4px rgba(168, 85, 247, 0.3);
+        /* Overlays */
+        #loadingOverlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;
         }
-
-        .info-box {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 12px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-top: 16px;
-            transition: border-color 0.3s var(--ease-out);
+        #lockOverlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s;
         }
-        .info-box:hover {
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-        .info-box strong { color: var(--text); font-weight: 600; }
-
-        @media (max-width: 1024px) {
-            .cards-grid { grid-template-columns: 1fr; }
-            .dashboard-wrapper { flex-direction: column; height: auto; padding-bottom: 40px; }
-            body { overflow: auto; height: auto; }
-            .sidebar-left { width: 100%; flex-direction: row; justify-content: space-between; padding: 16px 24px; border-radius: 16px; margin-bottom: 0; }
-            .sidebar-logo { margin-bottom: 0; }
-            .nav-menu { flex-direction: row; width: auto; gap: 8px; }
-            .sidebar-right { width: 100%; flex-direction: row; flex-wrap: wrap; }
-            .sidebar-right > * { flex: 1; min-width: 300px; margin-bottom: 0; }
-            .content-main { padding: 32px 24px; }
+        .lock-box {
+            background: var(--surface); padding: 48px; border-radius: 24px;
+            border: 1px solid var(--border-highlight); text-align: center;
+            width: 100%; max-width: 440px; box-shadow: var(--shadow-lg);
         }
     </style>
 </head>
 <body>
 
-    <div id="loadingOverlay" style="position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease;">
-        <div style="width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.06); border-top-color: #a855f7; border-right-color: #6366f1; border-radius: 50%; animation: optSpin 1s linear infinite;"></div>
-        <style>@keyframes optSpin { to { transform: rotate(360deg); } }</style>
+    <!-- Loaders & Overlays -->
+    <div id="loadingOverlay">
+        <div style="width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
     </div>
-    
-    <div id="lockOverlay" style="opacity: 0; pointer-events: none; transition: opacity 0.45s ease, backdrop-filter 0.45s ease; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <div style="background: var(--surface); padding: 40px; border-radius: 20px; border: 1px solid var(--border-highlight); text-align: center; max-width: 420px; width: 100%; box-shadow: 0 32px 64px rgba(0,0,0,0.5); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent);"></div>
-            <div style="width: 64px; height: 64px; background: rgba(239,68,68,0.08); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; border: 1px solid rgba(239,68,68,0.15);">
+
+    <div id="lockOverlay">
+        <div class="lock-box">
+            <div style="width: 64px; height: 64px; background: rgba(239,68,68,0.1); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px;">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M8 6h8M10 10v4M14 10v4"/><rect x="3" y="11" width="18" height="11" rx="2"/></svg>
             </div>
-            <h2 style="font-size: 22px; background: linear-gradient(135deg, #fff, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px;">Activation Required</h2>
-            <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; font-size: 14px;">Enter your license key to unlock the extension and configure your API settings.</p>
+            <h2 style="font-size: 24px; margin-bottom: 12px;">Activation Required</h2>
+            <p style="color: var(--text-muted); margin-bottom: 32px;">Enter your license key to unlock the extension.</p>
             
-            <div style="display: flex; flex-direction: column; gap: 12px; text-align: left;">
-                <input type="text" id="optionsLicenseInput" placeholder="Enter license key..." style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; color: #fff; padding: 12px; font-size: 14px; outline: none; transition: border-color 0.25s ease; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);" />
-                <button id="optionsActivateBtn" class="btn" style="width: 100%; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; justify-content: center; box-shadow: 0 4px 16px rgba(99,102,241,0.3);">Activate License</button>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="text" id="optionsLicenseInput" placeholder="CORTEX-XXXX-XXXX" style="text-align: center; letter-spacing: 0.1em; text-transform: uppercase;" />
+                <button id="optionsActivateBtn" class="btn btn-primary">Unlock Cortex</button>
             </div>
-            <div id="optionsAuthStatus" style="color: #ef4444; font-size: 12px; margin-top: 16px; min-height: 18px;"></div>
-            <div style="margin-top: 16px; font-size: 12px; color: var(--text-muted); text-align: center;">
-                Install ID: <span id="optionsInstallId" style="font-family: monospace; color: var(--text); user-select: all;">...</span>
-            </div>
-
-            <!-- Cross-Browser Sync Backup -->
-            <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
-                <div style="font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Cross-Browser Sync Backup</div>
-                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; text-align: left;">
-                    Import a backup file from another browser to instantly restore your License Key and settings.
-                </p>
-                <div style="display: flex; gap: 8px;">
-                    <button id="exportBtnLock" class="btn" style="flex: 1; background: var(--surface-raised); border: 1px solid var(--border); font-size: 12px; padding: 10px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Export
-                    </button>
-                    <button id="importBtnLock" class="btn" style="flex: 1; background: var(--surface-raised); border: 1px solid var(--border); font-size: 12px; padding: 10px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        Import
-                    </button>
+            <div id="optionsAuthStatus" style="color: #ef4444; font-size: 13px; margin-top: 16px; min-height: 20px;"></div>
+            
+            <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border);">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Or restore an existing backup from another device.</p>
+                <div style="display: flex; gap: 12px;">
+                    <button id="exportBtnLock" class="btn" style="flex: 1; padding: 10px;">Export</button>
+                    <button id="importBtnLock" class="btn" style="flex: 1; padding: 10px;">Import</button>
                     <input type="file" id="importFileLock" accept=".json" style="display: none;" />
                 </div>
             </div>
+            <div style="margin-top: 24px; font-size: 12px; color: #555;">ID: <span id="optionsInstallId">...</span></div>
         </div>
     </div>
-    
-    <div class="dashboard-wrapper" id="mainContainer" style="opacity: 0; transition: opacity 0.5s ease, filter 0.5s ease;">
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-logo">
+                <img src="icons/logo.png" onerror="this.style.display='none'" alt="">
+                <span class="brand">Project Cortex</span>
+            </div>
+            <div class="header-actions">
+                <a href="mailto:zenithprojects@icloud.com"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="16" r="1"/><path d="M12 13v-1a3 3 0 1 1 4-2.83"/></svg> Support</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="container" id="mainContainer" style="opacity: 0;">
         
-        <aside class="sidebar-left">
-            <div class="sidebar-logo">
-                <img src="icons/logo.png" alt="Logo" onerror="this.style.display='none'; document.getElementById('fallbackLogo2').style.display='block';" />
-                <svg id="fallbackLogo2" style="display:none;" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12a9 9 0 1 1-9-9" /><circle cx="21" cy="5" r="3" />
-                </svg>
+        <div>
+            <h1 class="page-title">Settings & Preferences</h1>
+            <p class="page-desc">Configure your intelligence providers and web utilities to personalize your experience.</p>
+        </div>
+
+        <!-- Update Panel (Full Width) -->
+        <div id="updatePanel" style="display: block;">
+            <div id="updateIconBox">
+                <svg id="updateIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.138-6.32"/><circle cx="12" cy="12" r="2"/><path d="M20 4v6h-6"/></svg>
             </div>
-            <nav class="nav-menu">
-                <div class="nav-item active" title="Settings">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                </div>
-                <a href="mailto:zenithprojects@icloud.com" class="nav-item" title="Help / Support" style="text-decoration: none; color: inherit;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="16" r="1"/><path d="M12 13v-1a3 3 0 1 1 4-2.83"/></svg>
-                </a>
-            </nav>
-            <div class="sidebar-bottom">
-                <div class="sidebar-branding">
-                    <span>PROJECT</span>
-                    <span class="highlight">CORTEX</span>
-                </div>
-            </div>
-        </aside>
-
-        
-        <main class="content-main">
-            <header class="content-header">
-                <h1>Settings & Preferences</h1>
-                <p>Configure your intelligence providers and web utilities to personalize your experience.</p>
-            </header>
-
-            <div class="cards-grid">
-                
-                <div class="grid-column">
-                    <div class="section">
-                        <div class="section-title">API Configuration</div>
-
-                        <div class="field">
-                            <label>API Provider</label>
-                            <select id="apiProvider">
-                                <option value="groq">Groq (groq.com) — Free &amp; Fast</option>
-                                <option value="openrouter">OpenRouter (openrouter.ai)</option>
-                                <option value="custom">Custom Endpoint</option>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <label>API Key</label>
-                            <div class="input-wrap">
-                                <input type="password" id="apiKey" placeholder="gsk_…  or your custom key" autocomplete="off" />
-                                <button class="eye-btn" id="toggleKey" title="Show/hide key">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-5 0-9 4-9 7s4 7 9 7 9-4 9-7-4-7-9-7z"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="10" x2="12" y2="8"/></svg>
-                                </button>
-                            </div>
-                            <p class="hint">
-                                Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a>
-                            </p>
-                        </div>
-
-                        <div class="custom-ep-wrap" id="customEpWrap">
-                            <div class="field">
-                                <label>Custom Endpoint URL</label>
-                                <input type="text" id="customEndpoint"
-                                    placeholder="https://openrouter.ai/api/v1/chat/completions" />
-                                <p class="hint">Must be an OpenAI-compatible <code>/v1/chat/completions</code> endpoint.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">Model Selection</div>
-                        <div class="field">
-                            <label>AI Model</label>
-                            <select id="model">
-                                <optgroup label="— Groq (Free Tier) —">
-                                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning</option>
-                                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
-                                    <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
-                                    <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
-                                </optgroup>
-                                <optgroup label="— OpenRouter (Free Tier) —">
-                                    <option value="openrouter/free">Recommended — Auto-routes to best available free model</option>
-                                    <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning & coding (1M ctx)</option>
-                                    <option value="deepseek/deepseek-r1:free">DeepSeek R1 — Chain-of-thought reasoning</option>
-                                    <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality</option>
-                                    <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B — Heavy-lift generation</option>
-                                    <option value="qwen/qwen3-32b:free">Qwen3 32B — Multilingual & technical</option>
-                                    <option value="google/gemma-4-31b:free">Gemma 4 31B — Google-grade precision</option>
-                                    <option value="mistralai/mistral-7b-instruct:free">Mistral 7B — Lightweight, fast drafts</option>
-                                    <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 Ultra — High-quality (1M ctx)</option>
-                                </optgroup>
-                                <option value="custom">Custom model name…</option>
-                            </select>
-                        </div>
-                        <div class="field" id="customModelWrap" style="display:none">
-                            <label>Custom Model Name</label>
-                            <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
-                        </div>
-                    </div>
-                </div>
-
-                
-                <div class="grid-column">
-                    <div class="section">
-                        <div class="section-title">Window Control</div>
-
-                        <div class="toggle-container">
-                            <div class="toggle-left">
-                                <div class="toggle-label">Always Active Window</div>
-                                <div class="toggle-hint">Keep this site active in background</div>
-                            </div>
-                            <div class="toggle-switch" id="activeWindowToggle">
-                                <div class="toggle-circle"></div>
-                            </div>
-                        </div>
-
-                        <div class="info-box">
-                            <strong>What does this do?</strong><br>
-                            When enabled, prevents this website from detecting when the tab is in the background. Useful for music
-                            players, timers, and streaming services.
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">Page Utilities</div>
-
-                        <div class="toggle-container">
-                            <div class="toggle-left">
-                                <div class="toggle-label">Enable Copy & Paste</div>
-                                <div class="toggle-hint">Allow selection, copy, paste, and right-click on <span id="siteLabel">current site</span></div>
-                            </div>
-                            <div class="toggle-switch" id="copyPasteToggle">
-                                <div class="toggle-circle"></div>
-                            </div>
-                        </div>
-
-                        <div class="info-box">
-                            <strong>Designed to stay out of the way.</strong><br>
-                            This only runs on sites you enable here. Refresh the page after saving to apply the utility.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="content-footer">
-                <button class="btn btn-save" id="saveBtn" aria-label="Save your settings">Save Settings</button>
-                <button class="btn" id="testBtn" aria-label="Test your API connection">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    Test Connection
-                </button>
-                <div id="status" style="margin-left: 12px;"></div>
-            </div>
-        </main>
-
-        
-        <aside class="sidebar-right">
-            <!-- ── Update Panel ── -->
-            <div id="updatePanel" style="display: block; background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02)); border: 1px solid rgba(16,185,129,0.25); border-radius: 16px; padding: 20px; box-shadow: 0 4px 20px rgba(16,185,129,0.1); transition: all 0.35s ease; position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(16,185,129,0.4), transparent);"></div>
-                <div style="display: flex; align-items: flex-start; gap: 16px;">
-                    <div id="updateIconBox" style="background: rgba(16,185,129,0.15); color: #4ade80; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s ease; border: 1px solid rgba(16,185,129,0.2);">
-                        <svg id="updateIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 12a8 8 0 1 1-3.138-6.32"/><circle cx="12" cy="12" r="2"/><path d="M20 4v6h-6"/>
-                        </svg>
-                    </div>
-                    <div style="flex: 1; min-width: 0;">
-                        <h3 id="updateTitle" style="color: #4ade80; margin: 0 0 8px 0; font-size: 16px; font-weight: 700; transition: color 0.3s ease;">Extension Up to Date</h3>
-                        <p id="updateDesc" style="color: rgba(74,222,128,0.7); font-size: 13px; line-height: 1.5; margin: 0 0 16px 0; transition: color 0.3s ease;">
-                            You are running the latest version of ProjectCortex. Your configuration is fully synchronized and secure.
-                        </p>
-                        <a id="updateLink" href="#" style="text-decoration: none; pointer-events: none;">
-                            <button id="updateBtn" class="btn" style="background: rgba(16,185,129,0.1); color: #4ade80; border: 1px solid rgba(16,185,129,0.3); font-weight: bold; box-shadow: 0 4px 12px rgba(16,185,129,0.1); opacity: 0.8; transition: all 0.3s ease;" disabled>
-                                Up to Date
-                            </button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── License Details ── -->
-            <div style="background: linear-gradient(160deg, #0e0e16, #0a0a10); border: 1px solid var(--border-highlight); border-radius: 16px; padding: 20px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2L2 7v4c0 5.25 3.75 10.24 10 12 6.25-1.76 10-6.75 10-12V7l-10-5z"/><circle cx="12" cy="12" r="3"/>
-                        </svg>
-                        <span style="font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: 0.02em;">License Details</span>
-                    </div>
-                    <span id="licenseBadge" style="font-size: 10px; padding: 3px 8px; border-radius: 10px; background: rgba(16,185,129,0.12); color: #4ade80; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; border: 1px solid rgba(16,185,129,0.2);">Active</span>
-                </div>
-                
-                <div style="margin-bottom: 16px;">
-                    <label style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: block;">Activation ID</label>
-                    <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px; font-family: monospace; font-size: 12px; color: var(--text); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-inner); min-width: 0;">
-                        <span id="dispLicenseKey" style="letter-spacing: 0.05em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">••••••••-••••-••••-••••</span>
-                        <button id="copyLicenseBtn" title="Copy" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; transition: all 0.2s; display: flex; align-items: center; flex-shrink: 0;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 14px; border-radius: 10px; box-shadow: var(--shadow-inner);">
-                        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Days Remaining</div>
-                        <div style="display: flex; align-items: baseline; gap: 4px;">
-                            <span id="dispDaysLeft" style="font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #4ade80, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1;">--</span>
-                            <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">days</span>
-                        </div>
-                    </div>
-                    <div style="background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 14px; border-radius: 10px; box-shadow: var(--shadow-inner); display: flex; flex-direction: column;">
-                        <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">Activated On</div>
-                        <div id="dispActivatedAt" style="font-size: 14px; font-weight: 500; color: var(--text); margin-top: auto; line-height: 1.3;">--</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── Data Backup & Sync ── -->
-            <div style="background: rgba(12,12,18,0.8); border: 1px solid var(--border); border-radius: 16px; padding: 20px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
-                    </svg>
-                    <span style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Data Backup & Sync</span>
-                </div>
-                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
-                    Export your Identity, License Key, and API settings to a secure backup file.
+            <div style="flex: 1; min-width: 0;">
+                <h3 id="updateTitle" style="color: #4ade80; margin-bottom: 8px; font-size: 18px;">Extension Up to Date</h3>
+                <p id="updateDesc" style="color: rgba(74,222,128,0.8); font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+                    You are running the latest version. Your configuration is fully synchronized and secure.
                 </p>
-                <ul style="font-size: 11px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6; padding-left: 16px;">
-                    <li><strong style="color: var(--text);">Updates:</strong> Restoring your configuration.</li>
-                    <li><strong style="color: var(--text);">Safety:</strong> Recovering settings.</li>
-                    <li><strong style="color: var(--text);">Syncing:</strong> Moving your setup across browsers.</li>
-                </ul>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn" id="exportBtn" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); font-size: 11px; padding: 9px 10px;" aria-label="Export Settings Backup">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        Export
-                    </button>
-                    <button class="btn" id="importBtn" style="flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); font-size: 11px; padding: 9px 10px;" aria-label="Import Settings Backup">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-                        </svg>
-                        Import
-                    </button>
-                    <input type="file" id="importFile" accept=".json" style="display: none;" />
+                <a id="updateLink" href="#" style="text-decoration: none; pointer-events: none;">
+                    <button id="updateBtn" class="btn" style="background: rgba(16,185,129,0.15); color: #4ade80; border: 1px solid rgba(16,185,129,0.3);" disabled>Up to Date</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="layout-grid">
+            <!-- Left Column: Core Settings -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- API Config -->
+                <div class="card">
+                    <div class="card-header">API Configuration</div>
+                    <div class="field">
+                        <label>API Provider</label>
+                        <select id="apiProvider">
+                            <option value="groq">Groq (groq.com) — Free & Fast</option>
+                            <option value="openrouter">OpenRouter (openrouter.ai)</option>
+                            <option value="custom">Custom Endpoint</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>API Key</label>
+                        <div class="input-wrap">
+                            <input type="password" id="apiKey" placeholder="gsk_…  or your custom key" />
+                            <button class="eye-btn" id="toggleKey"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-5 0-9 4-9 7s4 7 9 7 9-4 9-7-4-7-9-7z"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="10" x2="12" y2="8"/></svg></button>
+                        </div>
+                        <p class="hint">Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+                    </div>
+                    <div class="field" id="customEpWrap" style="display: none;">
+                        <label>Custom Endpoint URL</label>
+                        <input type="text" id="customEndpoint" placeholder="https://openrouter.ai/api/v1/chat/completions" />
+                    </div>
                 </div>
+
+                <!-- Model Config -->
+                <div class="card">
+                    <div class="card-header">Model Selection</div>
+                    <div class="field">
+                        <label>AI Model</label>
+                        <select id="model">
+                            <optgroup label="— Groq (Free Tier) —">
+                                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning</option>
+                                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
+                                <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
+                                <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
+                            </optgroup>
+                            <optgroup label="— OpenRouter (Free Tier) —">
+                                <option value="openrouter/free">Recommended — Auto-routes to best free</option>
+                                <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning & coding</option>
+                                <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality</option>
+                            </optgroup>
+                            <option value="custom">Custom model name…</option>
+                        </select>
+                    </div>
+                    <div class="field" id="customModelWrap" style="display:none">
+                        <label>Custom Model Name</label>
+                        <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
+                    </div>
+                </div>
+
+                <!-- Utilities -->
+                <div class="card">
+                    <div class="card-header">Utilities</div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Always Active Window</div>
+                            <div class="hint">Prevents sites from detecting background tabs.</div>
+                        </div>
+                        <div class="toggle-switch" id="activeWindowToggle"><div class="toggle-circle"></div></div>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <div class="toggle-label">Enable Copy & Paste</div>
+                            <div class="hint">Allow selection/copy/right-click on <span id="siteLabel">current site</span>.</div>
+                        </div>
+                        <div class="toggle-switch" id="copyPasteToggle"><div class="toggle-circle"></div></div>
+                    </div>
+                </div>
+
+                <!-- Save Actions -->
+                <div style="display: flex; gap: 16px; margin-top: 8px;">
+                    <button class="btn btn-primary" id="saveBtn" style="flex: 1;">Save Settings</button>
+                    <button class="btn" id="testBtn">Test Connection</button>
+                </div>
+                <div id="status" style="color: #4ade80; font-size: 14px; font-weight: 600; text-align: center; min-height: 20px;"></div>
+
             </div>
 
-            <!-- ── Footer ── -->
-            <div style="margin-top: auto; padding: 0 4px 8px 4px;">
-                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-                    </svg>
-                    <span style="font-size: 13px; font-weight: 700; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 0.04em;">Zenith Open Source Projects</span>
-                </div>
-                <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; padding-left: 20px;">Developer - roshhellwett</div>
+            <!-- Right Column: Status & Data -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
                 
-                <div style="display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: #666;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>Support</span>
-                        <div>
-                            <a href="mailto:zenithprojects@icloud.com" style="color: rgba(168,85,247,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#c084fc'" onmouseout="this.style.color='rgba(168,85,247,0.7)'">Email</a>
-                            <span style="margin: 0 5px; color: #444;">•</span>
-                            <a href="https://t.me/roshhellwett" target="_blank" style="color: rgba(168,85,247,0.7); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#c084fc'" onmouseout="this.style.color='rgba(168,85,247,0.7)'">Telegram</a>
+                <!-- License Card -->
+                <div class="card" style="background: linear-gradient(160deg, #101016, #0a0a0f);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
+                        <span style="font-weight: 700;">License Details</span>
+                        <span id="licenseBadge" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(16,185,129,0.15); color: #4ade80; font-weight: 700; border: 1px solid rgba(16,185,129,0.3);">ACTIVE</span>
+                    </div>
+                    
+                    <div class="field">
+                        <label style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Activation ID</label>
+                        <div style="display: flex; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 12px; align-items: center; justify-content: space-between;">
+                            <span id="dispLicenseKey" style="font-family: monospace; font-size: 13px;">••••••••</span>
+                            <button id="copyLicenseBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>Install ID</span>
-                        <span id="optionsCreditsInstallId" style="font-family: monospace; color: #666; user-select: all; font-size: 10px;">...</span>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Days Left</div>
+                            <div style="font-size: 24px; font-weight: 700; color: #4ade80;" id="dispDaysLeft">--</div>
+                        </div>
+                        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Activated</div>
+                            <div style="font-size: 14px; font-weight: 600;" id="dispActivatedAt">--</div>
+                        </div>
                     </div>
                 </div>
-                
-                <div style="margin-top: 20px; color: #444; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase;">
-                    &copy; 2026 Zenith — All rights reserved
-                </div>
-            </div>
-        </aside>
-    </div>
 
-    <div id="toast" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.08)); border: 1px solid rgba(168,85,247,0.25); color: #fff; padding: 14px 28px; border-radius: 30px; font-weight: 600; font-size: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 20px rgba(168,85,247,0.1); opacity: 0; transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; z-index: 9999; display: flex; align-items: center; gap: 10px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/><circle cx="12" cy="12" r="10"/></svg>
-        Settings Saved Successfully
-    </div>
+                <!-- Backup Card -->
+                <div class="card">
+                    <div class="card-header" style="color: var(--text);">Data Backup & Sync</div>
+                    <p class="hint" style="margin-bottom: 20px;">Export your Identity, License Key, and API settings to a secure backup file.</p>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn" id="exportBtn" style="flex: 1; padding: 12px; font-size: 13px;">Export</button>
+                        <button class="btn" id="importBtn" style="flex: 1; padding: 12px; font-size: 13px;">Import</button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
 
     <script src="options.js"></script>
 </body>

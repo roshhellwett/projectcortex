@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ProjectCortex",
-  "version": "7.0.0",
-  "description": "AI-powered productivity assistant. Summarize, fact-check, find correct MCQ answers, and ask anything about any page.",
+  "name": "ProjectCortex — Intelligence",
+  "version": "8.0.0",
+  "description": "Unlock premium intelligence directly inside your browser. Ask, summarize, and analyze anything instantly.",
   "author": "roshhellwett",
   "homepage_url": "https://github.com/roshhellwett/projectcortex",
   "icons": {

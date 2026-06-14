@@ -186,7 +186,7 @@ function callAIAction(settings, action, prompt, systemPrompt) {
   })
 }
 
-var runCorrectAnswers = guard(async function () {
+window.runCorrectAnswers = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'correct_answers' }
   const selectedText = getDeepSelectionText()
@@ -238,7 +238,7 @@ var runCorrectAnswers = guard(async function () {
   }
 })
 
-var runSummarize = guard(async function () {
+window.runSummarize = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'summarize' }
   openPanel()
@@ -278,7 +278,7 @@ var runSummarize = guard(async function () {
   }
 })
 
-var runDefine = guard(async function () {
+window.runDefine = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'define' }
   const selectedText = getDeepSelectionText()
@@ -308,7 +308,7 @@ var runDefine = guard(async function () {
   }
 })
 
-var runFactCheck = guard(async function () {
+window.runFactCheck = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'factcheck' }
   const selectedText = getDeepSelectionText()
@@ -343,7 +343,7 @@ var runFactCheck = guard(async function () {
   }
 })
 
-var runAsk = guard(async function (question) {
+window.runAsk = guard(async function (question) {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   if (!question?.trim()) return
   _lastAction = { name: 'ask', question }

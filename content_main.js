@@ -27,7 +27,7 @@ function initMessageListener() {
           }
         }
       }
-      const fn = actionMap[message.action]
+      const fn = actions[message.action]
       if (fn) {
         Promise.resolve(fn()).catch(() => {})
         sendResponse({ ok: true })
@@ -100,7 +100,9 @@ function handleAuthRes(res) {
   }
   if (res && res.installId) {
     const idEl = document.getElementById('pm-install-id');
+    const creditsIdEl = document.getElementById('pm-credits-install-id');
     if (idEl) idEl.textContent = res.installId;
+    if (creditsIdEl) creditsIdEl.textContent = res.installId;
   }
   if (res && res.locked) {
     _isLocked = true;

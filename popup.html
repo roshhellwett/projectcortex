@@ -81,7 +81,7 @@
       background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
       border: 1px solid rgba(168,85,247,0.3);
       color: #e0e0e5; font-size: 13px; font-weight: 600;
-      padding: 12px; border-radius: 12px;
+      padding: 12px; border-radius: 8px;
       cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
@@ -101,7 +101,7 @@
     .btn-action {
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
       background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      padding: 14px 10px; border-radius: 12px;
+      padding: 14px 10px; border-radius: 8px;
       color: #aaa; font-size: 11px; font-weight: 600; text-align: center;
       cursor: pointer; transition: all 0.25s ease;
     }
@@ -181,12 +181,16 @@
         <span>Extension Settings</span>
       </button>
     </div>
+    <div id="pm-error" style="display: none; color: #ff6b6b; font-size: 12px; font-weight: 500; text-align: center; margin-top: 4px; padding: 8px; background: rgba(255, 107, 107, 0.1); border-radius: 8px; border: 1px solid rgba(255, 107, 107, 0.2);"></div>
     
     <div class="loading" id="loading"><div class="spinner"></div> Processing...</div>
   </div>
 
   <div class="ftr">
-    Support: <a href="mailto:zenithprojects@icloud.com">zenithprojects@icloud.com</a>
+    <div style="margin-bottom: 4px; color: #888;">Install ID: <span id="popupInstallId" style="user-select: all; font-family: monospace; color: #e0e0e5;">Loading...</span></div>
+    <div style="margin-bottom: 4px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank">Zenith Open Source Projects</a></div>
+    <div style="margin-bottom: 4px;">Developer: <a href="https://github.com/roshhellwett" target="_blank">roshhellwett</a></div>
+    <div>Support: <a href="mailto:zenithprojects@icloud.com">zenithprojects@icloud.com</a></div>
   </div>
 
   <script src="popup.js"></script>

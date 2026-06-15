@@ -120,7 +120,7 @@ async function checkUpdate() {
     try {
         const manifest = chrome.runtime.getManifest();
         const currentVersion = manifest.version;
-        const res = await fetch('http://localhost:3000/api/version').catch(() => fetch('https://projectcortex.vercel.app/api/version'));
+        const res = await fetch('https://projectcortex.vercel.app/api/version').catch(() => ({ ok: false }));
         if (res.ok) {
             const data = await res.json();
             if (data.version && data.version > currentVersion) {
@@ -142,7 +142,7 @@ async function checkUpdate() {
                     const updateTitle = $('updateTitle');
                     if (updateTitle) {
                         updateTitle.style.color = '#ef4444';
-                        updateTitle.innerHTML = `Critical Update Available (${data.version})`;
+                        updateTitle.textContent = `Critical Update Available (${data.version})`;
                     }
 
                     const updateDesc = $('updateDesc');

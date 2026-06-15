@@ -16,9 +16,21 @@ function getHostnameFromUrl(url) {
   try { return new URL(url).hostname; } catch { return ''; }
 }
 
+function showError(msg) {
+  const errEl = document.getElementById('pm-error');
+  if (errEl) {
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+  }
+}
+
 function setLoading(loading) {
   document.getElementById('loading').classList.toggle('visible', loading);
   document.querySelectorAll('.btn-main, .btn-action').forEach(b => b.disabled = loading);
+  if (loading) {
+    const errEl = document.getElementById('pm-error');
+    if (errEl) errEl.style.display = 'none';
+  }
 }
 
 async function sendAction(tab, action) {
@@ -35,30 +47,38 @@ const btnMap = [
   ['openPanel', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
-    await sendAction(tab, 'open_panel');
+    const res = await sendAction(tab, 'open_panel');
+    if (!res) return showError('Cannot run on this page.');
     window.close();
   }],
   ['factCheck', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
     setLoading(true);
-    await sendAction(tab, 'factcheck');
+    const res = await sendAction(tab, 'factcheck');
+    setLoading(false);
+    if (!res) return showError('Cannot run on this page.');
     window.close();
   }],
   ['correctAnswers', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
     setLoading(true);
-    await sendAction(tab, 'correct_answers');
+    const res = await sendAction(tab, 'correct_answers');
+    setLoading(false);
+    if (!res) return showError('Cannot run on this page.');
     window.close();
   }],
   ['summarize', async () => {
     const tab = await getActiveTab();
     if (!tab?.id) return;
     setLoading(true);
-    await sendAction(tab, 'summarize');
+    const res = await sendAction(tab, 'summarize');
+    setLoading(false);
+    if (!res) return showError('Cannot run on this page.');
     window.close();
   }],
+
   ['openSettings', async () => {
     const tab = await getActiveTab();
     const hostname = getHostnameFromUrl(tab?.url);
@@ -77,3 +97,10 @@ const btnMap = [
 for (const [id, handler] of btnMap) {
   document.getElementById(id)?.addEventListener('click', handler);
 }
+
+chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+  if (res && res.installId) {
+    const installIdEl = document.getElementById('popupInstallId');
+    if (installIdEl) installIdEl.textContent = res.installId;
+  }
+});

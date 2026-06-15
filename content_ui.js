@@ -313,6 +313,11 @@ function buildPanelHTML() {
           <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
+      <div style="font-size: 10px; color: #666; text-align: center; padding: 10px 8px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); line-height: 1.4;">
+        Install ID: <span id="pm-credits-install-id" style="font-family: monospace; user-select: all; color: #aaa;">...</span><br/>
+        <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: #888; text-decoration: none;">Zenith Open Source Projects</a> | 
+        Dev: <a href="https://github.com/roshhellwett" target="_blank" style="color: #888; text-decoration: none;">roshhellwett</a>
+      </div>
   `
 }
 

@@ -60,24 +60,6 @@ The latest enterprise build (`Cortex-v8.0.0.zip`) is fully compiled, obfuscated,
 
 ---
 
-## 🛠️ Development & Building
-
-To compile the source code into a secure, distribution-ready extension:
-
-```bash
-# 1. Ensure you are in the project root
-cd projectcortex
-
-# 2. Run the build pipeline
-node build.js
-
-# 3. Zip the output for distribution
-# (Windows PowerShell Example)
-Compress-Archive -Force -Path ".\dist\*" -DestinationPath ".\Cortex-v8.0.0.zip"
-```
-
----
-
 ## 🔐 Licensing & Support
 
 ProjectCortex operates on a premium SaaS model. You will need an active License Key to unlock the extension functionality. 
@@ -87,8 +69,5 @@ ProjectCortex operates on a premium SaaS model. You will need an active License 
 
 ---
 
-<div align="center">
-  <br />
-  <p><i>© 2026 Zenith Open Source Projects. All Rights Reserved.</i></p>
-  <p>Developed by <b>@roshhellwett</b></p>
-</div>
+© 2026 Zenith Open Source Projects. All Rights Reserved. Developed by roshhellwett
+

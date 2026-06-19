@@ -13,13 +13,23 @@
   "permissions": [
     "activeTab",
     "storage",
-    "alarms"
+    "alarms",
+    "contextMenus"
   ],
   "host_permissions": [
     "<all_urls>",
     "https://api.groq.com/*",
     "https://openrouter.ai/*"
   ],
+  "commands": {
+    "open_panel": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Open ProjectCortex Panel"
+    }
+  },
   "background": {
     "service_worker": "bg_main.js",
     "type": "module"
@@ -41,7 +51,8 @@
         "content.css"
       ],
       "run_at": "document_idle",
-      "all_frames": false
+      "all_frames": true,
+      "match_about_blank": true
     },
     {
       "matches": [

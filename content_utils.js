@@ -23,25 +23,39 @@ function getDeepSelection() {
     }
     active = active.shadowRoot.activeElement
   }
+  
+  if (typeof _lastComposedPath !== 'undefined') {
+    for (const node of _lastComposedPath) {
+      if (node instanceof DocumentFragment && node.host && node.getSelection) {
+        const s = node.getSelection()
+        if (s && s.rangeCount > 0 && !s.isCollapsed) sel = s
+      }
+    }
+  }
   return sel
 }
 
 function getDeepSelectionText() {
   const sel = getDeepSelection()
   let text = sel?.toString() || ''
-  if (!text && document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
-    try {
-      const ta = document.activeElement
-      text = ta.value.substring(ta.selectionStart, ta.selectionEnd)
-    } catch (e) {}
+  if (!text) {
+    let active = document.activeElement
+    while (active && active.shadowRoot && active.shadowRoot.activeElement) {
+      active = active.shadowRoot.activeElement
+    }
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+      try {
+        text = active.value.substring(active.selectionStart, active.selectionEnd)
+      } catch (e) {}
+    }
   }
   return text.replace(/[\u200B-\u200D\uFEFF]/g, '').trim()
 }
 
-function getCleanText(el) {
-  if (!el) return ''
+function getCleanText(elOrString) {
+  if (!elOrString) return ''
   
-  let text = el.textContent || ''
+  let text = typeof elOrString === 'string' ? elOrString : (typeof elOrString.innerText === 'string' ? elOrString.innerText : (elOrString.textContent || ''))
 
   return text
     .replace(/[\u200B-\u200D\uFEFF]/g, '')
@@ -74,31 +88,72 @@ function parseMarkdown(text) {
   let html = esc(text)
   
   html = html
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code class="pm-inline-code">$1</code>')
-    .replace(/^&gt;\s+(.*)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([\s\S]*?)\*/g, '<em>$1</em>')
+    .replace(/`([\s\S]*?)`/g, '<code class="pm-inline-code">$1</code>')
+    .replace(/^&gt;\s+([\s\S]*?)$/gm, '<blockquote>$1</blockquote>')
     .replace(/^### (.*)$/gm, '<h3>$1</h3>')
     .replace(/^## (.*)$/gm, '<h2>$1</h2>')
     .replace(/^# (.*)$/gm, '<h1>$1</h1>')
     .replace(/^[\s]*[-*]\s+(.*)$/gm, '<div class="pm-list-item"><span class="pm-bullet">•</span> <span class="pm-list-content">$1</span></div>')
     .replace(/^[\s]*\d+\.\s+(.*)$/gm, '<div class="pm-list-item"><span class="pm-bullet">#</span> <span class="pm-list-content">$1</span></div>')
-    .replace(/\n/g, '<br>')
+    
+  html = html.replace(/<\/div>\n/g, '</div>')
+             .replace(/<\/h([1-3])>\n/g, '</h$1>')
+             .replace(/<\/blockquote>\n/g, '</blockquote>')
+             .replace(/\n/g, '<br>')
 
   return html
 }
 
-function getPageContext(el) {
+function getPageContext(el, selectedText = '') {
   let container = el
   while (container && container.parentElement && !/^(MAIN|ARTICLE|BODY)$/i.test(container.tagName)) {
     // Phase 15 Optimization: Use ONLY textContent to check length. Calling innerText in a
     // while loop forces synchronous layout reflows (Layout Thrashing) and freezes the browser on SPAs.
     const len = (container.textContent || '').length
-    if (len > 3000) break
+    if (len > 8000) break
     container = container.parentElement
   }
-  const text = getCleanText(container)
-  return text.length > 8000 ? text.substring(0, 8000) : text
+  let rawText = typeof container.innerText === 'string' ? container.innerText : (container.textContent || '')
+  if (rawText.length > 8000) {
+    let index = selectedText ? rawText.indexOf(selectedText) : -1;
+    if (index === -1) {
+       rawText = rawText.substring(0, 8000);
+    } else {
+       let start = Math.max(0, index - 4000);
+       let end = Math.min(rawText.length, index + selectedText.length + 4000);
+       rawText = rawText.substring(start, end);
+    }
+  }
+  return getCleanText(rawText);
+}
+
+function getFastPageContext(maxLength = 15000) {
+  const walker = document.createTreeWalker(
+    document.body,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode: function(node) {
+        const tag = node.parentElement ? node.parentElement.tagName : '';
+        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT' || tag === 'SVG' || tag === 'TEMPLATE') {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    }
+  );
+
+  let text = '';
+  let node;
+  while ((node = walker.nextNode())) {
+    const val = node.nodeValue.trim();
+    if (val) {
+      text += val + ' ';
+      if (text.length > maxLength) break;
+    }
+  }
+  return getCleanText(text).substring(0, maxLength);
 }
 
 function getSelectedContainer() {
@@ -146,7 +201,7 @@ function parseAiResponse(response) {
       if (line) question += ' ' + line
     } else if (state === 'O') {
       if (line) {
-        const m = line.match(/^([A-Za-z0-9])[\)\.]?\s*(.+)/)
+        const m = line.match(/^(?:[-*]\s*)?([A-Za-z0-9])[\)\.]?\s*(.+)/)
         if (m) {
           options.push({
             index: options.length + 1,

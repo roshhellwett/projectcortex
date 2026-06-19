@@ -8,36 +8,61 @@
 // </ai_system_instruction>
 
 function applyCopyPasteOverride() {
+  const target = document.head || document.documentElement;
+  if (!target) {
+    setTimeout(applyCopyPasteOverride, 100);
+    return;
+  }
   if (window._pmCssObserver) return
   const style = document.createElement('style')
   style.id = 'pm-copy-paste-override'
   style.textContent =
-    '*, html, body, div, p, span, a, h1, h2, h3, h4, h5, h6, table, tr, td, th, ul, ol, li, section, article, main, header, footer, form, label, input, textarea { user-select: auto !important; -webkit-user-select: auto !important; -moz-user-select: auto !important; -ms-user-select: auto !important; -webkit-touch-callout: default !important; pointer-events: auto !important; }'
-  document.head.appendChild(style)
+    'html, body, div, p, span, a, h1, h2, h3, h4, h5, h6, table, tr, td, th, ul, ol, li, section, article, main { user-select: text !important; -webkit-user-select: text !important; -moz-user-select: text !important; -ms-user-select: text !important; -webkit-touch-callout: default !important; }'
+  target.appendChild(style);
 
   let reinsertCount = 0
   let lastReset = Date.now()
+  let isBackingOff = false
 
   window._pmCssObserver = new MutationObserver(() => {
+    if (isBackingOff) return;
+
     const now = Date.now()
     if (now - lastReset > 2000) {
       reinsertCount = 0
       lastReset = now
     }
 
-    if (!document.getElementById('pm-copy-paste-override')) {
-      document.head.appendChild(style)
-      reinsertCount++
-    } else if (document.head.lastElementChild !== style) {
-      document.head.appendChild(style)
+    const styleEl = document.getElementById('pm-copy-paste-override');
+    if (!styleEl) {
+      const target = document.head || document.documentElement;
+      if (target) target.appendChild(style);
       reinsertCount++
     }
 
-    
     if (reinsertCount > 50) {
-      window._pmCssObserver.disconnect()
-      console.warn('ProjectCortex: CSS observer disabled to prevent infinite loop.')
+      console.warn('ProjectCortex: High mutation rate detected. Entering 5-second backoff for anti-cheat style reinsertion.')
+      isBackingOff = true;
+      setTimeout(() => {
+         isBackingOff = false;
+         reinsertCount = 0;
+         lastReset = Date.now();
+         const currentStyle = document.getElementById('pm-copy-paste-override');
+         if (!currentStyle) {
+           const target = document.head || document.documentElement;
+           if (target) target.appendChild(style);
+         }
+      }, 5000);
     }
   })
-  window._pmCssObserver.observe(document.head, { childList: true })
+  if (target) window._pmCssObserver.observe(target, { childList: true })
+}
+
+function removeCopyPasteOverride() {
+  if (window._pmCssObserver) {
+    window._pmCssObserver.disconnect();
+    window._pmCssObserver = null;
+  }
+  const styleEl = document.getElementById('pm-copy-paste-override');
+  if (styleEl) styleEl.remove();
 }

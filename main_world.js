@@ -81,13 +81,34 @@
       }
       if (this.type === 'mousedown') {
         const t = this.target && this.target.tagName ? this.target.tagName.toUpperCase() : '';
-        if (t !== 'BUTTON' && t !== 'A' && t !== 'INPUT' && t !== 'SELECT' && t !== 'TEXTAREA') {
+        const isEditable = this.target && this.target.isContentEditable;
+        if (!isEditable && t !== 'BUTTON' && t !== 'A' && t !== 'INPUT' && t !== 'SELECT' && t !== 'TEXTAREA') {
           return;
         }
       }
     }
     return origPreventDefault.apply(this, arguments);
   };
+  
+  try {
+    const origReturnValueDesc = Object.getOwnPropertyDescriptor(Event.prototype, 'returnValue');
+    if (origReturnValueDesc) {
+      Object.defineProperty(Event.prototype, 'returnValue', {
+        get: function() { return origReturnValueDesc.get ? origReturnValueDesc.get.call(this) : true; },
+        set: function(val) {
+          if (_forceCopyPaste) {
+            if (blockEvents.includes(this.type)) return;
+            if (this.type === 'keydown' || this.type === 'keyup') {
+              if ((this.ctrlKey || this.metaKey) && ['c', 'v', 'x', 'a', 'C', 'V', 'X', 'A'].includes(this.key)) return;
+            }
+          }
+          if (origReturnValueDesc.set) origReturnValueDesc.set.call(this, val);
+        },
+        configurable: true
+      });
+    }
+  } catch (_) {}
+
   
   try {
     const origRemoveAll = Selection.prototype.removeAllRanges;

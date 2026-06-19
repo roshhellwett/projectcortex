@@ -123,7 +123,20 @@ async function checkUpdate() {
         const res = await fetch('https://projectcortex.vercel.app/api/version').catch(() => ({ ok: false }));
         if (res.ok) {
             const data = await res.json();
-            if (data.version && data.version > currentVersion) {
+            
+            const isNewer = (oldVer, newVer) => {
+                const a = oldVer.split('.').map(Number);
+                const b = newVer.split('.').map(Number);
+                for (let i = 0; i < Math.max(a.length, b.length); i++) {
+                    const numA = a[i] || 0;
+                    const numB = b[i] || 0;
+                    if (numB > numA) return true;
+                    if (numB < numA) return false;
+                }
+                return false;
+            };
+
+            if (data.version && isNewer(currentVersion, data.version)) {
                 const updatePanel = $('updatePanel');
                 if (updatePanel) {
                     updatePanel.style.background = 'rgba(239, 68, 68, 0.1)';

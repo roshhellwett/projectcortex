@@ -111,7 +111,7 @@ export function classifyError(status, data, apiProvider) {
     return { type: 'error', message: 'The page content is too long for the selected model. Try summarizing shorter sections.', retryable: false };
   }
   if (status >= 500) {
-    return { type: 'server_error', message: `${apiProvider} server returned ${status}. Retrying…`, retryable: true };
+    return { type: 'server_error', message: `${apiProvider} server returned ${status}.`, retryable: true };
   }
   if (status === 0 || !status) {
     return { type: 'network', message: 'Network request failed. Check your internet connection.', retryable: true };
@@ -119,7 +119,16 @@ export function classifyError(status, data, apiProvider) {
   return { type: 'error', message: msg || `HTTP ${status}: Request failed`, retryable: false };
 }
 
-export async function handleAIRequest(payload, sendResponse) {
+const activeRequests = new Map();
+
+export function abortAIRequest(tabId) {
+  if (tabId && activeRequests.has(tabId)) {
+    try { activeRequests.get(tabId).abort('MANUAL_ABORT'); } catch(e) {}
+    activeRequests.delete(tabId);
+  }
+}
+
+export async function handleAIRequest(payload, sendResponse, tabId) {
   const {
     prompt, systemPrompt, apiKey,
     apiProvider = 'groq', customEndpoint = '',
@@ -161,7 +170,10 @@ export async function handleAIRequest(payload, sendResponse) {
 
   while (attempt <= MAX_RETRIES) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    if (tabId) activeRequests.set(tabId, controller);
+    const timeout = setTimeout(() => {
+      try { controller.abort(); } catch(e) {}
+    }, TIMEOUT_MS);
 
     const endpoint = resolveEndpoint(apiProvider, customEndpoint);
 
@@ -208,6 +220,10 @@ export async function handleAIRequest(payload, sendResponse) {
       clearTimeout(timeout);
 
       if (err.name === 'AbortError') {
+        if (tabId && !activeRequests.has(tabId)) {
+          safeRespond({ error: 'MANUAL_ABORT' });
+          return;
+        }
         if (await retry('Timed out')) continue;
         safeRespond({ error: `Request timed out after ${TIMEOUT_MS / 1000}s across ${MAX_RETRIES + 1} attempts. Your network or ${apiProvider} may be slow. Try again later.` });
         return;

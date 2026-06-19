@@ -47,7 +47,6 @@ var SANITIZE_RULES = [
   [/\^\{([^}]*)\}/g, '^$1'],
   [/\{([^}]*)\}/g, '$1'],
   [/\\\\/g, '\\'],
-  [/\\[a-zA-Z]+/g, ''],
   [/^#{1,6}\s+/gm, ''],
   [/\*\*([^*]+)\*\*/g, '$1'],
   [/__([^_]+)__/g, '$1'],
@@ -60,6 +59,7 @@ var SANITIZE_RULES = [
 
 var _busy = false;
 var _lastAction = null;
+window.__ProjectCortexAI = window.__ProjectCortexAI || {};
 
 var _typeTimer = null;
 var _thinkTimer = null;
@@ -80,8 +80,15 @@ try {
 var _dragListenersAdded = false;
 var _drag = false;
 var _sx, _sy, _sl, _st;
+var _lastDragEnd = 0;
 
 var _selectionListenersAdded = false;
 var _messageListenerAdded = false;
 
 var _lastURL = location.href;
+
+var _lastComposedPath = [];
+document.addEventListener('mousedown', e => _lastComposedPath = e.composedPath(), true);
+document.addEventListener('mouseup', e => _lastComposedPath = e.composedPath(), true);
+document.addEventListener('keydown', e => _lastComposedPath = e.composedPath(), true);
+document.addEventListener('keyup', e => _lastComposedPath = e.composedPath(), true);

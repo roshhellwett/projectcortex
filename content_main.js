@@ -13,11 +13,14 @@ function initMessageListener() {
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'RUN_ACTION') {
+      if (!document.getElementById('pagemind-panel')) {
+        init();
+      }
       const actions = {
-        correct_answers: window.runCorrectAnswers,
-        summarize: window.runSummarize,
-        factcheck: window.runFactCheck,
-        define: window.runDefine,
+        correct_answers: window.__ProjectCortexAI.runCorrectAnswers,
+        summarize: window.__ProjectCortexAI.runSummarize,
+        factcheck: window.__ProjectCortexAI.runFactCheck,
+        define: window.__ProjectCortexAI.runDefine,
         open_panel: () => {
           const sel = getDeepSelection()
           if (sel && !sel.isCollapsed && sel.toString().trim()) {
@@ -25,6 +28,10 @@ function initMessageListener() {
           } else {
             openPanel()
             showState(_isLocked ? 'locked' : 'welcome')
+            setTimeout(() => {
+              const inputId = _isLocked ? 'pm-license-input' : 'pm-ask-input';
+              document.getElementById(inputId)?.focus();
+            }, 50);
           }
         }
       }
@@ -64,6 +71,8 @@ function applySiteSettings() {
 
         if (forceCopyPaste) {
           applyCopyPasteOverride()
+        } else {
+          if (typeof removeCopyPasteOverride === 'function') removeCopyPasteOverride()
         }
       }
     )
@@ -134,7 +143,6 @@ async function init() {
     initDragger()
     wireActionButtons()
     initCopyButton()
-    initAskBar()
 
     const titleEl = document.querySelector('.pm-page-title')
     if (titleEl) titleEl.textContent = document.title || window.location.hostname
@@ -199,6 +207,14 @@ function initSecurityObserver() {
 
 if (window !== window.top) {
   /* Skip full init in iframes — extension UI only runs in the top frame */
+  applySiteSettings()
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === 'sync') {
+      if (changes.activeWindowsWhitelist || changes.copyPasteWhitelist) {
+        applySiteSettings()
+      }
+    }
+  })
 } else if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init)
 } else {

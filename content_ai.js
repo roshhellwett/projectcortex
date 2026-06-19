@@ -77,6 +77,10 @@ function callAI(payload) {
               settle(reject, new Error('__SW_DEAD__'))
               return
             }
+            if (response.error === 'MANUAL_ABORT') {
+              settle(reject, new Error('MANUAL_ABORT'))
+              return
+            }
             if (response.error === 'NO_KEY') {
               settle(reject, new Error('__NO_KEY__'))
               return
@@ -110,7 +114,29 @@ function guard(fn) {
   }
 }
 
+let _swDeadRetries = 0
+
 function handleAIError(err) {
+  if (err.message === '__SW_DEAD__') {
+    if (_swDeadRetries >= 2) {
+      _swDeadRetries = 0
+      showError('Extension context invalidated. Please refresh the page.')
+      return
+    }
+    _swDeadRetries++
+    showError('Extension backend disconnected. Retrying...')
+    setTimeout(() => {
+      if (!_lastAction) return showState('welcome')
+      const a = _lastAction
+      if (a.name === 'correct_answers') window.__ProjectCortexAI.runCorrectAnswers()
+      else if (a.name === 'factcheck') window.__ProjectCortexAI.runFactCheck()
+      else if (a.name === 'summarize') window.__ProjectCortexAI.runSummarize()
+      else if (a.name === 'define') window.__ProjectCortexAI.runDefine()
+      else if (a.name === 'ask' && a.question) window.__ProjectCortexAI.runAsk(a.question)
+    }, 1500)
+    return
+  }
+  _swDeadRetries = 0
   const msg = err.message || ''
 
   const settingsBtn = document.getElementById('pm-error-settings-btn');
@@ -126,6 +152,9 @@ function handleAIError(err) {
     _isLocked = true;
     showState('locked');
     return;
+  }
+  if (msg === 'MANUAL_ABORT') {
+    return; // Silently ignore manual UI aborts
   }
   if (msg === '__NO_KEY__') {
     showError('No API key configured. Open Settings to add one, then click Retry.')
@@ -159,6 +188,10 @@ function handleAIError(err) {
     showError('The request timed out. The AI provider may be experiencing heavy load, or your network is slow. Please click Retry.')
     return
   }
+  if (/server returned 50/i.test(msg)) {
+    showError('The AI provider is currently experiencing server issues (50x Error). Please wait a moment and click Retry.')
+    return
+  }
   if (/network|internet|connection/i.test(msg)) {
     showError('Network connectivity error. Please verify your internet connection and click Retry.')
     return
@@ -182,7 +215,7 @@ function callAIAction(settings, action, prompt, systemPrompt) {
   })
 }
 
-window.runCorrectAnswers = guard(async function () {
+window.__ProjectCortexAI.runCorrectAnswers = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'correct_answers' }
   const selectedText = getDeepSelectionText()
@@ -202,7 +235,7 @@ window.runCorrectAnswers = guard(async function () {
     return
   }
 
-  const contextText = getPageContext(container)
+  const contextText = getPageContext(container, selectedText)
   const prompt = buildPrompt(selectedText, contextText)
 
   const settings = await getSettings()
@@ -234,7 +267,7 @@ window.runCorrectAnswers = guard(async function () {
   }
 })
 
-window.runSummarize = guard(async function () {
+window.__ProjectCortexAI.runSummarize = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'summarize' }
   openPanel()
@@ -245,7 +278,7 @@ window.runSummarize = guard(async function () {
   let pageText = selectedText;
 
   if (!pageText || pageText.trim().length < 10) {
-    pageText = getCleanText(document.body);
+    pageText = getFastPageContext(15000);
   }
 
   if (!pageText || pageText.trim().length < 25) {
@@ -274,7 +307,7 @@ window.runSummarize = guard(async function () {
   }
 })
 
-window.runDefine = guard(async function () {
+window.__ProjectCortexAI.runDefine = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'define' }
   const selectedText = getDeepSelectionText()
@@ -304,7 +337,7 @@ window.runDefine = guard(async function () {
   }
 })
 
-window.runFactCheck = guard(async function () {
+window.__ProjectCortexAI.runFactCheck = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'factcheck' }
   const selectedText = getDeepSelectionText()
@@ -323,7 +356,7 @@ window.runFactCheck = guard(async function () {
 
   try {
     startThinking('Cross-referencing')
-    const pageText = getCleanText(document.body).substring(0, 8000)
+    const pageText = getFastPageContext(8000)
     const contextHint = pageText.length > 50
       ? '\n\nPage context (for reference):\n' + pageText
       : ''
@@ -339,7 +372,7 @@ window.runFactCheck = guard(async function () {
   }
 })
 
-window.runAsk = guard(async function (question) {
+window.__ProjectCortexAI.runAsk = guard(async function (question) {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   if (!question?.trim()) return
   _lastAction = { name: 'ask', question }
@@ -351,9 +384,8 @@ window.runAsk = guard(async function (question) {
   showState('loading')
   startThinking('Thinking')
 
-  const fullPageText = getCleanText(document.body)
-  const truncated = fullPageText.substring(0, 12000)
-  const wasTruncated = fullPageText.length > 12000
+  const truncated = getFastPageContext(12000)
+  const wasTruncated = truncated.length >= 12000
   const settings = await getSettings()
   setLoadingSub(`${settings.apiProvider} · ${settings.model}`)
 

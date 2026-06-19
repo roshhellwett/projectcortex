@@ -57,6 +57,7 @@ function setLoadingSub(text) {
 }
 
 function showError(msg) {
+  openPanel()
   const el = document.getElementById('pm-error-msg')
   if (el) el.textContent = String(msg || '').substring(0, 800)
   showState('error')
@@ -66,51 +67,85 @@ function typeHtml(el, htmlString, speed) {
   cancelTypewriter()
   el.innerHTML = ''
   if (!htmlString) return
-
-  const cursor = document.createElement('span')
-  cursor.className = 'pm-cursor'
-  el.appendChild(cursor)
-
+  
   const parts = htmlString.split(/(<[^>]+>)/g).filter(Boolean)
   let partIndex = 0
   let charIndex = 0
-  let lastTime = 0
-  let decodedText = ''
-
-  const delay = speed || (htmlString.length > 800 ? 5 : htmlString.length > 300 ? 10 : 20)
-
+  
+  const charsPerFrame = htmlString.length > 800 ? 4 : htmlString.length > 300 ? 2 : 1
+  let activeTextNode = null
+  
+  const cursor = document.createElement('span')
+  cursor.className = 'pm-cursor'
+  
+  const parser = document.createElement('div')
+  let currentParent = el
+  
   function frame(time) {
-    if (time - lastTime < delay) { _typeTimer = requestAnimationFrame(frame); return }
-    lastTime = time
-
-    while (partIndex < parts.length) {
+    let charsTyped = 0
+    while (partIndex < parts.length && charsTyped < charsPerFrame) {
       const part = parts[partIndex]
+      
       if (part.startsWith('<') && part.endsWith('>')) {
-        cursor.insertAdjacentHTML('beforebegin', part)
+        const isClosing = part.startsWith('</')
+        const isVoid = part === '<br>' || part === '<hr>'
+        
+        if (isClosing) {
+          if (currentParent !== el && currentParent.parentNode) {
+            currentParent = currentParent.parentNode
+          }
+        } else {
+          parser.innerHTML = part
+          const newNode = parser.firstChild
+          if (newNode) {
+            currentParent.appendChild(newNode)
+            if (!isVoid) {
+              currentParent = newNode
+            }
+          } else if (isVoid) {
+            const voidNode = document.createElement(part.replace(/<|>/g, ''))
+            currentParent.appendChild(voidNode)
+          }
+        }
+        activeTextNode = null
         partIndex++
         charIndex = 0
         continue
       }
-
+      
       if (charIndex === 0) {
         const textarea = document.createElement('textarea')
         textarea.innerHTML = part
-        decodedText = textarea.value
+        const decodedText = textarea.value
+        activeTextNode = document.createTextNode('')
+        activeTextNode._fullText = decodedText
+        currentParent.appendChild(activeTextNode)
       }
-
-      if (charIndex < decodedText.length) {
-        cursor.insertAdjacentText('beforebegin', decodedText[charIndex])
+      
+      const fullText = activeTextNode._fullText
+      
+      if (charIndex < fullText.length) {
+        activeTextNode.nodeValue += fullText[charIndex]
         charIndex++
-        _typeTimer = requestAnimationFrame(frame)
-        return
+        charsTyped++
       } else {
         charIndex = 0
         partIndex++
+        activeTextNode = null
       }
     }
-    cursor.remove()
-    _typeTimer = null
+    
+    currentParent.appendChild(cursor)
+
+    if (partIndex < parts.length) {
+      _typeTimer = requestAnimationFrame(frame)
+    } else {
+      cursor.remove()
+      _typeTimer = null
+    }
   }
+  
+  el.appendChild(cursor)
   _typeTimer = requestAnimationFrame(frame)
 }
 
@@ -188,8 +223,15 @@ function openPanel() {
   if (!panel) return
   if (!panel.classList.contains('pm-open')) {
     if (_panelPos) {
-      panel.style.left = _panelPos.x + 'px'
-      panel.style.top = _panelPos.y + 'px'
+      let x = _panelPos.x;
+      let y = _panelPos.y;
+      if (typeof clamp === 'function') {
+        x = clamp(x, 0, window.innerWidth - 100);
+        y = clamp(y, 0, window.innerHeight - 100);
+        _panelPos = { x, y }; // dont call savePanelPos here to avoid heavy disk writes on open
+      }
+      panel.style.left = x + 'px'
+      panel.style.top = y + 'px'
       panel.style.transform = 'none'
       panel.classList.add('pm-positioned')
     } else {
@@ -346,7 +388,7 @@ function createBubble() {
           const query = e.target.value.trim()
           e.target.value = ''
           hideBubble()
-          window.runAsk(query)
+          window.__ProjectCortexAI.runAsk(query)
         }
       })
       bubbleInput.addEventListener('keyup', e => e.stopPropagation())
@@ -355,19 +397,19 @@ function createBubble() {
 
     _bubble.querySelector('#pm-bubble-correct')?.addEventListener('click', () => {
       hideBubble()
-      window.runCorrectAnswers()
+      window.__ProjectCortexAI.runCorrectAnswers()
     })
     _bubble.querySelector('#pm-bubble-factcheck')?.addEventListener('click', () => {
       hideBubble()
-      window.runFactCheck()
+      window.__ProjectCortexAI.runFactCheck()
     })
     _bubble.querySelector('#pm-bubble-define')?.addEventListener('click', () => {
       hideBubble()
-      window.runDefine()
+      window.__ProjectCortexAI.runDefine()
     })
     _bubble.querySelector('#pm-bubble-summarize')?.addEventListener('click', () => {
       hideBubble()
-      window.runSummarize()
+      window.__ProjectCortexAI.runSummarize()
     })
     _bubble.querySelector('#pm-bubble-hide')?.addEventListener('click', () => {
       hideBubble()
@@ -376,7 +418,11 @@ function createBubble() {
 }
 
 function hideBubble() {
-  if (_bubble) _bubble.classList.remove('visible')
+  if (_bubble) {
+    _bubble.classList.remove('visible')
+    const inp = document.getElementById('pm-bubble-input')
+    if (inp) inp.value = ''
+  }
 }
 
 function showBubble(sel) {
@@ -432,6 +478,12 @@ function showBubble(sel) {
 function scheduleBubbleCheck(delay = 200) {
   clearTimeout(_hideTimer)
   _hideTimer = setTimeout(() => {
+    if (typeof init === 'function') {
+      if ((_bubble && !document.contains(_bubble)) || (_panel && !document.contains(_panel))) {
+        init();
+        return; // init will recreate the UI, we should abort this check and let the new listeners handle it.
+      }
+    }
     const sel = getDeepSelection()
     if (sel && !sel.isCollapsed && sel.toString().trim()) {
       showBubble(sel)
@@ -459,6 +511,10 @@ function initDragger() {
       const saved = localStorage.getItem('pc_panel_pos');
       if (saved) {
         _panelPos = JSON.parse(saved);
+        if (typeof clamp === 'function') {
+          _panelPos.x = clamp(_panelPos.x, 0, window.innerWidth - 100);
+          _panelPos.y = clamp(_panelPos.y, 0, window.innerHeight - 100);
+        }
         if (_panel && _panel.classList.contains('pm-open')) {
           _panel.style.left = _panelPos.x + 'px';
           _panel.style.top = _panelPos.y + 'px';
@@ -487,27 +543,39 @@ function initDragger() {
   _dragListenersAdded = true
 
   let _rafPending = false
+  let _currentDx = 0, _currentDy = 0
+  
   document.addEventListener('mousemove', e => {
     if (!_drag || !_panel) return
     if (_rafPending) return
     _rafPending = true
     requestAnimationFrame(() => {
       _rafPending = false
-      const x = clamp(_sl + (e.clientX - _sx), 0, window.innerWidth - 100)
-      const y = clamp(_st + (e.clientY - _sy), 0, window.innerHeight - 100)
-      _panel.style.left = x + 'px'
-      _panel.style.top = y + 'px'
+      const targetX = clamp(_sl + (e.clientX - _sx), 0, window.innerWidth - 100)
+      const targetY = clamp(_st + (e.clientY - _sy), 0, window.innerHeight - 100)
+      _currentDx = targetX - _sl
+      _currentDy = targetY - _st
+      _panel.style.transform = `translate(${_currentDx}px, ${_currentDy}px)`
     })
   })
 
   document.addEventListener('mouseup', () => {
     if (!_drag || !_panel) return
     _drag = false
+    _lastDragEnd = Date.now()
     _panel.classList.remove('pm-dragging')
-    const x = clamp(parseInt(_panel.style.left) || 24, 0, window.innerWidth - 100)
-    const y = clamp(parseInt(_panel.style.top) || 100, 0, window.innerHeight - 100)
+    
+    // Apply final position to left/top and reset transform
+    const x = clamp(_sl + _currentDx, 0, window.innerWidth - 100)
+    const y = clamp(_st + _currentDy, 0, window.innerHeight - 100)
+    
+    _panel.style.transform = 'none'
     _panel.style.left = x + 'px'
     _panel.style.top = y + 'px'
+    
+    _currentDx = 0
+    _currentDy = 0
+    
     savePanelPos(x, y)
   })
 }
@@ -518,10 +586,10 @@ function wireActionButtons() {
     const btnFactcheck = document.getElementById('pm-action-factcheck')
     const btnSummarize = document.getElementById('pm-action-summarize')
     const btnDefine = document.getElementById('pm-action-define')
-    if (btnCorrect) btnCorrect.addEventListener('click', () => { window.runCorrectAnswers() })
-    if (btnFactcheck) btnFactcheck.addEventListener('click', () => { window.runFactCheck() })
-    if (btnSummarize) btnSummarize.addEventListener('click', () => { window.runSummarize() })
-    if (btnDefine) btnDefine.addEventListener('click', () => { window.runDefine() })
+    if (btnCorrect) btnCorrect.addEventListener('click', () => { window.__ProjectCortexAI.runCorrectAnswers() })
+    if (btnFactcheck) btnFactcheck.addEventListener('click', () => { window.__ProjectCortexAI.runFactCheck() })
+    if (btnSummarize) btnSummarize.addEventListener('click', () => { window.__ProjectCortexAI.runSummarize() })
+    if (btnDefine) btnDefine.addEventListener('click', () => { window.__ProjectCortexAI.runDefine() })
     document.getElementById('pm-action-settings')?.addEventListener('click', () => {
       chrome.runtime.sendMessage({
         type: 'OPEN_OPTIONS',
@@ -609,13 +677,30 @@ function wireActionButtons() {
       bubbleInput.addEventListener('keypress', e => e.stopPropagation())
     }
     const askInput = document.getElementById('pm-ask-input')
+    const askSendBtn = document.getElementById('pm-ask-send')
+    
+    const triggerAsk = () => {
+      const q = askInput.value.trim()
+      if (!q) {
+        askInput.classList.remove('pm-invalid')
+        void askInput.offsetWidth // trigger reflow
+        askInput.classList.add('pm-invalid')
+        setTimeout(() => askInput.classList.remove('pm-invalid'), 500)
+        return
+      }
+      askInput.value = ''
+      window.__ProjectCortexAI.runAsk(q)
+    }
+
+    if (askSendBtn) {
+      askSendBtn.addEventListener('click', triggerAsk)
+    }
+
     if (askInput) {
       askInput.addEventListener('keydown', e => {
         e.stopPropagation()
         if (e.key === 'Enter') {
-          const q = e.target.value
-          e.target.value = ''
-          window.runAsk(q)
+          triggerAsk()
         }
       })
       askInput.addEventListener('keyup', e => e.stopPropagation())
@@ -633,11 +718,11 @@ function wireActionButtons() {
       if (_isLocked) return showState('locked');
       if (!_lastAction) return showState('welcome')
       const a = _lastAction
-      if (a.name === 'correct_answers') window.runCorrectAnswers()
-      else if (a.name === 'factcheck') window.runFactCheck()
-      else if (a.name === 'summarize') window.runSummarize()
-      else if (a.name === 'define') window.runDefine()
-      else if (a.name === 'ask' && a.question) window.runAsk(a.question)
+      if (a.name === 'correct_answers') window.__ProjectCortexAI.runCorrectAnswers()
+      else if (a.name === 'factcheck') window.__ProjectCortexAI.runFactCheck()
+      else if (a.name === 'summarize') window.__ProjectCortexAI.runSummarize()
+      else if (a.name === 'define') window.__ProjectCortexAI.runDefine()
+      else if (a.name === 'ask' && a.question) window.__ProjectCortexAI.runAsk(a.question)
       else showState('welcome')
     })
   } catch (_) {}
@@ -675,20 +760,6 @@ function initCopyButton() {
   })
 }
 
-function initAskBar() {
-  const askInput = document.getElementById('pm-ask-input')
-  const askSend = document.getElementById('pm-ask-send')
-
-  function handleAsk() {
-    const q = askInput.value.trim()
-    if (!q) return
-    askInput.value = ''
-    window.runAsk(q)
-  }
-
-  askSend?.addEventListener('click', handleAsk)
-}
-
 function initSelectionListeners() {
   if (_selectionListenersAdded) return
   _selectionListenersAdded = true
@@ -703,6 +774,7 @@ function initSelectionListeners() {
   })
 
   document.addEventListener('mouseup', e => {
+    if (typeof _lastDragEnd !== 'undefined' && Date.now() - _lastDragEnd < 100) return
     if (Date.now() - _clickedOutsideAt < 100) { _clickedOutsideAt = 0; return }
     if (_bubble && _bubble.contains(e.target)) return
     if (isOurElement(e.target)) { hideBubble(); return }
@@ -726,7 +798,15 @@ function initSelectionListeners() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       hideBubble()
+      const panel = document.getElementById('pagemind-panel')
+      const wasOpen = panel && panel.classList.contains('pm-open')
       closePanel()
+      if (wasOpen) {
+        chrome.runtime.sendMessage({ type: 'AI_ABORT' }).catch(() => {})
+        if (typeof showState === 'function' && !_isLocked) {
+          showState('welcome')
+        }
+      }
     }
 
     if (e.altKey && e.key.toLowerCase() === 'a') {
@@ -741,6 +821,33 @@ function initSelectionListeners() {
         } else {
           showState('welcome')
           document.getElementById('pm-ask-input')?.focus()
+        }
+      }
+    }
+
+    if (e.key === 'Tab') {
+      const panel = document.getElementById('pagemind-panel')
+      if (!panel || !panel.classList.contains('pm-open')) return
+      
+      const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      const focusableElements = Array.from(panel.querySelectorAll(focusableSelectors)).filter(el => {
+        return el.offsetWidth > 0 && el.offsetHeight > 0 && !el.disabled
+      })
+      
+      if (focusableElements.length === 0) return
+      
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements[focusableElements.length - 1]
+      
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement || !panel.contains(document.activeElement)) {
+          e.preventDefault()
+          lastElement.focus()
+        }
+      } else {
+        if (document.activeElement === lastElement || !panel.contains(document.activeElement)) {
+          e.preventDefault()
+          firstElement.focus()
         }
       }
     }

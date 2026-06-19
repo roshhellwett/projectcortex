@@ -408,7 +408,8 @@
     100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
 }
 
-#pagemind-panel #pm-license-input.pm-invalid {
+#pagemind-panel #pm-license-input.pm-invalid,
+#pagemind-panel #pm-ask-input.pm-invalid {
     animation: pmShake 0.5s cubic-bezier(.36,.07,.19,.97) both !important;
     border-color: #ef4444 !important;
     background: rgba(239, 68, 68, 0.08) !important;
@@ -601,6 +602,7 @@
     padding: 0 !important;
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
+    word-break: break-word !important;
 }
 
 #pagemind-panel .pm-result-body strong {

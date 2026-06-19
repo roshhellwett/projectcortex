@@ -17,6 +17,7 @@ function initMessageListener() {
         correct_answers: window.runCorrectAnswers,
         summarize: window.runSummarize,
         factcheck: window.runFactCheck,
+        define: window.runDefine,
         open_panel: () => {
           const sel = getDeepSelection()
           if (sel && !sel.isCollapsed && sel.toString().trim()) {
@@ -68,6 +69,10 @@ function applySiteSettings() {
     )
   } catch (_) {}
 }
+
+var _securityObserver = null;
+var _securityInterval = null;
+var _enforcingLock = false;
 
 function cleanup() {
   if (_securityObserver) { _securityObserver.disconnect(); _securityObserver = null; }
@@ -153,10 +158,6 @@ async function init() {
     console.error('[Cortex] Init failed:', e)
   }
 }
-
-let _securityObserver = null;
-let _securityInterval = null;
-let _enforcingLock = false;
 
 function initSecurityObserver() {
   if (_securityObserver) _securityObserver.disconnect();

@@ -1,6 +1,6 @@
 {
   "name": "projectcortex",
-  "version": "1.0.0",
+  "version": "9.0.0",
   "description": "![Stars](https://img.shields.io/github/stars/roshhellwett/projectcortex?style=for-the-badge)\r ![Chrome](https://img.shields.io/badge/Chrome-Extension-brightgreen?style=for-the-badge)\r ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge)",
   "main": "bg_api.js",
   "scripts": {

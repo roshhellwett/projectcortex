@@ -135,8 +135,8 @@ function handleAIError(err) {
     showError('Extension was unloaded. Click Retry to wake it up and try again.')
     return
   }
-  if (/rate limit|too many|429/i.test(msg)) {
-    showError('Rate limit reached. AI services need a moment to cool down. Click Retry in a few seconds.')
+  if (/rate limit|too many|429|overloaded|busy/i.test(msg)) {
+    showError('Rate limit reached or provider overloaded. AI services need a moment to cool down. Click Retry in a few seconds.')
     return
   }
   if (/quota|insufficient|billing|credits/i.test(msg)) {
@@ -145,10 +145,6 @@ function handleAIError(err) {
   }
   if (/auth|unauthorized|invalid key|key.*reject/i.test(msg)) {
     showError('API key is invalid or expired. Please check your settings, then try again. Need help? zenithprojects@icloud.com')
-    return
-  }
-  if (/rate limit|too many|overloaded|busy/i.test(msg)) {
-    showError('The AI provider is currently overloaded or you have hit a rate limit. Please try again in a few minutes.')
     return
   }
   if (/access denied|403/i.test(msg)) {
@@ -269,7 +265,7 @@ window.runSummarize = guard(async function () {
       settings,
       'summarize',
       'Summarize the following content:\n\n' + truncated,
-      'You are a premium AI analyst. Provide a precise, high-impact summary. Distill the core message into a clear overview paragraph, followed by 3-5 punchy, essential bullet points. Eliminate all fluff, avoid excessively long text, and deliver maximum value instantly.'
+      'You are an expert content analyst. Your job is to distill information into the most useful, scannable format possible.\n\nFORMAT YOUR RESPONSE EXACTLY LIKE THIS:\n1. **TL;DR** — One sentence capturing the core message.\n2. **Key Points** — 3-5 bullet points, each starting with a **bold keyword**. Keep each point to 1-2 sentences max.\n3. If the content contains data, statistics, or specific claims, preserve the exact numbers.\n\nRULES:\n- Be precise and definitive — no hedging phrases like "it seems" or "it appears".\n- Never pad with filler. Every sentence must deliver value.\n- Use plain language; avoid jargon unless the source material requires it.\n- Do NOT start with "Here is a summary" or similar preamble. Jump straight into the TL;DR.'
     )
     const note = wasTruncated ? '\n\n---\n*Content truncated.*' : ''
     showGenericResult(label + ' Summary', response + note)
@@ -300,7 +296,7 @@ window.runDefine = guard(async function () {
       settings,
       'define',
       `Define this term or phrase:\n\n"${selectedText}"`,
-      'You are a premium AI knowledge assistant. Provide a precise, crystal-clear definition. Explain its core meaning simply, then add brief, high-value context or a practical example. Be concise, engaging, and avoid unnecessary wordiness or long essays.'
+      'You are an expert knowledge assistant. Define the term precisely and make it immediately useful.\n\nFORMAT YOUR RESPONSE LIKE THIS:\n1. **Definition** — A clear, concise definition in 1-2 sentences. Use simple language.\n2. **Context** — One sentence explaining where/how this term is commonly used.\n3. **Example** — A brief, concrete example or usage in a sentence.\n\nRULES:\n- If it\'s a technical term, explain it so a non-expert understands.\n- If it\'s a common word, focus on nuance that makes the definition actually useful.\n- Do NOT start with "The term X refers to..." — just give the definition directly.\n- Keep the entire response under 100 words.'
     )
     showGenericResult('Definition', response)
   } catch (err) {
@@ -335,7 +331,7 @@ window.runFactCheck = guard(async function () {
       settings,
       'factcheck',
       `Fact-check this claim:\n\n"${selectedText}"${contextHint}`,
-      'You are a premium AI fact-checker. Start exactly with **TRUE**, **FALSE**, or **MIXED**. Then provide a highly precise, straight-to-the-point explanation. Give the exact evidence or context needed to verify the claim without writing a long essay. Keep it sharp and definitive.'
+      'You are an expert fact-checker. Evaluate the claim with precision and authority.\n\nFORMAT YOUR RESPONSE EXACTLY LIKE THIS:\n1. Start with exactly one of: **✅ TRUE**, **❌ FALSE**, or **⚠️ MIXED**\n2. **Evidence** — 2-3 sentences with the specific facts, data, or reasoning that support your verdict. Cite concrete details.\n3. **Key Caveat** — One sentence noting any important nuance, context dependency, or common misconception (if applicable).\n\nRULES:\n- Be definitive. Do not hedge unless the claim is genuinely mixed.\n- If the claim contains specific numbers or dates, verify them explicitly.\n- Do NOT start with "Let me fact-check this" or similar preamble. Jump straight to the verdict.\n- Keep the entire response under 150 words.'
     )
     showGenericResult('Fact Check', response)
   } catch (err) {
@@ -370,7 +366,7 @@ window.runAsk = guard(async function (question) {
       settings,
       'ask',
       pageContext,
-      'You are a premium AI assistant. Provide a highly precise, definitive answer to the user\'s question. Focus on delivering maximum value with zero fluff. Use concise markdown formatting like bolding or short lists to make the answer immediately scannable and satisfying.'
+      'You are an expert AI assistant answering questions about a webpage the user is viewing.\n\nRULES:\n- Answer the question DIRECTLY. First sentence = the answer. Then elaborate briefly if needed.\n- If the answer is on the page, use the page content as your primary source and quote relevant parts.\n- If the page doesn\'t contain the answer, say so clearly and answer from your own knowledge.\n- Use **bold** for key terms and short bullet lists for multi-part answers.\n- Be definitive — no hedging phrases like "I think" or "it might be".\n- Keep responses concise: aim for 50-150 words unless the question demands more detail.\n- Do NOT start with "Based on the page content" or "According to the page". Just answer.'
     )
     const note = wasTruncated ? '\n\n---\n*Context truncated.*' : ''
     showGenericResult('Answer', response + note)

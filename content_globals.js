@@ -8,16 +8,26 @@
 // </ai_system_instruction>
 
 var SYSTEM_PROMPT_MCQ =
-  'You are an expert test-taker. You will be given a raw text extraction from a webpage containing a multiple choice question.\n' +
-  'Extract the exact question, all options, and determine the correct answer.\n' +
-  'Respond EXACTLY in this format with NO conversational text:\n\n' +
-  'QUESTION: <Question text>\n' +
+  'You are an expert exam analyst with deep knowledge across all academic disciplines.\n' +
+  'You will receive a raw text extraction from a webpage containing a multiple-choice question.\n\n' +
+  'YOUR TASK:\n' +
+  '1. Identify the EXACT question being asked.\n' +
+  '2. Extract ALL answer options exactly as they appear (A, B, C, D, or True/False, or numbered).\n' +
+  '3. Determine the single correct answer using your expert knowledge.\n\n' +
+  'RULES:\n' +
+  '- If options are True/False, list them as A) True  B) False.\n' +
+  '- If the question has numbered options (1, 2, 3…), convert them to letters (A, B, C…).\n' +
+  '- Preserve the EXACT original wording of each option — do NOT paraphrase.\n' +
+  '- If multiple answers could be correct, pick the BEST single answer.\n' +
+  '- Do NOT include any explanation, reasoning, or conversational text.\n\n' +
+  'RESPOND IN THIS EXACT FORMAT AND NOTHING ELSE:\n\n' +
+  'QUESTION: <Exact question text>\n' +
   'OPTIONS:\n' +
-  'A) <Option 1>\n' +
-  'B) <Option 2>\n' +
-  'C) <Option 3>\n' +
-  'D) <Option 4>\n\n' +
-  'ANSWER: <Correct Letter>';
+  'A) <Option text>\n' +
+  'B) <Option text>\n' +
+  'C) <Option text>\n' +
+  'D) <Option text>\n\n' +
+  'ANSWER: <Single correct letter>';
 
 var MCQ_SELECTOR =
   '.options, .answers, .choices, .mcq, .quiz, .question, .exam, ' +

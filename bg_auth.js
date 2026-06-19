@@ -121,9 +121,11 @@ export async function checkAuthStatus() {
       if (!res.ok) {
         chrome.storage.local.remove(['authToken']);
         chrome.storage.sync.remove(['authToken']);
-        chrome.tabs.query({}, (tabs) => {
-          tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
-        });
+        try {
+          chrome.tabs.query({}, (tabs) => {
+            tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
+          });
+        } catch (_) {}
         return { locked: true, reason: data.error || 'EXPIRED', installId: currentInstallId };
       }
 
@@ -194,9 +196,11 @@ export async function activateLicense(licenseKey) {
     chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() });
     chrome.storage.sync.set(authData);
 
-    chrome.tabs.query({}, (tabs) => {
-      tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
-    });
+    try {
+      chrome.tabs.query({}, (tabs) => {
+        tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
+      });
+    } catch (_) {}
 
     return { success: true };
   } catch (e) {

@@ -78,6 +78,15 @@ const btnMap = [
     if (!res) return showError('Cannot run on this page.');
     window.close();
   }],
+  ['define', async () => {
+    const tab = await getActiveTab();
+    if (!tab?.id) return;
+    setLoading(true);
+    const res = await sendAction(tab, 'define');
+    setLoading(false);
+    if (!res) return showError('Select a word or phrase first, then click Define.');
+    window.close();
+  }],
 
   ['openSettings', async () => {
     const tab = await getActiveTab();

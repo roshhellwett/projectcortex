@@ -14,6 +14,14 @@ const extractHostname = url => {
   try { return new URL(url).hostname; } catch { return ''; }
 };
 
+chrome.runtime.onInstalled.addListener(() => {
+  checkAuthStatus();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  checkAuthStatus();
+});
+
 chrome.alarms.create('authCheck', { periodInMinutes: 2.5 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'authCheck') {

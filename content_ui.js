@@ -368,16 +368,31 @@ function createBubble() {
     _bubble = document.createElement('div')
     _bubble.id = 'pagemind-bubble'
     _bubble.innerHTML =
-      '<div style="padding: 0 4px"><input type="text" id="pm-bubble-input" placeholder="Ask anything..." autocomplete="off"></div>' +
-      '<button id="pm-bubble-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>' +
-      '<button id="pm-bubble-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>' +
-      '<button id="pm-bubble-define" aria-label="Define">\uD83D\uDCD6 Define</button>' +
-      '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>' +
-      '<button id="pm-bubble-hide" aria-label="Hide">\u2205 Hide</button>'
+      '<button id="pm-bubble-trigger" aria-label="Open ProjectCortex actions" title="ProjectCortex">' +
+        '<img src="' + chrome.runtime.getURL('icons/logo48.png') + '" alt="">' +
+      '</button>' +
+      '<div id="pm-bubble-menu" aria-label="ProjectCortex selection actions">' +
+        '<div style="padding: 0 4px"><input type="text" id="pm-bubble-input" placeholder="Ask anything..." autocomplete="off"></div>' +
+        '<button id="pm-bubble-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>' +
+        '<button id="pm-bubble-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>' +
+        '<button id="pm-bubble-define" aria-label="Define">\uD83D\uDCD6 Define</button>' +
+        '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>' +
+        '<button id="pm-bubble-hide" aria-label="Hide">\u2205 Hide</button>' +
+      '</div>'
     document.body.appendChild(_bubble)
 
     _bubble.addEventListener('mousedown', e => { 
       if(e.target.id !== 'pm-bubble-input') e.preventDefault() 
+    })
+
+    _bubble.querySelector('#pm-bubble-trigger')?.addEventListener('click', e => {
+      e.preventDefault()
+      e.stopPropagation()
+      _bubble.classList.toggle('expanded')
+      if (_bubble.classList.contains('expanded')) {
+        keepBubbleInViewport()
+        setTimeout(() => _bubble.querySelector('#pm-bubble-input')?.focus(), 60)
+      }
     })
 
     const bubbleInput = _bubble.querySelector('#pm-bubble-input')
@@ -417,9 +432,25 @@ function createBubble() {
   } catch (_) {}
 }
 
+function keepBubbleInViewport() {
+  if (!_bubble) return
+  try {
+    const rect = _bubble.getBoundingClientRect()
+    let left = rect.left
+    let top = rect.top
+    if (left + rect.width > window.innerWidth - 8) left = window.innerWidth - rect.width - 8
+    if (left < 8) left = 8
+    if (top + rect.height > window.innerHeight - 8) top = window.innerHeight - rect.height - 8
+    if (top < 8) top = 8
+    _bubble.style.left = left + 'px'
+    _bubble.style.top = top + 'px'
+  } catch (_) {}
+}
+
 function hideBubble() {
   if (_bubble) {
     _bubble.classList.remove('visible')
+    _bubble.classList.remove('expanded')
     const inp = document.getElementById('pm-bubble-input')
     if (inp) inp.value = ''
   }
@@ -453,6 +484,7 @@ function showBubble(sel) {
     }
 
     _bubble.classList.add('visible')
+    _bubble.classList.remove('expanded')
     const bw = _bubble.offsetWidth
     const bh = _bubble.offsetHeight
 
@@ -478,6 +510,10 @@ function showBubble(sel) {
 function scheduleBubbleCheck(delay = 200) {
   clearTimeout(_hideTimer)
   _hideTimer = setTimeout(() => {
+    if (_bubble?.classList.contains('expanded')) {
+      keepBubbleInViewport()
+      return
+    }
     if (typeof init === 'function') {
       if ((_bubble && !document.contains(_bubble)) || (_panel && !document.contains(_panel))) {
         init();
@@ -784,6 +820,7 @@ function initSelectionListeners() {
 
   document.addEventListener('selectionchange', () => {
     if (Date.now() - _clickedOutsideAt < 500) { _clickedOutsideAt = 0; return }
+    if (_bubble?.classList.contains('expanded')) return
     scheduleBubbleCheck(300)
   })
 
@@ -792,6 +829,7 @@ function initSelectionListeners() {
     if (_scrollTimer) return
     _scrollTimer = setTimeout(() => {
       _scrollTimer = null
+      if (_bubble?.classList.contains('expanded')) return
       hideBubble()
     }, 50)
   }, true)

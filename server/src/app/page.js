@@ -180,7 +180,7 @@ export default function Home() {
           
           <div className="card">
             <h3 className="card-title">Your Own License Key</h3>
-            <p className="card-desc">No complicated setups. Buy a license key, activate the extension in your browser, and it's yours to use securely.</p>
+            <p className="card-desc">No complicated setups. Buy a license key, activate the extension in your browser, and it&apos;s yours to use securely.</p>
             <div className="tags-container">
               <div className="tag">JWT Verification</div>
               <div className="tag">Zero-Touch Management</div>
@@ -196,7 +196,7 @@ export default function Home() {
         </div>
         
         <p className="about-desc">
-          It's simple: install the extension, activate your license key, and you're good to go. The AI interface floats discreetly over your current webpage. No clunky sidebars, no copying and pasting into other tabs—just fast, accurate answers exactly when you need them.
+          It&apos;s simple: install the extension, activate your license key, and you&apos;re good to go. The AI interface floats discreetly over your current webpage. No clunky sidebars, no copying and pasting into other tabs—just fast, accurate answers exactly when you need them.
         </p>
         
         <div className="showcase-grid">
@@ -219,8 +219,8 @@ export default function Home() {
                 <div className="mockup-status"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg> SELECTION SUMMARY</div>
                 <div className="mockup-back-btn">← Back</div>
               </div>
-              <div className="mockup-paragraph"><strong>Understanding React Hooks</strong>Hooks are functions that let you "hook into" React state and lifecycle features from function components. They don't work inside classes.</div>
-              <div className="mockup-paragraph" style={{ marginTop: 'auto' }}><strong>Rules of Hooks</strong>Only call Hooks at the top level. Don't call Hooks inside loops, conditions, or nested functions.</div>
+              <div className="mockup-paragraph"><strong>Understanding React Hooks</strong>Hooks are functions that let you &quot;hook into&quot; React state and lifecycle features from function components. They don&apos;t work inside classes.</div>
+              <div className="mockup-paragraph" style={{ marginTop: 'auto' }}><strong>Rules of Hooks</strong>Only call Hooks at the top level. Don&apos;t call Hooks inside loops, conditions, or nested functions.</div>
             </div>
             <div className="mockup-footer">
               <div className="mockup-input-wrapper" style={{ marginTop: 0 }}>

@@ -1002,20 +1002,21 @@
     z-index: 2147483647 !important;
     display: flex !important;
     flex-direction: column !important;
-    background: rgba(14, 14, 18, 0.92) !important;
+    background: rgba(14, 14, 18, 0.88) !important;
     -webkit-backdrop-filter: blur(32px) saturate(160%) !important;
     backdrop-filter: blur(32px) saturate(160%) !important;
     border: none !important;
-    border-radius: var(--pm-radius) !important;
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.06) inset !important;
-    padding: 6px !important;
+    border-radius: 999px !important;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255,255,255,0.1) inset !important;
+    padding: 4px !important;
     gap: 2px !important;
     opacity: 0 !important;
     transform: translateY(10px) scale(0.95) !important;
     transition: opacity 0.3s var(--pm-ease-out), transform 0.4s var(--pm-spring) !important;
     will-change: transform, opacity !important;
     pointer-events: none !important;
-    width: 220px !important;
+    width: 44px !important;
+    min-height: 44px !important;
     max-width: calc(100vw - 20px) !important;
 }
 
@@ -1023,6 +1024,44 @@
     opacity: 1 !important;
     transform: translateY(0) scale(1) !important;
     pointer-events: auto !important;
+}
+
+#pagemind-bubble.expanded {
+    width: 220px !important;
+    border-radius: var(--pm-radius) !important;
+    padding: 6px !important;
+    background: rgba(14, 14, 18, 0.94) !important;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.06) inset !important;
+}
+
+#pm-bubble-trigger {
+    width: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#pm-bubble-trigger img {
+    width: 24px !important;
+    height: 24px !important;
+    display: block !important;
+    border-radius: 50% !important;
+}
+
+#pm-bubble-menu {
+    display: none !important;
+}
+
+#pagemind-bubble.expanded #pm-bubble-menu {
+    display: block !important;
+}
+
+#pagemind-bubble.expanded #pm-bubble-trigger {
+    display: none !important;
 }
 
 #pm-bubble-input {
@@ -1049,7 +1088,7 @@
     content: '' !important;
     position: absolute !important;
     inset: -1px !important;
-    border-radius: calc(var(--pm-radius) + 1px) !important;
+    border-radius: inherit !important;
     background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.15), rgba(236,72,153,0.1), rgba(99,102,241,0.25)) !important;
     background-size: 300% 300% !important;
     animation: pmBorderGlow 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
@@ -1081,6 +1120,11 @@
     position: relative !important;
     overflow: hidden !important;
     will-change: transform !important;
+}
+
+#pagemind-bubble:not(.expanded) button {
+    text-align: center !important;
+    gap: 0 !important;
 }
 
 #pagemind-bubble button::after {

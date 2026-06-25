@@ -11,18 +11,47 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { signActivationToken } from '@/lib/auth';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_LICENSE_DAYS = Math.min(Math.max(parseInt(process.env.DEFAULT_LICENSE_DAYS || '7', 10), 1), 3650);
+
+function normalizeLicenseKey(value) {
+  return String(value || '').trim().toUpperCase();
+}
+
+function getLicenseDays(license) {
+  const rawDays = license?.duration_days ?? license?.days ?? DEFAULT_LICENSE_DAYS;
+  const parsed = parseInt(rawDays, 10);
+  if (!Number.isFinite(parsed)) return DEFAULT_LICENSE_DAYS;
+  return Math.min(Math.max(parsed, 1), 3650);
+}
+
+function publicLicenseState(license, token) {
+  const expiresAt = license.expires_at;
+  const remainingMs = expiresAt ? new Date(expiresAt).getTime() - Date.now() : 0;
+  return {
+    success: true,
+    token,
+    expiresAt,
+    activatedAt: license.activated_at,
+    licenseKey: license.license_key,
+    status: license.status,
+    daysRemaining: Math.max(0, Math.ceil(remainingMs / DAY_MS))
+  };
+}
+
 export async function POST(req) {
   try {
     const { licenseKey, installId } = await req.json();
+    const cleanLicenseKey = normalizeLicenseKey(licenseKey);
 
-    if (!licenseKey || !installId) {
+    if (!cleanLicenseKey || !installId) {
       return NextResponse.json({ error: 'Missing licenseKey or installId' }, { status: 400 });
     }
 
     const { data: license, error: fetchError } = await supabase
       .from('licenses')
       .select('*')
-      .eq('license_key', licenseKey)
+      .eq('license_key', cleanLicenseKey)
       .single();
 
     if (fetchError || !license) {
@@ -38,11 +67,15 @@ export async function POST(req) {
         return NextResponse.json({ error: 'License key is already used on another device' }, { status: 403 });
       }
 
-      if (new Date() > new Date(license.expires_at)) {
+      if (license.expires_at && new Date() > new Date(license.expires_at)) {
         if (license.status !== 'expired') {
           await supabase.from('licenses').update({ status: 'expired' }).eq('id', license.id);
         }
-        return NextResponse.json({ error: 'License key has expired' }, { status: 403 });
+        return NextResponse.json({
+          error: 'License key has expired',
+          code: 'LICENSE_EXPIRED',
+          expiresAt: license.expires_at
+        }, { status: 403 });
       }
 
       if (license.status === 'expired') {
@@ -58,18 +91,12 @@ export async function POST(req) {
         seed: process.env.AI_CRYPTO_SEED || 'default_seed_777' 
       });
 
-      return NextResponse.json({ 
-        success: true, 
-        token, 
-        expiresAt: license.expires_at,
-        activatedAt: license.activated_at,
-        licenseKey: license.license_key
-      });
+      return NextResponse.json(publicLicenseState(license, token));
     }
 
     if (license.status === 'unused') {
       const now = new Date();
-      const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); 
+      const expiresAt = new Date(now.getTime() + getLicenseDays(license) * DAY_MS);
 
       const { error: updateError } = await supabase
         .from('licenses')
@@ -94,13 +121,13 @@ export async function POST(req) {
         seed: process.env.AI_CRYPTO_SEED || 'default_seed_777'
       });
 
-      return NextResponse.json({ 
-        success: true, 
-        token, 
-        expiresAt: expiresAt.toISOString(),
-        activatedAt: now.toISOString(),
-        licenseKey: license.license_key
-      });
+      return NextResponse.json(publicLicenseState({
+        ...license,
+        status: 'active',
+        install_id: installId,
+        activated_at: now.toISOString(),
+        expires_at: expiresAt.toISOString()
+      }, token));
     }
 
     return NextResponse.json({ error: 'License is not valid for activation' }, { status: 403 });

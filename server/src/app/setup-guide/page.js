@@ -9,6 +9,7 @@
 
 'use client';
 import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 import '../globals.css';
 
 export default function Guide() {
@@ -63,14 +64,14 @@ export default function Guide() {
       />
       <nav className="navbar-wrapper">
         <div className="navbar-inner">
-          <a href="/" className="logo-circle" style={{ background: 'transparent', border: 'none', padding: 0 }}>
+          <Link href="/" className="logo-circle" style={{ background: 'transparent', border: 'none', padding: 0 }}>
             <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', mixBlendMode: 'screen' }} />
-          </a>
+          </Link>
           
           <div className="nav-links-pill">
-            <a href="/">Home</a>
-            <a href="/#features">Features</a>
-            <a href="/setup-guide" className="active">Setup Guide</a>
+            <Link href="/">Home</Link>
+            <Link href="/#features">Features</Link>
+            <Link href="/setup-guide" className="active">Setup Guide</Link>
             <a href="https://t.me/roshhellwett">Pricing</a>
           </div>
           
@@ -181,7 +182,7 @@ export default function Guide() {
             </div>
             
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: '1.6', marginBottom: '24px' }}>
-              If ProjectCortex isn't appearing or working on a webpage after installation, follow these quick steps:
+              If ProjectCortex isn&apos;t appearing or working on a webpage after installation, follow these quick steps:
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>

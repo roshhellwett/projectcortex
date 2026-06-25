@@ -11,6 +11,8 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { verifyActivationToken, signActivationToken } from '@/lib/auth';
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export async function POST(req) {
   try {
     const { token, hwid } = await req.json();
@@ -46,25 +48,42 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Hardware Mismatch (Database). Please activate this device.' }, { status: 403 });
     }
 
-    if (new Date() > new Date(license.expires_at)) {
+    if (license.expires_at && new Date() > new Date(license.expires_at)) {
       if (license.status !== 'expired') {
         supabase.from('licenses').update({ status: 'expired' }).eq('id', payload.id).then();
       }
-      return NextResponse.json({ error: 'License has expired' }, { status: 403 });
+      return NextResponse.json({
+        error: 'License has expired',
+        code: 'LICENSE_EXPIRED',
+        expiresAt: license.expires_at
+      }, { status: 403 });
+    }
+
+    if (license.status === 'expired') {
+      return NextResponse.json({
+        error: 'License has expired',
+        code: 'LICENSE_EXPIRED',
+        expiresAt: license.expires_at
+      }, { status: 403 });
     }
 
     const freshToken = signActivationToken({
       id: payload.id,
+      licenseKey: license.license_key,
       seed: payload.seed,
       expiresAt: license.expires_at,
       installId: hwid
     });
+
+    const remainingMs = license.expires_at ? new Date(license.expires_at).getTime() - Date.now() : 0;
 
     return NextResponse.json({ 
       success: true, 
       expiresAt: license.expires_at, 
       activatedAt: license.activated_at,
       licenseKey: license.license_key,
+      status: license.status,
+      daysRemaining: Math.max(0, Math.ceil(remainingMs / DAY_MS)),
       seed: payload.seed, 
       token: freshToken 
     });

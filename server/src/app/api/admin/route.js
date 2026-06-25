@@ -9,12 +9,60 @@
 
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import crypto from 'crypto';
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const VALID_STATUSES = new Set(['unused', 'active', 'expired', 'revoked']);
 
 function isAuthorized(req) {
   const authHeader = req.headers.get('authorization');
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword) return false;
   return authHeader === `Bearer ${adminPassword}`;
+}
+
+function toInt(value, fallback, min, max) {
+  const parsed = parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.min(Math.max(parsed, min), max);
+}
+
+function normalizeIds(ids) {
+  return Array.isArray(ids) ? ids.filter(Boolean) : [];
+}
+
+function makeLicenseKey() {
+  const partA = crypto.randomBytes(4).toString('hex').toUpperCase();
+  const partB = crypto.randomBytes(3).toString('hex').toUpperCase();
+  return `CORTEX-${partA}-${partB}`;
+}
+
+function expiryFromAdjustment(license, days) {
+  const existing = license.expires_at ? new Date(license.expires_at) : new Date();
+  const base = existing > new Date() ? existing : new Date();
+  return new Date(base.getTime() + days * DAY_MS);
+}
+
+async function updateLicenseExpiry(id, days) {
+  const { data: lic, error: fetchErr } = await supabase
+    .from('licenses')
+    .select('expires_at, status')
+    .eq('id', id)
+    .single();
+
+  if (fetchErr || !lic) return { error: 'License not found', status: 404 };
+  if (lic.status === 'revoked') return { error: 'Cannot change expiry for a revoked license', status: 400 };
+  if (lic.status === 'unused') {
+    const safeDuration = toInt(days, 7, 1, 3650);
+    const { error } = await supabase.from('licenses').update({ duration_days: safeDuration }).eq('id', id);
+    return error ? { error: error.message, status: 500 } : { newDurationDays: safeDuration };
+  }
+
+  const newExpiry = expiryFromAdjustment(lic, days);
+  const updateData = { expires_at: newExpiry.toISOString() };
+  updateData.status = newExpiry <= new Date() ? 'expired' : 'active';
+  const { error } = await supabase.from('licenses').update(updateData).eq('id', id);
+  return error ? { error: error.message, status: 500 } : { newExpiry: newExpiry.toISOString() };
 }
 
 export async function GET(req) {
@@ -44,7 +92,7 @@ export async function GET(req) {
 export async function POST(req) {
   if (!isAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { action, id, ids, count, days, status, version } = await req.json();
+  const { action, id, ids, count, days, status, version, expiresAt } = await req.json();
 
   if (action === 'set_version') {
     if (!version) return NextResponse.json({ error: 'Missing version' }, { status: 400 });
@@ -54,12 +102,14 @@ export async function POST(req) {
   }
 
   if (action === 'generate') {
-    const safeCount = Math.min(Math.max(parseInt(count) || 5, 1), 100);
+    const safeCount = toInt(count, 5, 1, 1000);
+    const safeDays = toInt(days, 7, 1, 3650);
     const newLicenses = [];
     for (let i = 0; i < safeCount; i++) {
       newLicenses.push({
-        license_key: 'CORTEX-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
-        status: 'unused'
+        license_key: makeLicenseKey(),
+        status: 'unused',
+        duration_days: safeDays
       });
     }
     const { error } = await supabase.from('licenses').insert(newLicenses);
@@ -86,18 +136,29 @@ export async function POST(req) {
 
   if (action === 'extend') {
     if (!id) return NextResponse.json({ error: 'Missing license id' }, { status: 400 });
-    const safeDays = Math.min(Math.max(parseInt(days) || 7, 1), 365);
-    const { data: lic } = await supabase.from('licenses').select('expires_at, status').eq('id', id).single();
-    if (!lic) return NextResponse.json({ error: 'License not found' }, { status: 404 });
-    if (lic.status === 'revoked') return NextResponse.json({ error: 'Cannot extend a revoked license' }, { status: 400 });
+    const safeDays = toInt(days, 7, 1, 3650);
+    const result = await updateLicenseExpiry(id, safeDays);
+    if (result.error) return NextResponse.json({ error: result.error }, { status: result.status });
+    return NextResponse.json({ success: true, ...result });
+  }
 
-    const base = (lic.expires_at && new Date(lic.expires_at) > new Date()) ? new Date(lic.expires_at) : new Date();
-    const newExpiry = new Date(base.getTime() + safeDays * 24 * 60 * 60 * 1000);
-    const updateData = { expires_at: newExpiry.toISOString() };
-    if (lic.status === 'expired') updateData.status = 'active';
-    const { error } = await supabase.from('licenses').update(updateData).eq('id', id);
+  if (action === 'adjust_days') {
+    if (!id) return NextResponse.json({ error: 'Missing license id' }, { status: 400 });
+    const deltaDays = toInt(days, 0, -3650, 3650);
+    if (deltaDays === 0) return NextResponse.json({ error: 'Days adjustment cannot be zero' }, { status: 400 });
+    const result = await updateLicenseExpiry(id, deltaDays);
+    if (result.error) return NextResponse.json({ error: result.error }, { status: result.status });
+    return NextResponse.json({ success: true, ...result });
+  }
+
+  if (action === 'set_expiry') {
+    if (!id || !expiresAt) return NextResponse.json({ error: 'Missing id or expiresAt' }, { status: 400 });
+    const expiry = new Date(expiresAt);
+    if (Number.isNaN(expiry.getTime())) return NextResponse.json({ error: 'Invalid expiry date' }, { status: 400 });
+    const updateData = { expires_at: expiry.toISOString(), status: expiry <= new Date() ? 'expired' : 'active' };
+    const { error } = await supabase.from('licenses').update(updateData).eq('id', id).neq('status', 'revoked');
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ success: true, newExpiry: newExpiry.toISOString() });
+    return NextResponse.json({ success: true, expiresAt: expiry.toISOString() });
   }
 
   if (action === 'reset_hwid') {
@@ -109,35 +170,38 @@ export async function POST(req) {
 
   if (action === 'set_status') {
     if (!id || !status) return NextResponse.json({ error: 'Missing id or status' }, { status: 400 });
+    if (!VALID_STATUSES.has(status)) return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     const { error } = await supabase.from('licenses').update({ status }).eq('id', id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
   }
 
   if (action === 'bulk_revoke') {
-    if (!ids || !ids.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
-    const { error } = await supabase.from('licenses').update({ status: 'revoked' }).in('id', ids);
+    const safeIds = normalizeIds(ids);
+    if (!safeIds.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
+    const { error } = await supabase.from('licenses').update({ status: 'revoked' }).in('id', safeIds);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
   }
 
   if (action === 'bulk_delete') {
-    if (!ids || !ids.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
-    const { error } = await supabase.from('licenses').delete().in('id', ids).eq('status', 'unused');
+    const safeIds = normalizeIds(ids);
+    if (!safeIds.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
+    const { error } = await supabase.from('licenses').delete().in('id', safeIds).eq('status', 'unused');
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
   }
 
   if (action === 'bulk_extend') {
-    if (!ids || !ids.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
-    const safeDays = Math.min(Math.max(parseInt(days) || 7, 1), 365);
-    const { data: lics, error: fetchErr } = await supabase.from('licenses').select('id, expires_at, status').in('id', ids);
+    const safeIds = normalizeIds(ids);
+    if (!safeIds.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
+    const safeDays = toInt(days, 7, 1, 3650);
+    const { data: lics, error: fetchErr } = await supabase.from('licenses').select('id, expires_at, status').in('id', safeIds);
     if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
 
     const updates = lics.map(lic => {
       if (lic.status === 'revoked') return null;
-      const base = (lic.expires_at && new Date(lic.expires_at) > new Date()) ? new Date(lic.expires_at) : new Date();
-      const newExpiry = new Date(base.getTime() + safeDays * 24 * 60 * 60 * 1000);
+      const newExpiry = expiryFromAdjustment(lic, safeDays);
       return { id: lic.id, expires_at: newExpiry.toISOString(), status: lic.status === 'expired' ? 'active' : lic.status };
     }).filter(Boolean);
 

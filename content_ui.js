@@ -212,6 +212,7 @@ function showCorrectAnswer(question, options, matched) {
       <div class="pm-answer-num">${matched.label}</div>
       <div class="pm-answer-txt">${esc(sanitizeText(matched.text))}</div>
     </div>
+    <div class="pm-answer-note">Selected by Cortex after matching the question and answer options.</div>
   `
 
   if (copyBtn) copyBtn.dataset.content = matched.label + '. ' + sanitizeText(matched.text)
@@ -272,8 +273,8 @@ function buildPanelHTML() {
         <div style="width: 48px; height: 48px; background: rgba(239,68,68,0.1); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
-        <h2 style="font-size: 16px; color: #fff; margin: 0 0 8px 0;">Activation Required</h2>
-        <p style="font-size: 13px; color: #aaa; margin-bottom: 16px; line-height: 1.4;">
+        <h2 id="pm-lock-title" style="font-size: 16px; color: #fff; margin: 0 0 8px 0;">Activation Required</h2>
+        <p id="pm-lock-message" style="font-size: 13px; color: #aaa; margin-bottom: 16px; line-height: 1.4;">
           Your subscription has been ended. Please enter a new activation key to start using this SaaS.
         </p>
         <div style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
@@ -457,7 +458,8 @@ function hideBubble() {
 }
 
 function showBubble(sel) {
-  if (!_bubble || !sel || sel.isCollapsed || !sel.toString().trim()) {
+  const selectedText = sel?.toString?.().replace(/[\u200B-\u200D\uFEFF]/g, '').trim() || ''
+  if (!_bubble || !sel || sel.isCollapsed || !selectedText) {
     hideBubble()
     return
   }
@@ -472,6 +474,14 @@ function showBubble(sel) {
     )) {
       hideBubble()
       return
+    }
+    if (typeof _lastSelectionSnapshot !== 'undefined') {
+      const contextRoot = container?.nodeType === Node.ELEMENT_NODE ? container : container?.parentElement
+      _lastSelectionSnapshot = {
+        text: selectedText,
+        context: contextRoot ? getPageContext(contextRoot, selectedText) : getFastPageContext(8000),
+        capturedAt: Date.now()
+      }
     }
   } catch (_) {}
 

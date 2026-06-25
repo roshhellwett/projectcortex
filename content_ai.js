@@ -85,6 +85,10 @@ function callAI(payload) {
               settle(reject, new Error('__NO_KEY__'))
               return
             }
+            if (response.error === 'AUTH_REQUIRED') {
+              settle(reject, new Error('AUTH_REQUIRED:' + (response.reason || 'LOCKED')))
+              return
+            }
             if (response.error) {
               settle(reject, new Error(response.error))
               return
@@ -148,8 +152,11 @@ function handleAIError(err) {
     }
   }
 
-  if (msg === 'AUTH_REQUIRED') {
+  if (msg === 'AUTH_REQUIRED' || msg.startsWith('AUTH_REQUIRED:')) {
     _isLocked = true;
+    if (typeof handleAuthRes === 'function') {
+      handleAuthRes({ locked: true, reason: msg.split(':')[1] || 'LOCKED' });
+    }
     showState('locked');
     return;
   }
@@ -218,7 +225,7 @@ function callAIAction(settings, action, prompt, systemPrompt) {
 window.__ProjectCortexAI.runCorrectAnswers = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'correct_answers' }
-  const selectedText = getDeepSelectionText()
+  const selectedText = getActionSelectionText()
 
   if (!selectedText) {
     showError('Please select the question text first.')
@@ -230,12 +237,7 @@ window.__ProjectCortexAI.runCorrectAnswers = guard(async function () {
   startThinking('Analyzing Page & Finding Answer...')
 
   const container = getSelectedContainer()
-  if (!container) {
-    showError('Could not find the selected text container.')
-    return
-  }
-
-  const contextText = getPageContext(container, selectedText)
+  const contextText = container ? getPageContext(container, selectedText) : getActionSelectionContext()
   const prompt = buildPrompt(selectedText, contextText)
 
   const settings = await getSettings()
@@ -274,7 +276,7 @@ window.__ProjectCortexAI.runSummarize = guard(async function () {
   showState('loading')
   startThinking('Reading page')
 
-  const selectedText = getDeepSelectionText()
+  const selectedText = getActionSelectionText()
   let pageText = selectedText;
 
   if (!pageText || pageText.trim().length < 10) {
@@ -298,7 +300,7 @@ window.__ProjectCortexAI.runSummarize = guard(async function () {
       settings,
       'summarize',
       'Summarize the following content:\n\n' + truncated,
-      'You are an expert content analyst. Your job is to distill information into the most useful, scannable format possible.\n\nFORMAT YOUR RESPONSE EXACTLY LIKE THIS:\n1. **TL;DR** — One sentence capturing the core message.\n2. **Key Points** — 3-5 bullet points, each starting with a **bold keyword**. Keep each point to 1-2 sentences max.\n3. If the content contains data, statistics, or specific claims, preserve the exact numbers.\n\nRULES:\n- Be precise and definitive — no hedging phrases like "it seems" or "it appears".\n- Never pad with filler. Every sentence must deliver value.\n- Use plain language; avoid jargon unless the source material requires it.\n- Do NOT start with "Here is a summary" or similar preamble. Jump straight into the TL;DR.'
+      'You are Zenith Cortex, a premium AI reading assistant. Deliver a beautiful, concise, executive-quality answer.\n\nFORMAT EXACTLY:\n### Quick Answer\nOne sharp sentence with the central idea.\n\n### Key Insights\n- **Label:** One useful insight in 1 sentence.\n- **Label:** One useful insight in 1 sentence.\n- **Label:** One useful insight in 1 sentence.\n\n### Why It Matters\nOne practical sentence explaining why the user should care.\n\nQUALITY BAR:\n- Never write TL;DR.\n- Be specific, not generic. Preserve names, dates, numbers, and causal relationships.\n- Use **bold** for important labels and *italic* for useful nuance.\n- Prefer crisp language over long explanation.\n- Do not invent facts beyond the provided text.\n- Do not start with a greeting or "Here is".'
     )
     const note = wasTruncated ? '\n\n---\n*Content truncated.*' : ''
     showGenericResult(label + ' Summary', response + note)
@@ -310,7 +312,7 @@ window.__ProjectCortexAI.runSummarize = guard(async function () {
 window.__ProjectCortexAI.runDefine = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'define' }
-  const selectedText = getDeepSelectionText()
+  const selectedText = getActionSelectionText()
 
   if (!selectedText) {
     showError('Please select a word or phrase to define.')
@@ -328,8 +330,8 @@ window.__ProjectCortexAI.runDefine = guard(async function () {
     const response = await callAIAction(
       settings,
       'define',
-      `Define this term or phrase:\n\n"${selectedText}"`,
-      'You are an expert knowledge assistant. Define the term precisely and make it immediately useful.\n\nFORMAT YOUR RESPONSE LIKE THIS:\n1. **Definition** — A clear, concise definition in 1-2 sentences. Use simple language.\n2. **Context** — One sentence explaining where/how this term is commonly used.\n3. **Example** — A brief, concrete example or usage in a sentence.\n\nRULES:\n- If it\'s a technical term, explain it so a non-expert understands.\n- If it\'s a common word, focus on nuance that makes the definition actually useful.\n- Do NOT start with "The term X refers to..." — just give the definition directly.\n- Keep the entire response under 100 words.'
+      `Define this selected term or phrase:\n\n"${selectedText}"\n\nNearby page context:\n${getActionSelectionContext().substring(0, 4000)}`,
+      'You are Zenith Cortex, a premium explanation assistant. Give a high-confidence, context-aware definition that feels instantly useful.\n\nFORMAT EXACTLY:\n### Meaning\nDefine it in 1-2 plain-English sentences.\n\n### In This Context\nExplain what it likely means on this page or in this sentence.\n\n### Example\nGive one short example sentence or scenario.\n\n### Related Idea\n**Term:** 5-10 words explaining the connection.\n\nQUALITY BAR:\n- If the selected text is a person, place, organization, event, or historical term, identify what it is before explaining relevance.\n- Use **bold** for the core term and *italic* for nuance.\n- If context is insufficient, say exactly what is known and avoid pretending.\n- Keep it under 130 words.\n- No filler, no preamble, no "as an AI".'
     )
     showGenericResult('Definition', response)
   } catch (err) {
@@ -340,7 +342,7 @@ window.__ProjectCortexAI.runDefine = guard(async function () {
 window.__ProjectCortexAI.runFactCheck = guard(async function () {
   if (_isLocked) { openPanel(); showState('locked'); return; }
   _lastAction = { name: 'factcheck' }
-  const selectedText = getDeepSelectionText()
+  const selectedText = getActionSelectionText()
 
   if (!selectedText) {
     showError('Please select text on the page to fact-check, then click Fact Check again.')
@@ -356,7 +358,7 @@ window.__ProjectCortexAI.runFactCheck = guard(async function () {
 
   try {
     startThinking('Cross-referencing')
-    const pageText = getFastPageContext(8000)
+    const pageText = getActionSelectionContext()
     const contextHint = pageText.length > 50
       ? '\n\nPage context (for reference):\n' + pageText
       : ''
@@ -364,7 +366,7 @@ window.__ProjectCortexAI.runFactCheck = guard(async function () {
       settings,
       'factcheck',
       `Fact-check this claim:\n\n"${selectedText}"${contextHint}`,
-      'You are an expert fact-checker. Evaluate the claim with precision and authority.\n\nFORMAT YOUR RESPONSE EXACTLY LIKE THIS:\n1. Start with exactly one of: **✅ TRUE**, **❌ FALSE**, or **⚠️ MIXED**\n2. **Evidence** — 2-3 sentences with the specific facts, data, or reasoning that support your verdict. Cite concrete details.\n3. **Key Caveat** — One sentence noting any important nuance, context dependency, or common misconception (if applicable).\n\nRULES:\n- Be definitive. Do not hedge unless the claim is genuinely mixed.\n- If the claim contains specific numbers or dates, verify them explicitly.\n- Do NOT start with "Let me fact-check this" or similar preamble. Jump straight to the verdict.\n- Keep the entire response under 150 words.'
+      'You are Zenith Cortex, a premium fact-checking assistant. Evaluate the selected claim with precision and useful nuance.\n\nFORMAT EXACTLY:\n### Verdict\nStart with exactly one bold verdict: **TRUE**, **FALSE**, **MIXED**, or **NEEDS CONTEXT**. Add one short reason.\n\n### Evidence\n- **Fact:** One tight sentence with concrete support.\n- **Fact:** One tight sentence with concrete support.\n\n### Correction\nIf false or mixed, give the corrected version in one sentence. If true, write "No correction needed."\n\n### Confidence\n**High**, **Medium**, or **Low** with a short reason.\n\nQUALITY BAR:\n- Be direct and specific. Preserve dates, names, numbers, and scope.\n- Do not overclaim if the provided context is insufficient.\n- Do not start with "Let me fact-check".'
     )
     showGenericResult('Fact Check', response)
   } catch (err) {

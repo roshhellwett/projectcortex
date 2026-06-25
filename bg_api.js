@@ -149,7 +149,7 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
 
   const authState = await quickAuthCheck();
   if (authState.locked) {
-    safeRespond({ error: 'AUTH_REQUIRED' });
+    safeRespond({ error: 'AUTH_REQUIRED', reason: authState.reason || 'LOCKED' });
     return;
   }
 

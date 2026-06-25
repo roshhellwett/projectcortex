@@ -597,17 +597,96 @@
 #pagemind-panel .pm-result-body {
     font-size: 13px !important;
     color: var(--pm-text) !important;
-    line-height: 1.8 !important;
+    line-height: 1.7 !important;
     margin: 0 !important;
     padding: 0 !important;
-    white-space: pre-wrap !important;
+    white-space: normal !important;
     word-wrap: break-word !important;
     word-break: break-word !important;
 }
 
 #pagemind-panel .pm-result-body strong {
-    color: #fff !important;
-    font-weight: 700 !important;
+    color: #f8fafc !important;
+    font-weight: 800 !important;
+}
+
+#pagemind-panel .pm-result-body em {
+    color: #d6d3d1 !important;
+    font-style: italic !important;
+}
+
+#pagemind-panel .pm-section-title {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    margin: 14px 0 8px 0 !important;
+    padding: 0 !important;
+    color: #67e8f9 !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.16em !important;
+    text-transform: uppercase !important;
+}
+
+#pagemind-panel .pm-section-title::before {
+    content: '' !important;
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, #22c55e, #22d3ee) !important;
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.45) !important;
+}
+
+#pagemind-panel .pm-insight-card,
+#pagemind-panel .pm-card-line {
+    display: flex !important;
+    gap: 10px !important;
+    align-items: flex-start !important;
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.022)) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 10px !important;
+    padding: 11px 12px !important;
+    margin: 7px 0 !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.035) !important;
+}
+
+#pagemind-panel .pm-insight-num,
+#pagemind-panel .pm-bullet {
+    flex: 0 0 auto !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    padding: 0 6px !important;
+    border-radius: 999px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(34, 211, 238, 0.1) !important;
+    border: 1px solid rgba(34, 211, 238, 0.18) !important;
+    color: #67e8f9 !important;
+    font-size: 10px !important;
+    font-weight: 900 !important;
+    box-sizing: border-box !important;
+}
+
+#pagemind-panel .pm-insight-content,
+#pagemind-panel .pm-list-content {
+    flex: 1 !important;
+    min-width: 0 !important;
+    color: #d4d4d8 !important;
+    line-height: 1.6 !important;
+}
+
+#pagemind-panel .pm-insight-content strong,
+#pagemind-panel .pm-list-content strong {
+    display: inline !important;
+    color: #ffffff !important;
+}
+
+#pagemind-panel .pm-insight-content em {
+    display: block !important;
+    margin-top: 3px !important;
+    color: #c4c4cc !important;
+    font-style: normal !important;
 }
 
 #pagemind-panel .pm-cursor {
@@ -666,13 +745,16 @@
 }
 
 #pagemind-panel .pm-mcq-question {
-    font-size: 13px !important;
-    color: #ddd !important;
-    font-weight: 500 !important;
-    margin: 0 0 10px 0 !important;
-    padding: 0 0 10px 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    font-size: 13.5px !important;
+    color: #f4f4f5 !important;
+    font-weight: 750 !important;
+    margin: 0 0 12px 0 !important;
+    padding: 13px 14px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02)) !important;
     line-height: 1.6 !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
 }
 
 #pagemind-panel .pm-options-list {
@@ -689,8 +771,8 @@
     gap: 8px !important;
     background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid var(--pm-border-light) !important;
-    border-radius: 10px !important;
-    padding: 10px 12px !important;
+    border-radius: 12px !important;
+    padding: 11px 12px !important;
     margin: 0 !important;
     transition: all 0.25s var(--pm-ease-out) !important;
 }
@@ -702,9 +784,9 @@
 }
 
 #pagemind-panel .pm-option--correct {
-    background: rgba(16, 185, 129, 0.1) !important;
-    border-color: rgba(16, 185, 129, 0.35) !important;
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.2) inset !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(20, 184, 166, 0.08)) !important;
+    border-color: rgba(16, 185, 129, 0.55) !important;
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.2), 0 0 0 1px rgba(16, 185, 129, 0.24) inset !important;
     animation: pmCorrectPulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
@@ -742,7 +824,7 @@
 
 #pagemind-panel .pm-option-text {
     flex: 1 !important;
-    font-size: 12.5px !important;
+    font-size: 13px !important;
     color: #aaa !important;
     line-height: 1.5 !important;
     margin: 0 !important;
@@ -750,8 +832,8 @@
 }
 
 #pagemind-panel .pm-option--correct .pm-option-text {
-    color: #b8f5d6 !important;
-    font-weight: 600 !important;
+    color: #d1fae5 !important;
+    font-weight: 800 !important;
 }
 
 #pagemind-panel .pm-option-badge {
@@ -778,12 +860,12 @@
 }
 
 #pagemind-panel .pm-answer-card {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(16, 185, 129, 0.03)) !important;
-    border: 1px solid rgba(16, 185, 129, 0.3) !important;
-    border-radius: 12px !important;
-    padding: 14px 16px !important;
+    background: radial-gradient(circle at 10% 0%, rgba(34, 211, 238, 0.14), transparent 42%), linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.05)) !important;
+    border: 1px solid rgba(16, 185, 129, 0.42) !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
     margin: 0 !important;
-    box-shadow: 0 0 16px rgba(16, 185, 129, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.15) inset !important;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24), 0 0 22px rgba(16, 185, 129, 0.16), 0 0 0 1px rgba(16, 185, 129, 0.14) inset !important;
     animation: pmAnswerGlow 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
@@ -838,6 +920,16 @@
     line-height: 1.4 !important;
     margin: 0 !important;
     padding: 0 !important;
+}
+
+#pagemind-panel .pm-answer-note {
+    margin-top: 12px !important;
+    padding-top: 11px !important;
+    border-top: 1px solid rgba(16, 185, 129, 0.16) !important;
+    color: #8fbfaf !important;
+    font-size: 11px !important;
+    line-height: 1.5 !important;
+    font-style: italic !important;
 }
 
 #pagemind-panel .pm-error-wrap {
@@ -1188,17 +1280,17 @@
 #pagemind-panel .pm-list-item {
     display: flex !important;
     align-items: flex-start !important;
-    gap: 8px !important;
-    margin-bottom: 6px !important;
+    gap: 10px !important;
 }
 
 #pagemind-panel .pm-bullet {
-    color: #888 !important;
-    font-weight: bold !important;
+    color: #67e8f9 !important;
+    font-weight: 900 !important;
 }
 
 #pagemind-panel .pm-list-content {
     flex: 1 !important;
+    min-width: 0 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

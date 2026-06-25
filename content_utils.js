@@ -52,6 +52,30 @@ function getDeepSelectionText() {
   return text.replace(/[\u200B-\u200D\uFEFF]/g, '').trim()
 }
 
+function getActionSelectionText(maxAgeMs = 45000) {
+  const liveText = getDeepSelectionText()
+  if (liveText) return liveText
+  if (
+    typeof _lastSelectionSnapshot !== 'undefined' &&
+    _lastSelectionSnapshot.text &&
+    Date.now() - _lastSelectionSnapshot.capturedAt < maxAgeMs
+  ) {
+    return _lastSelectionSnapshot.text
+  }
+  return ''
+}
+
+function getActionSelectionContext() {
+  if (
+    typeof _lastSelectionSnapshot !== 'undefined' &&
+    _lastSelectionSnapshot.context &&
+    Date.now() - _lastSelectionSnapshot.capturedAt < 45000
+  ) {
+    return _lastSelectionSnapshot.context
+  }
+  return getFastPageContext(8000)
+}
+
 function getCleanText(elOrString) {
   if (!elOrString) return ''
   
@@ -92,14 +116,14 @@ function parseMarkdown(text) {
     .replace(/\*([\s\S]*?)\*/g, '<em>$1</em>')
     .replace(/`([\s\S]*?)`/g, '<code class="pm-inline-code">$1</code>')
     .replace(/^&gt;\s+([\s\S]*?)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^### (.*)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.*)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.*)$/gm, '<h1>$1</h1>')
-    .replace(/^[\s]*[-*]\s+(.*)$/gm, '<div class="pm-list-item"><span class="pm-bullet">•</span> <span class="pm-list-content">$1</span></div>')
-    .replace(/^[\s]*\d+\.\s+(.*)$/gm, '<div class="pm-list-item"><span class="pm-bullet">#</span> <span class="pm-list-content">$1</span></div>')
+    .replace(/^### (.*)$/gm, '<div class="pm-section-title">$1</div>')
+    .replace(/^## (.*)$/gm, '<div class="pm-section-title">$1</div>')
+    .replace(/^# (.*)$/gm, '<div class="pm-section-title">$1</div>')
+    .replace(/^[\s]*[-*]\s+(.*)$/gm, '<div class="pm-list-item pm-card-line"><span class="pm-bullet">•</span> <span class="pm-list-content">$1</span></div>')
+    .replace(/^[\s]*(\d+)\.\s+(?:<strong>)?([^<—-]+)(?:<\/strong>)?\s*[—-]\s*(.*)$/gm, '<div class="pm-insight-card"><span class="pm-insight-num">$1</span><span class="pm-insight-content"><strong>$2</strong><em>$3</em></span></div>')
+    .replace(/^[\s]*(\d+)\.\s+(.*)$/gm, '<div class="pm-list-item pm-card-line"><span class="pm-bullet">$1.</span> <span class="pm-list-content">$2</span></div>')
     
   html = html.replace(/<\/div>\n/g, '</div>')
-             .replace(/<\/h([1-3])>\n/g, '</h$1>')
              .replace(/<\/blockquote>\n/g, '</blockquote>')
              .replace(/\n/g, '<br>')
 

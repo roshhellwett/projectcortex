@@ -16,7 +16,7 @@ const extractHostname = url => {
 
 chrome.runtime.onInstalled.addListener(() => {
   checkAuthStatus();
-  chrome.alarms.create('authCheck', { periodInMinutes: 120 });
+  chrome.alarms.create('authCheck', { periodInMinutes: 1 });
 
   chrome.contextMenus.create({
     id: "cortex_correct_answers",
@@ -58,7 +58,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'cortex_define') action = 'define';
   
   if (action) {
-    chrome.tabs.sendMessage(tab.id, { type: 'RUN_ACTION', action }, { frameId: info.frameId }).catch(() => {});
+    chrome.tabs.sendMessage(tab.id, {
+      type: 'RUN_ACTION',
+      action,
+      selectionText: info.selectionText || ''
+    }, { frameId: info.frameId }).catch(() => {});
   }
 });
 

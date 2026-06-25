@@ -66,6 +66,11 @@ var _thinkTimer = null;
 var _hideTimer = null;
 
 var _bubble = null;
+var _lastSelectionSnapshot = {
+  text: '',
+  context: '',
+  capturedAt: 0
+};
 
 var _panel = null;
 var _panelPos = null;

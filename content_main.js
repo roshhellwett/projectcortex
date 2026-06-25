@@ -16,6 +16,14 @@ function initMessageListener() {
       if (!document.getElementById('pagemind-panel')) {
         init();
       }
+      if (message.selectionText?.trim() && typeof _lastSelectionSnapshot !== 'undefined') {
+        const selectedText = message.selectionText.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+        _lastSelectionSnapshot = {
+          text: selectedText,
+          context: getFastPageContext(8000),
+          capturedAt: Date.now()
+        };
+      }
       const actions = {
         correct_answers: window.__ProjectCortexAI.runCorrectAnswers,
         summarize: window.__ProjectCortexAI.runSummarize,
@@ -41,6 +49,23 @@ function initMessageListener() {
         sendResponse({ ok: true })
       }
       return true
+    }
+
+    if (message.type === 'CAPTURE_SELECTION') {
+      const text = getDeepSelectionText();
+      if (text && typeof _lastSelectionSnapshot !== 'undefined') {
+        const container = getSelectedContainer();
+        _lastSelectionSnapshot = {
+          text,
+          context: container ? getPageContext(container, text) : getFastPageContext(8000),
+          capturedAt: Date.now()
+        };
+      }
+      sendResponse({
+        ok: true,
+        selectionText: text || _lastSelectionSnapshot?.text || ''
+      });
+      return true;
     }
 
     if (message.type === 'AUTH_STATE_CHANGED') {
@@ -120,6 +145,27 @@ function handleAuthRes(res) {
   }
   if (res && res.locked) {
     _isLocked = true;
+    const titleEl = document.getElementById('pm-lock-title');
+    const msgEl = document.getElementById('pm-lock-message');
+    const reason = String(res.reason || '').toUpperCase();
+    if (titleEl && msgEl) {
+      if (reason.includes('REVOK')) {
+        titleEl.textContent = 'License Revoked';
+        msgEl.textContent = 'This activation key was disabled by the administrator. Enter a valid key to continue.';
+      } else if (reason.includes('EXPIRED')) {
+        titleEl.textContent = 'Days Exhausted';
+        msgEl.textContent = 'Your activation days are exhausted. Enter a renewed key or ask support to extend your license.';
+      } else if (reason.includes('OFFLINE')) {
+        titleEl.textContent = 'Verification Required';
+        msgEl.textContent = 'The extension could not verify your license within the offline grace period. Connect to the internet and activate again.';
+      } else if (reason.includes('MISMATCH')) {
+        titleEl.textContent = 'Device Mismatch';
+        msgEl.textContent = 'This key is linked to another device. Ask support to reset the install ID or use a valid key.';
+      } else {
+        titleEl.textContent = 'Activation Required';
+        msgEl.textContent = 'Enter your activation key to unlock ProjectCortex on this device.';
+      }
+    }
     hideBubble(); 
     showState('locked');
   } else {

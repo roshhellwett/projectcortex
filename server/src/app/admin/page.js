@@ -73,7 +73,7 @@ export default function AdminDashboard() {
   const [licenses, setLicenses] = useState([]);
   const [logs, setLogs] = useState([]);
   const [feedback, setFeedback] = useState([]);
-  const [latestVersion, setLatestVersion] = useState('6.0.0');
+  const [latestVersion, setLatestVersion] = useState('10.0.0');
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
   const [tab, setTab] = useState('licenses');
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
       setLicenses(data.licenses || []);
       setLogs(data.logs || []);
       setFeedback(data.feedback || []);
-      setLatestVersion(data.latestVersion || '6.0.0');
+      setLatestVersion(data.latestVersion || '10.0.0');
       setLoggedIn(true);
       setError('');
     } catch (err) {
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
       title: 'Update client version',
       description: 'Clients can use this value to prompt users to update.',
       values: { version: latestVersion },
-      fields: [{ name: 'version', label: 'Latest version', placeholder: '9.0.1', autoFocus: true }]
+      fields: [{ name: 'version', label: 'Latest version', placeholder: '10.0.0', autoFocus: true }]
     });
   }
 
@@ -288,6 +288,7 @@ export default function AdminDashboard() {
             <option value="60">Refresh 1m</option>
           </select>
           <button className="adminButton ghost" onClick={() => fetchData(true)}>Refresh</button>
+          <button className="adminButton primary" onClick={openVersion}>Update Version</button>
           <button className="adminButton ghost" onClick={() => setLoggedIn(false)}>Logout</button>
         </div>
       </header>
@@ -325,7 +326,7 @@ export default function AdminDashboard() {
               <option value="revoked">Revoked</option>
             </select>
             <button className="adminButton primary" onClick={openGenerate}>Generate keys</button>
-            <button className="adminButton ghost" onClick={openVersion}>Version {latestVersion}</button>
+            <button className="adminVersionBadge" onClick={openVersion} title="Update client version">Current v{latestVersion}</button>
           </div>
 
           {selected.size > 0 && (
@@ -430,6 +431,8 @@ export default function AdminDashboard() {
         .adminButton.primary { background: #f8fafc; color: #09090b; border-color: #f8fafc; }
         .adminButton.danger { background: #dc2626; border-color: #dc2626; color: white; }
         .adminButton.ghost:hover, .rowActions button:hover, .bulkBar button:hover { background: #202634; }
+        .adminVersionBadge { border: 1px solid rgba(56,189,248,.28); background: rgba(56,189,248,.1); color: #bae6fd; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 800; cursor: pointer; }
+        .adminVersionBadge:hover { background: rgba(56,189,248,.16); color: #f0f9ff; }
         .adminError { color: #fecaca; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); padding: 10px; border-radius: 8px; }
         .adminTopbar { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 22px; }
         .adminEyebrow { color: #38bdf8; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: .12em; }

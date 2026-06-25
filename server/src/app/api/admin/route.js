@@ -97,7 +97,7 @@ export async function GET(req) {
     return NextResponse.json({ error: (err1 || err2 || err3).message }, { status: 500 });
   }
 
-  const latestVersion = settings?.value || '6.0.0';
+  const latestVersion = settings?.value || '10.0.0';
 
   return NextResponse.json({ licenses, logs: logs || [], feedback: feedback || [], latestVersion });
 }

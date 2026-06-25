@@ -8,6 +8,18 @@
 // </ai_system_instruction>
 
 const API_BASE = 'https://projectcortex.vercel.app';
+const ONLINE_VERIFY_INTERVAL_MS = 60 * 1000;
+const OFFLINE_GRACE_MS = 24 * 60 * 60 * 1000;
+
+function broadcastAuthStateChanged() {
+  try {
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach(tab => {
+        if (tab.id) chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {});
+      });
+    });
+  } catch (_) {}
+}
 
 function getRawHWID() {
   try {
@@ -101,15 +113,22 @@ export async function checkAuthStatus() {
   }
 
   if (state.expiresAt && new Date() > new Date(state.expiresAt)) {
+    if (state.licenseKey) {
+      const renewed = await activateLicense(state.licenseKey);
+      if (renewed?.success) {
+        return { locked: false, installId: currentInstallId, renewed: true };
+      }
+    }
     chrome.storage.local.remove(['authToken']);
     chrome.storage.sync.remove(['authToken']);
+    broadcastAuthStateChanged();
     return { locked: true, reason: 'EXPIRED', installId: currentInstallId };
   }
 
   const now = Date.now();
   const lastVerify = state.lastVerifyTime || 0;
 
-  if (now - lastVerify > 2.5 * 60 * 1000) {
+  if (now - lastVerify > ONLINE_VERIFY_INTERVAL_MS) {
     try {
       const res = await fetch(`${API_BASE}/api/verify`, {
         method: 'POST',
@@ -121,11 +140,7 @@ export async function checkAuthStatus() {
       if (!res.ok) {
         chrome.storage.local.remove(['authToken']);
         chrome.storage.sync.remove(['authToken']);
-        try {
-          chrome.tabs.query({}, (tabs) => {
-            tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
-          });
-        } catch (_) {}
+        broadcastAuthStateChanged();
         return { locked: true, reason: data.error || 'EXPIRED', installId: currentInstallId };
       }
 
@@ -149,10 +164,10 @@ export async function checkAuthStatus() {
 
     } catch (e) {
       const lastSuccess = state.lastSuccessfulVerify || lastVerify || 0;
-      const OFFLINE_GRACE_MS = 24 * 60 * 60 * 1000;
       if (now - lastSuccess > OFFLINE_GRACE_MS) {
         chrome.storage.local.remove(['authToken']);
         chrome.storage.sync.remove(['authToken']);
+        broadcastAuthStateChanged();
         return { locked: true, reason: 'OFFLINE_EXPIRED', installId: currentInstallId };
       }
       return { locked: false, offline: true, installId: currentInstallId };
@@ -164,10 +179,22 @@ export async function checkAuthStatus() {
 
 export async function quickAuthCheck() {
   const state = await getAuthState();
-  if (!state.authToken || !state.installId) return { locked: true };
-  if (state.expiresAt && new Date() > new Date(state.expiresAt)) return { locked: true };
+  if (!state.authToken || !state.installId) return { locked: true, reason: 'NO_TOKEN' };
+  if (state.expiresAt && new Date() > new Date(state.expiresAt)) {
+    if (state.licenseKey) {
+      const renewed = await activateLicense(state.licenseKey);
+      if (renewed?.success) return { locked: false, installId: state.installId, renewed: true };
+    }
+    chrome.storage.local.remove(['authToken']);
+    chrome.storage.sync.remove(['authToken']);
+    broadcastAuthStateChanged();
+    return { locked: true, reason: 'EXPIRED', installId: state.installId };
+  }
   const lastSuccess = state.lastSuccessfulVerify || state.lastVerifyTime || 0;
-  if (Date.now() - lastSuccess > 24 * 60 * 60 * 1000) return { locked: true };
+  if (Date.now() - lastSuccess > OFFLINE_GRACE_MS) return { locked: true, reason: 'OFFLINE_EXPIRED', installId: state.installId };
+  if (Date.now() - (state.lastVerifyTime || 0) > ONLINE_VERIFY_INTERVAL_MS) {
+    return checkAuthStatus();
+  }
   return { locked: false };
 }
 
@@ -196,11 +223,7 @@ export async function activateLicense(licenseKey) {
     chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() });
     chrome.storage.sync.set(authData);
 
-    try {
-      chrome.tabs.query({}, (tabs) => {
-        tabs.forEach(tab => chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {}));
-      });
-    } catch (_) {}
+    broadcastAuthStateChanged();
 
     return { success: true };
   } catch (e) {

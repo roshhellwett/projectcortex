@@ -39,8 +39,18 @@ function makeLicenseKey() {
 
 function expiryFromAdjustment(license, days) {
   const existing = license.expires_at ? new Date(license.expires_at) : new Date();
-  const base = existing > new Date() ? existing : new Date();
+  const base = days < 0 ? existing : (existing > new Date() ? existing : new Date());
   return new Date(base.getTime() + days * DAY_MS);
+}
+
+async function expireStaleActiveLicenses() {
+  const nowIso = new Date().toISOString();
+  return supabase
+    .from('licenses')
+    .update({ status: 'expired' })
+    .eq('status', 'active')
+    .not('expires_at', 'is', null)
+    .lte('expires_at', nowIso);
 }
 
 async function updateLicenseExpiry(id, days) {
@@ -67,6 +77,9 @@ async function updateLicenseExpiry(id, days) {
 
 export async function GET(req) {
   if (!isAuthorized(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const { error: expireErr } = await expireStaleActiveLicenses();
+  if (expireErr) return NextResponse.json({ error: expireErr.message }, { status: 500 });
 
   const [
     { data: licenses, error: err1 },
@@ -196,7 +209,7 @@ export async function POST(req) {
     const safeIds = normalizeIds(ids);
     if (!safeIds.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
     const safeDays = toInt(days, 7, 1, 3650);
-    const { data: lics, error: fetchErr } = await supabase.from('licenses').select('id, expires_at, status').in('id', safeIds);
+    const { data: lics, error: fetchErr } = await supabase.from('licenses').select('id, expires_at, status, duration_days').in('id', safeIds);
     if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
 
     const updates = lics.map(lic => {
@@ -207,6 +220,38 @@ export async function POST(req) {
 
     for (const update of updates) {
       await supabase.from('licenses').update({ expires_at: update.expires_at, status: update.status }).eq('id', update.id);
+    }
+    return NextResponse.json({ success: true });
+  }
+
+  if (action === 'bulk_adjust_days') {
+    const safeIds = normalizeIds(ids);
+    if (!safeIds.length) return NextResponse.json({ error: 'Missing ids' }, { status: 400 });
+    const deltaDays = toInt(days, 0, -3650, 3650);
+    if (deltaDays === 0) return NextResponse.json({ error: 'Days adjustment cannot be zero' }, { status: 400 });
+    const { data: lics, error: fetchErr } = await supabase.from('licenses').select('id, expires_at, status').in('id', safeIds);
+    if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+
+    const updates = lics.map(lic => {
+      if (lic.status === 'revoked') return null;
+      if (lic.status === 'unused') {
+        const currentDuration = toInt(lic.duration_days, 7, 1, 3650);
+        return { id: lic.id, duration_days: Math.max(1, Math.min(3650, currentDuration + deltaDays)), status: lic.status };
+      }
+      const newExpiry = expiryFromAdjustment(lic, deltaDays);
+      return {
+        id: lic.id,
+        expires_at: newExpiry.toISOString(),
+        status: newExpiry <= new Date() ? 'expired' : 'active'
+      };
+    }).filter(Boolean);
+
+    for (const update of updates) {
+      if (update.duration_days) {
+        await supabase.from('licenses').update({ duration_days: update.duration_days }).eq('id', update.id);
+      } else {
+        await supabase.from('licenses').update({ expires_at: update.expires_at, status: update.status }).eq('id', update.id);
+      }
     }
     return NextResponse.json({ success: true });
   }

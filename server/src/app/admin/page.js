@@ -165,14 +165,18 @@ export default function AdminDashboard() {
     });
   }
 
-  function openAdjust(id, label = 'Adjust days') {
+  function openAdjust(id, mode = 'add') {
+    const isReduce = mode === 'reduce';
     setModal({
       action: 'adjust_days',
-      title: label,
-      description: 'Use a positive number to add days or a negative number to subtract days immediately.',
+      deltaSign: isReduce ? -1 : 1,
+      title: isReduce ? 'Reduce license days' : 'Add license days',
+      description: isReduce
+        ? 'Subtract days from the stored expiry immediately. If expiry reaches now or past, the server marks the license expired.'
+        : 'Add days to the current expiry. Expired licenses become active again after days are added.',
       id,
       values: { days: '7' },
-      fields: [{ name: 'days', label: 'Days delta', type: 'number', placeholder: '-3 or 30', autoFocus: true }]
+      fields: [{ name: 'days', label: isReduce ? 'Days to subtract' : 'Days to add', type: 'number', placeholder: '7', autoFocus: true }]
     });
   }
 
@@ -211,21 +215,33 @@ export default function AdminDashboard() {
   function openBulk(action) {
     const titles = {
       bulk_extend: 'Bulk extend licenses',
+      bulk_adjust_days: 'Bulk adjust license days',
       bulk_revoke: 'Bulk revoke licenses',
       bulk_delete: 'Bulk delete unused keys'
     };
+    const isBulkAdjust = action === 'bulk_adjust_days';
     setModal({
       action,
+      deltaSign: isBulkAdjust ? -1 : 1,
       title: titles[action],
-      description: `${selected.size} selected license${selected.size === 1 ? '' : 's'} will be updated.`,
-      values: action === 'bulk_extend' ? { days: '7' } : {},
-      fields: action === 'bulk_extend' ? [{ name: 'days', label: 'Days to add', type: 'number', autoFocus: true }] : []
+      description: isBulkAdjust
+        ? `${selected.size} selected license${selected.size === 1 ? '' : 's'} will have days added or reduced. Use a negative number to reduce.`
+        : `${selected.size} selected license${selected.size === 1 ? '' : 's'} will be updated.`,
+      values: action === 'bulk_extend' ? { days: '7' } : isBulkAdjust ? { days: '7' } : {},
+      fields: action === 'bulk_extend'
+        ? [{ name: 'days', label: 'Days to add', type: 'number', autoFocus: true }]
+        : isBulkAdjust
+          ? [{ name: 'days', label: 'Days to subtract', type: 'number', placeholder: '7', autoFocus: true }]
+          : []
     });
   }
 
   function submitModal(current) {
     const ids = Array.from(selected);
     const payload = { ...current.values };
+    if ((current.action === 'adjust_days' || current.action === 'bulk_adjust_days') && current.deltaSign === -1) {
+      payload.days = String(-Math.abs(parseInt(payload.days, 10) || 0));
+    }
     if (current.id) payload.id = current.id;
     if (current.action.startsWith('bulk_')) payload.ids = ids;
     if (current.action === 'set_expiry' && payload.expiresAt) payload.expiresAt = new Date(payload.expiresAt).toISOString();
@@ -316,6 +332,7 @@ export default function AdminDashboard() {
             <div className="bulkBar">
               <strong>{selected.size} selected</strong>
               <button onClick={() => openBulk('bulk_extend')}>Add days</button>
+              <button onClick={() => openBulk('bulk_adjust_days')}>Reduce days</button>
               <button onClick={() => openBulk('bulk_revoke')}>Revoke</button>
               <button onClick={() => openBulk('bulk_delete')}>Delete unused</button>
               <button onClick={() => setSelected(new Set())}>Clear</button>
@@ -351,7 +368,8 @@ export default function AdminDashboard() {
                       <td><strong>{daysLeft(lic.expires_at)}</strong><small>{fmtDate(lic.expires_at)}</small></td>
                       <td>
                         <div className="rowActions">
-                          <button onClick={() => openAdjust(lic.id)}>Days</button>
+                          <button onClick={() => openAdjust(lic.id, 'add')}>Add Days</button>
+                          <button onClick={() => openAdjust(lic.id, 'reduce')}>Reduce Days</button>
                           <button onClick={() => openSetExpiry(lic)}>Expiry</button>
                           <button onClick={() => openStatus(lic)}>Status</button>
                           {lic.install_id && <button onClick={() => runAction('reset_hwid', { id: lic.id })}>Reset ID</button>}

@@ -317,6 +317,11 @@ function buildPanelHTML() {
               Install ID: <span id="pm-install-id" style="color: #d4a017; font-family: 'JetBrains Mono', monospace; user-select: all;">...</span><br/>
               Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #d4a017; text-decoration: none;">zenithprojects@icloud.com</a>
             </div>
+            <div style="margin-top: 10px; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 10px;">
+              <button id="pm-action-reactivate" style="background: none; border: 1px solid rgba(212,160,23,0.2); color: #b8860b; font-size: 11px; padding: 8px 12px; border-radius: 6px; cursor: pointer; width: 100%;">
+                Already Activated? Reactivate Device
+              </button>
+            </div>
         </div>
       </div>
 
@@ -706,6 +711,35 @@ function wireActionButtons() {
         hostname: window.location.hostname,
       })
     })
+
+    document.getElementById('pm-action-reactivate')?.addEventListener('click', () => {
+      const reactivateBtn = document.getElementById('pm-action-reactivate');
+      const errorEl = document.getElementById('pm-license-error');
+      const originalText = reactivateBtn.textContent;
+      reactivateBtn.textContent = 'Checking...';
+      reactivateBtn.disabled = true;
+
+      chrome.runtime.sendMessage({ type: 'REACTIVATE_DEVICE' }, res => {
+        reactivateBtn.textContent = originalText;
+        reactivateBtn.disabled = false;
+
+        if (chrome.runtime.lastError) {
+          if (errorEl) { errorEl.textContent = 'Extension backend unreachable. Please reload the page.'; errorEl.style.display = 'block'; }
+          return;
+        }
+
+        if (res?.success) {
+          if (errorEl) { errorEl.style.display = 'none'; }
+          reactivateBtn.textContent = 'Success! Reactivating...';
+          setTimeout(() => { init(); }, 1500);
+        } else {
+          if (errorEl) {
+            errorEl.textContent = res?.error || 'No previous activation found. Enter a license key above.';
+            errorEl.style.display = 'block';
+          }
+        }
+      });
+    });
 
     document.getElementById('pm-action-activate')?.addEventListener('click', () => {
       const inputEl = document.getElementById('pm-license-input');

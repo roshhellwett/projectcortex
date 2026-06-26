@@ -996,6 +996,15 @@
             <div style="display: flex; flex-direction: column; gap: 14px;">
                 <input type="text" id="optionsLicenseInput" class="lock-input" placeholder="CORTEX-XXXX-XXXX" />
                 <button id="optionsActivateBtn" class="btn btn-primary" style="padding: 14px; font-size: 15px;">Unlock Cortex</button>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                    <span style="font-size: 12px; color: var(--accent-2);">or</span>
+                    <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                </div>
+                <button id="optionsReactivateBtn" class="btn btn-ghost" style="padding: 12px; font-size: 13px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    Already Activated? Reactivate
+                </button>
             </div>
             <div id="optionsAuthStatus" style="color: var(--error); font-size: 13px; margin-top: 16px; min-height: 20px;"></div>
 

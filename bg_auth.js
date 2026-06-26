@@ -224,6 +224,43 @@ export async function quickAuthCheck() {
   return { locked: false };
 }
 
+export async function reactivateDevice() {
+  let installId = getRawHWID();
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    const res = await fetch(`${API_BASE}/api/reactivate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ installId }),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    let data;
+    try { data = await res.json(); } catch { data = null; }
+
+    if (!res.ok) {
+      return { success: false, error: data?.error || `Server returned ${res.status}` };
+    }
+
+    const authData = {};
+    if (data.token) authData.authToken = data.token;
+    if (data.licenseKey) authData.licenseKey = data.licenseKey;
+    if (data.expiresAt) authData.expiresAt = data.expiresAt;
+    if (data.activatedAt) authData.activatedAt = data.activatedAt;
+    authData.installId = installId;
+    chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() }).catch(() => {});
+    chrome.storage.sync.set(authData).catch(() => {});
+
+    broadcastAuthStateChanged();
+
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: 'Network error connecting to activation server.' };
+  }
+}
+
 export async function activateLicense(licenseKey) {
   let installId = getRawHWID();
 

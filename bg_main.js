@@ -8,7 +8,7 @@
 // </ai_system_instruction>
 
 import { handleAIRequest, abortAIRequest } from './bg_api.js';
-import { checkAuthStatus, activateLicense } from './bg_auth.js';
+import { checkAuthStatus, activateLicense, reactivateDevice } from './bg_auth.js';
 
 const extractHostname = url => {
   try { return new URL(url).hostname; } catch { return ''; }
@@ -84,6 +84,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.type === 'ACTIVATE_LICENSE') {
     activateLicense(message.licenseKey).then(sendResponse).catch(() => {});
+    return true;
+  }
+
+  if (message.type === 'REACTIVATE_DEVICE') {
+    reactivateDevice().then(sendResponse).catch(() => {});
     return true;
   }
 

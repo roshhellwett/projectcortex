@@ -340,6 +340,42 @@ function updateKeyHint() {
     const activateBtn = document.getElementById('optionsActivateBtn');
     const licenseInput = document.getElementById('optionsLicenseInput');
     const authStatus = document.getElementById('optionsAuthStatus');
+    const reactivateBtn = document.getElementById('optionsReactivateBtn');
+
+    if (reactivateBtn) {
+      reactivateBtn.addEventListener('click', async () => {
+        authStatus.textContent = '';
+        authStatus.style.color = '#888';
+        reactivateBtn.disabled = true;
+        reactivateBtn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Checking...</span>';
+
+        chrome.runtime.sendMessage({ type: 'REACTIVATE_DEVICE' }, res => {
+          reactivateBtn.disabled = false;
+          reactivateBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg> Already Activated? Reactivate';
+
+          if (chrome.runtime.lastError) {
+            authStatus.style.color = '#ef4444';
+            authStatus.textContent = 'Extension backend unreachable. Please reload the extension.';
+            return;
+          }
+
+          if (res && res.success) {
+            authStatus.style.color = '#059669';
+            authStatus.textContent = 'Device reactivated successfully!';
+            setTimeout(() => {
+              document.getElementById('lockOverlay').style.opacity = '0';
+              document.getElementById('lockOverlay').style.pointerEvents = 'none';
+              document.getElementById('mainContainer').style.opacity = '1';
+              document.getElementById('mainContainer').style.filter = 'none';
+              document.getElementById('mainContainer').style.pointerEvents = 'auto';
+            }, 800);
+          } else {
+            authStatus.style.color = '#ef4444';
+            authStatus.textContent = res?.error || 'No previous activation found on this device. Please enter a license key.';
+          }
+        });
+      });
+    }
 
     if (activateBtn && licenseInput) {
         activateBtn.addEventListener('click', async () => {

@@ -34,12 +34,12 @@ function AdminModal({ modal, setModal, onSubmit, loading }) {
   if (!modal) return null;
   const isDanger = ['revoke', 'delete', 'bulk_revoke', 'bulk_delete'].includes(modal.action);
   return (
-    <div className="adminModalBackdrop">
-      <div className="adminModal">
+    <div className="modalBackdrop">
+      <div className="modalBox">
         <h3>{modal.title}</h3>
         <p>{modal.description}</p>
         {modal.fields?.map(field => (
-          <label key={field.name} className="adminField">
+          <label key={field.name} className="modalField">
             <span>{field.label}</span>
             {field.type === 'select' ? (
               <select value={modal.values[field.name] || ''} onChange={e => setModal({ ...modal, values: { ...modal.values, [field.name]: e.target.value } })}>
@@ -56,9 +56,9 @@ function AdminModal({ modal, setModal, onSubmit, loading }) {
             )}
           </label>
         ))}
-        <div className="adminModalActions">
-          <button className="adminButton ghost" onClick={() => setModal(null)}>Cancel</button>
-          <button className={`adminButton ${isDanger ? 'danger' : 'primary'}`} disabled={loading} onClick={() => onSubmit(modal)}>
+        <div className="modalActions">
+          <button className="btn ghost" onClick={() => setModal(null)}>Cancel</button>
+          <button className={`btn ${isDanger ? 'danger' : 'primary'}`} disabled={loading} onClick={() => onSubmit(modal)}>
             {loading ? 'Working...' : 'Confirm'}
           </button>
         </div>
@@ -257,67 +257,78 @@ export default function AdminDashboard() {
 
   if (!loggedIn) {
     return (
-      <main className="adminShell loginShell">
-        <form className="loginPanel" onSubmit={e => { e.preventDefault(); fetchData(); }}>
-          <img src="/logo.png" alt="Zenith" />
+      <main className="shell loginShell">
+        <div className="loginOrbs" />
+        <form className="loginCard" onSubmit={e => { e.preventDefault(); fetchData(); }}>
+          <div className="loginIcon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
           <h1>Zenith Admin</h1>
-          <p>Secure operations console for activation keys and client trust.</p>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Admin password" autoFocus />
-          <button className="adminButton primary" disabled={loading}>{loading ? 'Signing in...' : 'Open console'}</button>
-          {error && <div className="adminError">{error}</div>}
+          <p className="loginDesc">Secure operations console for activation keys and client trust.</p>
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Admin password" className="loginInput" autoFocus />
+          <button className="btn primary" disabled={loading}>{loading ? 'Signing in...' : 'Open console'}</button>
+          {error && <div className="errorMsg">{error}</div>}
         </form>
       </main>
     );
   }
 
   return (
-    <main className="adminShell">
-      {toast && <div className="adminToast">{toast}</div>}
+    <main className="shell">
+      {toast && <div className="toast">{toast}</div>}
       <AdminModal modal={modal} setModal={setModal} onSubmit={submitModal} loading={loading} />
 
-      <header className="adminTopbar">
-        <div>
-          <span className="adminEyebrow">Production console</span>
+      <header className="topbar">
+        <div className="topbarLeft">
+          <div className="topbarBadge">Production console</div>
           <h1>Zenith Operations</h1>
         </div>
-        <div className="adminTopActions">
+        <div className="topbarRight">
           <select value={autoRefresh} onChange={e => setAutoRefresh(Number(e.target.value))}>
             <option value="0">Manual refresh</option>
             <option value="15">Refresh 15s</option>
             <option value="30">Refresh 30s</option>
             <option value="60">Refresh 1m</option>
           </select>
-          <button className="adminButton ghost" onClick={() => fetchData(true)}>Refresh</button>
-          <button className="adminButton primary" onClick={openVersion}>Update Version</button>
-          <button className="adminButton ghost" onClick={() => setLoggedIn(false)}>Logout</button>
+          <button className="btn ghost" onClick={() => fetchData(true)}>Refresh</button>
+          <button className="btn primary" onClick={openVersion}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.138-6.32"/><circle cx="12" cy="12" r="2"/><path d="M20 4v6h-6"/></svg>
+            Update Version
+          </button>
+          <button className="btn ghost" onClick={() => setLoggedIn(false)}>Logout</button>
         </div>
       </header>
 
-      <section className="adminStats">
+      <section className="statsRow">
         {[
-          ['Total', stats.total],
-          ['Active', stats.active],
-          ['Unused', stats.unused],
-          ['Expired', stats.expired],
-          ['Revoked', stats.revoked]
-        ].map(([label, value]) => (
-          <div className="adminStat" key={label}>
-            <span>{label}</span>
-            <strong>{value}</strong>
+          ['Total', stats.total, '#d4a017'],
+          ['Active', stats.active, '#059669'],
+          ['Unused', stats.unused, '#b8860b'],
+          ['Expired', stats.expired, '#b45309'],
+          ['Revoked', stats.revoked, '#dc2626']
+        ].map(([label, value, color]) => (
+          <div className="statCard" key={label}>
+            <div className="statDot" style={{ background: color }} />
+            <div>
+              <div className="statLabel">{label}</div>
+              <div className="statNum">{value}</div>
+            </div>
           </div>
         ))}
       </section>
 
-      <nav className="adminTabs">
+      <nav className="tabs">
         {['licenses', 'logs', 'feedback'].map(item => (
-          <button key={item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>{item}</button>
+          <button key={item} className={tab === item ? 'tab active' : 'tab'} onClick={() => setTab(item)}>{item}</button>
         ))}
       </nav>
 
       {tab === 'licenses' && (
-        <section className="adminWorkspace">
-          <div className="adminToolbar">
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search license, install ID, status..." />
+        <section className="workspace">
+          <div className="toolbar">
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search license, install ID, status..." className="toolbarSearch" />
             <select value={status} onChange={e => setStatus(e.target.value)}>
               <option value="all">All statuses</option>
               <option value="unused">Unused</option>
@@ -325,8 +336,8 @@ export default function AdminDashboard() {
               <option value="expired">Expired</option>
               <option value="revoked">Revoked</option>
             </select>
-            <button className="adminButton primary" onClick={openGenerate}>Generate keys</button>
-            <button className="adminVersionBadge" onClick={openVersion} title="Update client version">Current v{latestVersion}</button>
+            <button className="btn primary" onClick={openGenerate}>Generate keys</button>
+            <button className="versionBadge" onClick={openVersion} title="Update client version">v{latestVersion}</button>
           </div>
 
           {selected.size > 0 && (
@@ -340,8 +351,8 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          <div className="adminTableWrap">
-            <table className="adminTable">
+          <div className="tableWrap">
+            <table className="table">
               <thead>
                 <tr>
                   <th><input type="checkbox" checked={filtered.length > 0 && selected.size === filtered.length} onChange={e => setSelected(e.target.checked ? new Set(filtered.map(l => l.id)) : new Set())} /></th>
@@ -360,13 +371,13 @@ export default function AdminDashboard() {
                     <tr key={lic.id}>
                       <td><input type="checkbox" checked={selected.has(lic.id)} onChange={() => toggleSelected(lic.id)} /></td>
                       <td>
-                        <button className="keyButton" onClick={() => navigator.clipboard.writeText(lic.license_key).then(() => showToast('Copied'))}>{lic.license_key}</button>
+                        <button className="keyBtn" onClick={() => navigator.clipboard.writeText(lic.license_key).then(() => showToast('Copied'))}>{lic.license_key}</button>
                         <small>{lic.duration_days ? `${lic.duration_days} activation days` : 'duration follows server default'}</small>
                       </td>
-                      <td><span className="statusPill" style={{ background: tone.bg, color: tone.fg, borderColor: tone.border }}>{lic.status}</span></td>
-                      <td className="mono">{lic.install_id || '-'}</td>
-                      <td>{fmtDate(lic.activated_at)}</td>
-                      <td><strong>{daysLeft(lic.expires_at)}</strong><small>{fmtDate(lic.expires_at)}</small></td>
+                      <td><span className="pill" style={{ background: tone.bg, color: tone.fg, borderColor: tone.border }}>{lic.status}</span></td>
+                      <td className="monoCell">{lic.install_id || '-'}</td>
+                      <td className="dateCell">{fmtDate(lic.activated_at)}</td>
+                      <td className="expiryCell"><strong>{daysLeft(lic.expires_at)}</strong><small>{fmtDate(lic.expires_at)}</small></td>
                       <td>
                         <div className="rowActions">
                           <button onClick={() => openAdjust(lic.id, 'add')}>Add Days</button>
@@ -374,14 +385,14 @@ export default function AdminDashboard() {
                           <button onClick={() => openSetExpiry(lic)}>Expiry</button>
                           <button onClick={() => openStatus(lic)}>Status</button>
                           {lic.install_id && <button onClick={() => runAction('reset_hwid', { id: lic.id })}>Reset ID</button>}
-                          {lic.status !== 'revoked' && <button className="dangerText" onClick={() => runAction('revoke', { id: lic.id })}>Revoke</button>}
-                          {lic.status === 'unused' && <button className="dangerText" onClick={() => runAction('delete', { id: lic.id })}>Delete</button>}
+                          {lic.status !== 'revoked' && <button className="danger" onClick={() => runAction('revoke', { id: lic.id })}>Revoke</button>}
+                          {lic.status === 'unused' && <button className="danger" onClick={() => runAction('delete', { id: lic.id })}>Delete</button>}
                         </div>
                       </td>
                     </tr>
                   );
                 })}
-                {!filtered.length && <tr><td colSpan="7" className="emptyCell">No matching licenses.</td></tr>}
+                {!filtered.length && <tr><td colSpan="7" className="empty">No matching licenses.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -389,14 +400,14 @@ export default function AdminDashboard() {
       )}
 
       {tab === 'logs' && (
-        <section className="adminWorkspace">
-          <h2>API logs</h2>
-          <div className="adminTableWrap">
-            <table className="adminTable">
+        <section className="workspace">
+          <h2 className="sectionTitle">API logs</h2>
+          <div className="tableWrap">
+            <table className="table">
               <thead><tr><th>Time</th><th>Install ID</th><th>Action</th></tr></thead>
               <tbody>
-                {logs.slice(0, 200).map(log => <tr key={log.id}><td>{fmtDate(log.created_at)}</td><td className="mono">{log.install_id || '-'}</td><td>{log.action_type || '-'}</td></tr>)}
-                {!logs.length && <tr><td colSpan="3" className="emptyCell">No logs yet.</td></tr>}
+                {logs.slice(0, 200).map(log => <tr key={log.id}><td className="dateCell">{fmtDate(log.created_at)}</td><td className="monoCell">{log.install_id || '-'}</td><td>{log.action_type || '-'}</td></tr>)}
+                {!logs.length && <tr><td colSpan="3" className="empty">No logs yet.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -404,14 +415,14 @@ export default function AdminDashboard() {
       )}
 
       {tab === 'feedback' && (
-        <section className="adminWorkspace">
-          <h2>User feedback</h2>
-          <div className="adminTableWrap">
-            <table className="adminTable">
+        <section className="workspace">
+          <h2 className="sectionTitle">User feedback</h2>
+          <div className="tableWrap">
+            <table className="table">
               <thead><tr><th>Time</th><th>Install ID</th><th>Rating</th><th>Message</th></tr></thead>
               <tbody>
-                {feedback.map(item => <tr key={item.id}><td>{fmtDate(item.created_at)}</td><td className="mono">{item.install_id || '-'}</td><td>{item.rating || '-'}/5</td><td>{item.message || '-'}</td></tr>)}
-                {!feedback.length && <tr><td colSpan="4" className="emptyCell">No feedback yet.</td></tr>}
+                {feedback.map(item => <tr key={item.id}><td className="dateCell">{fmtDate(item.created_at)}</td><td className="monoCell">{item.install_id || '-'}</td><td>{item.rating || '-'}/5</td><td>{item.message || '-'}</td></tr>)}
+                {!feedback.length && <tr><td colSpan="4" className="empty">No feedback yet.</td></tr>}
               </tbody>
             </table>
           </div>
@@ -419,56 +430,600 @@ export default function AdminDashboard() {
       )}
 
       <style jsx>{`
-        .adminShell { min-height: 100vh; padding: 28px; background: #e1d7c2; color: #1a1a1a; font-family: Inter, Outfit, system-ui, sans-serif; }
-        .loginShell { display: grid; place-items: center; }
-        .loginPanel { width: min(420px, calc(100vw - 32px)); display: grid; gap: 16px; padding: 36px; border: 1px solid rgba(0,0,0,.08); background: #f5f0e8; border-radius: 8px; box-shadow: 0 24px 80px rgba(0,0,0,.08); }
-        .loginPanel img { width: 52px; height: 52px; }
-        .loginPanel h1, .adminTopbar h1 { margin: 0; font-size: 28px; letter-spacing: 0; }
-        .loginPanel p { color: #6b6b6b; margin: 0 0 6px; line-height: 1.5; }
-        input, select { color: #1a1a1a; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,.1); border-radius: 8px; padding: 11px 12px; outline: none; min-height: 42px; box-sizing: border-box; }
-        input:focus, select:focus { border-color: #d4a017; box-shadow: 0 0 0 3px rgba(212,160,23,.12); }
-        .adminButton, .rowActions button, .bulkBar button { border: 1px solid rgba(0,0,0,.08); background: rgba(0,0,0,.04); color: #1a1a1a; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 650; cursor: pointer; }
-        .adminButton.primary { background: #d4a017; color: #fff; border-color: #d4a017; }
-        .adminButton.primary:hover { background: #b8860b; }
-        .adminButton.danger { background: #dc2626; border-color: #dc2626; color: white; }
-        .adminButton.ghost:hover, .rowActions button:hover, .bulkBar button:hover { background: rgba(0,0,0,.06); }
-        .adminVersionBadge { border: 1px solid rgba(212,160,23,.28); background: rgba(212,160,23,.1); color: #b8860b; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 800; cursor: pointer; }
-        .adminVersionBadge:hover { background: rgba(212,160,23,.16); color: #1a1a1a; }
-        .adminError { color: #dc2626; background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.2); padding: 10px; border-radius: 8px; }
-        .adminTopbar { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 22px; }
-        .adminEyebrow { color: #d4a017; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
-        .adminTopActions, .adminToolbar, .bulkBar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .adminStats { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 12px; margin-bottom: 18px; }
-        .adminStat { background: #f5f0e8; border: 1px solid rgba(0,0,0,.08); border-radius: 8px; padding: 16px; }
-        .adminStat span, td small { display: block; color: #6b6b6b; font-size: 12px; }
-        .adminStat strong { font-size: 30px; }
-        .adminTabs { display: flex; gap: 8px; border-bottom: 1px solid rgba(0,0,0,.08); margin-bottom: 18px; }
-        .adminTabs button { background: transparent; color: #6b6b6b; border: 0; padding: 14px 16px; text-transform: capitalize; cursor: pointer; }
-        .adminTabs button.active { color: #1a1a1a; box-shadow: inset 0 -2px #d4a017; }
-        .adminWorkspace { display: grid; gap: 14px; }
-        .adminToolbar input { flex: 1; min-width: 260px; }
-        .bulkBar { background: rgba(212,160,23,.08); border: 1px solid rgba(212,160,23,.2); border-radius: 8px; padding: 10px; }
-        .adminTableWrap { overflow: auto; border: 1px solid rgba(0,0,0,.08); border-radius: 8px; background: rgba(245,240,232,.7); }
-        .adminTable { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1060px; }
-        th, td { padding: 12px; border-bottom: 1px solid rgba(0,0,0,.06); text-align: left; vertical-align: middle; }
-        th { color: #6b6b6b; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; background: rgba(0,0,0,.04); }
-        .keyButton { background: transparent; border: 0; color: #1a1a1a; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; cursor: pointer; padding: 0; }
-        .keyButton:hover { color: #d4a017; }
-        .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: #6b6b6b; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
-        .statusPill { border: 1px solid; border-radius: 999px; padding: 4px 9px; font-weight: 800; text-transform: uppercase; font-size: 11px; }
-        .rowActions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-        .rowActions button { min-height: 30px; padding: 0 9px; font-size: 12px; }
-        .dangerText { color: #dc2626 !important; }
-        .emptyCell { text-align: center; color: #6b6b6b; padding: 34px; }
-        .adminToast { position: fixed; right: 24px; bottom: 24px; z-index: 40; background: #1a1a1a; color: #e1d7c2; padding: 12px 16px; border-radius: 8px; font-weight: 800; box-shadow: 0 16px 48px rgba(0,0,0,.1); }
-        .adminModalBackdrop { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.4); z-index: 50; padding: 20px; }
-        .adminModal { width: min(460px, 100%); background: #f5f0e8; border: 1px solid rgba(0,0,0,.1); border-radius: 8px; padding: 24px; box-shadow: 0 24px 80px rgba(0,0,0,.1); }
-        .adminModal h3 { margin: 0 0 8px; font-size: 22px; }
-        .adminModal p { color: #6b6b6b; line-height: 1.5; margin: 0 0 18px; }
-        .adminField { display: grid; gap: 7px; margin-bottom: 12px; }
-        .adminField span { color: #1a1a1a; font-size: 12px; font-weight: 800; }
-        .adminModalActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-        @media (max-width: 900px) { .adminTopbar { align-items: stretch; flex-direction: column; } .adminStats { grid-template-columns: repeat(2, 1fr); } .adminShell { padding: 16px; } }
+        .shell {
+          min-height: 100vh;
+          padding: 24px 28px 60px;
+          background: #e1d7c2;
+          color: #1a1a1a;
+          font-family: Inter, Outfit, system-ui, sans-serif;
+          position: relative;
+        }
+
+        .loginShell {
+          display: grid;
+          place-items: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .loginOrbs {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(ellipse at 20% 30%, rgba(212, 160, 23, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 70%, rgba(5, 150, 105, 0.06) 0%, transparent 50%);
+        }
+
+        .loginCard {
+          width: min(400px, calc(100vw - 40px));
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          padding: 36px;
+          border: 1px solid rgba(0,0,0,0.06);
+          background: rgba(245, 240, 232, 0.75);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border-radius: 20px;
+          box-shadow: 0 24px 80px rgba(0,0,0,0.08);
+          position: relative;
+          z-index: 1;
+          animation: loginSlide 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes loginSlide {
+          0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .loginCard h1 {
+          margin: 0;
+          font-size: 26px;
+          letter-spacing: -0.02em;
+          background: linear-gradient(135deg, #b8860b, #d4a017);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .loginDesc {
+          color: #7a7a7a;
+          margin: 0;
+          line-height: 1.5;
+          font-size: 14px;
+        }
+
+        .loginIcon {
+          width: 56px;
+          height: 56px;
+          background: linear-gradient(135deg, rgba(212,160,23,0.12), rgba(184,134,11,0.08));
+          border: 1px solid rgba(212,160,23,0.15);
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #d4a017;
+        }
+
+        .loginInput {
+          text-align: center;
+          font-size: 15px;
+          padding: 14px 16px !important;
+          letter-spacing: 0.05em;
+        }
+
+        .topbar {
+          display: flex;
+          justify-content: space-between;
+          gap: 16px;
+          align-items: center;
+          margin-bottom: 20px;
+          background: rgba(245, 240, 232, 0.7);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(0,0,0,0.05);
+          border-radius: 16px;
+          padding: 16px 20px;
+        }
+
+        .topbarLeft h1 {
+          margin: 2px 0 0;
+          font-size: 22px;
+          letter-spacing: -0.02em;
+          background: linear-gradient(135deg, #b8860b, #d4a017);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .topbarBadge {
+          color: #d4a017;
+          text-transform: uppercase;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.15em;
+          padding: 3px 10px;
+          background: rgba(212,160,23,0.08);
+          border: 1px solid rgba(212,160,23,0.15);
+          border-radius: 6px;
+          display: inline-block;
+        }
+
+        .topbarRight {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+
+        .statsRow {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 12px;
+          margin-bottom: 18px;
+        }
+
+        .statCard {
+          background: rgba(245, 240, 232, 0.65);
+          border: 1px solid rgba(0,0,0,0.06);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border-radius: 14px;
+          padding: 16px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .statCard:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+          border-color: rgba(212,160,23,0.12);
+          background: rgba(245, 240, 232, 0.8);
+        }
+
+        .statDot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        .statLabel {
+          color: #7a7a7a;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .statNum {
+          font-size: 26px;
+          font-weight: 800;
+          line-height: 1.1;
+          margin-top: 2px;
+        }
+
+        .tabs {
+          display: flex;
+          gap: 4px;
+          background: rgba(245, 240, 232, 0.5);
+          border: 1px solid rgba(0,0,0,0.05);
+          border-radius: 12px;
+          padding: 4px;
+          margin-bottom: 18px;
+        }
+
+        .tab {
+          background: transparent;
+          color: #7a7a7a;
+          border: 0;
+          padding: 10px 20px;
+          text-transform: capitalize;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 600;
+          border-radius: 8px;
+          transition: all 0.3s;
+        }
+
+        .tab:hover {
+          color: #1a1a1a;
+          background: rgba(0,0,0,0.03);
+        }
+
+        .tab.active {
+          color: #1a1a1a;
+          background: rgba(255,255,255,0.7);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .workspace {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .sectionTitle {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 700;
+          color: #d4a017;
+        }
+
+        .toolbar {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+
+        .toolbarSearch {
+          flex: 1;
+          min-width: 260px;
+        }
+
+        .versionBadge {
+          border: 1px solid rgba(212,160,23,0.2);
+          background: rgba(212,160,23,0.08);
+          color: #b8860b;
+          border-radius: 8px;
+          min-height: 38px;
+          padding: 0 14px;
+          font-weight: 800;
+          font-size: 13px;
+          cursor: pointer;
+          font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+          transition: all 0.2s;
+        }
+
+        .versionBadge:hover {
+          background: rgba(212,160,23,0.14);
+          color: #1a1a1a;
+        }
+
+        .errorMsg {
+          color: #dc2626;
+          background: rgba(239,68,68,0.06);
+          border: 1px solid rgba(239,68,68,0.2);
+          padding: 10px 14px;
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .btn {
+          background: rgba(255,255,255,0.5);
+          color: #1a1a1a;
+          border: 1px solid rgba(0,0,0,0.07);
+          padding: 10px 18px;
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          user-select: none;
+        }
+
+        .btn:hover { background: rgba(255,255,255,0.75); border-color: rgba(212,160,23,0.2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .btn.primary {
+          background: linear-gradient(135deg, #b8860b, #d4a017);
+          color: #000;
+          border: none;
+          font-weight: 800;
+          box-shadow: 0 4px 16px rgba(212,160,23,0.25);
+        }
+        .btn.primary:hover { box-shadow: 0 8px 24px rgba(212,160,23,0.35); transform: translateY(-1px); }
+
+        .btn.danger {
+          background: #dc2626;
+          color: #fff;
+          border: none;
+          box-shadow: 0 4px 12px rgba(220,38,38,0.2);
+        }
+        .btn.danger:hover { background: #b91c1c; box-shadow: 0 8px 20px rgba(220,38,38,0.3); }
+
+        .btn.ghost { background: rgba(255,255,255,0.3); border: 1px solid rgba(0,0,0,0.07); }
+        .btn.ghost:hover { background: rgba(255,255,255,0.6); }
+
+        input, select {
+          color: #1a1a1a;
+          background: rgba(255,255,255,0.55);
+          border: 1px solid rgba(0,0,0,0.07);
+          border-radius: 10px;
+          padding: 10px 14px;
+          outline: none;
+          min-height: 38px;
+          box-sizing: border-box;
+          font-size: 14px;
+          font-family: inherit;
+          transition: all 0.25s;
+          box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        input:focus, select:focus {
+          border-color: #d4a017;
+          box-shadow: 0 0 0 3px rgba(212,160,23,0.1), inset 0 2px 4px rgba(0,0,0,0.03);
+          background: rgba(255,255,255,0.7);
+        }
+
+        select {
+          padding-right: 40px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 12px center;
+          cursor: pointer;
+        }
+
+        .bulkBar {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+          background: rgba(212,160,23,0.07);
+          border: 1px solid rgba(212,160,23,0.15);
+          border-radius: 12px;
+          padding: 12px 16px;
+          animation: fadeSlide 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeSlide {
+          0% { opacity: 0; transform: translateY(-8px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .bulkBar strong { font-size: 13px; color: #b8860b; }
+        .bulkBar button {
+          background: rgba(255,255,255,0.5);
+          border: 1px solid rgba(0,0,0,0.07);
+          border-radius: 8px;
+          padding: 7px 14px;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .bulkBar button:hover { background: rgba(255,255,255,0.8); border-color: rgba(212,160,23,0.2); }
+
+        .tableWrap {
+          overflow: auto;
+          border: 1px solid rgba(0,0,0,0.06);
+          border-radius: 14px;
+          background: rgba(245,240,232,0.6);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        }
+
+        .table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+          min-width: 1060px;
+        }
+
+        th, td {
+          padding: 12px 14px;
+          border-bottom: 1px solid rgba(0,0,0,0.05);
+          text-align: left;
+          vertical-align: middle;
+        }
+
+        th {
+          color: #7a7a7a;
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          font-weight: 700;
+          background: rgba(0,0,0,0.03);
+          position: sticky;
+          top: 0;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.25); }
+
+        .keyBtn {
+          background: transparent;
+          border: 0;
+          color: #1a1a1a;
+          font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+          cursor: pointer;
+          padding: 0;
+          font-size: 13px;
+          transition: color 0.2s;
+        }
+        .keyBtn:hover { color: #d4a017; }
+
+        td small {
+          display: block;
+          color: #7a7a7a;
+          font-size: 11px;
+          margin-top: 2px;
+        }
+
+        .pill {
+          border: 1px solid;
+          border-radius: 999px;
+          padding: 4px 10px;
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 10px;
+          letter-spacing: 0.03em;
+          display: inline-block;
+        }
+
+        .monoCell {
+          font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+          color: #7a7a7a;
+          max-width: 160px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 12px;
+        }
+
+        .dateCell {
+          color: #7a7a7a;
+          font-size: 12px;
+          white-space: nowrap;
+        }
+
+        .expiryCell strong {
+          display: block;
+          color: #1a1a1a;
+          font-size: 13px;
+        }
+
+        .expiryCell small {
+          color: #7a7a7a;
+          font-size: 11px;
+        }
+
+        .rowActions {
+          display: flex;
+          gap: 4px;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+        }
+
+        .rowActions button {
+          border: 1px solid rgba(0,0,0,0.07);
+          background: rgba(255,255,255,0.4);
+          color: #1a1a1a;
+          border-radius: 6px;
+          min-height: 28px;
+          padding: 0 8px;
+          font-size: 11px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .rowActions button:hover {
+          background: rgba(255,255,255,0.8);
+          border-color: rgba(212,160,23,0.2);
+        }
+
+        .rowActions .danger { color: #dc2626 !important; }
+        .rowActions .danger:hover {
+          background: rgba(239,68,68,0.08) !important;
+          border-color: rgba(239,68,68,0.2) !important;
+        }
+
+        .empty {
+          text-align: center;
+          color: #7a7a7a;
+          padding: 34px;
+          font-size: 14px;
+        }
+
+        .toast {
+          position: fixed;
+          right: 24px;
+          bottom: 24px;
+          z-index: 999;
+          background: #1a1a1a;
+          color: #e1d7c2;
+          padding: 12px 20px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 13px;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+          animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes toastIn {
+          0% { opacity: 0; transform: translateY(16px) scale(0.95); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modalBackdrop {
+          position: fixed;
+          inset: 0;
+          display: grid;
+          place-items: center;
+          background: rgba(0,0,0,0.35);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          z-index: 100;
+          padding: 20px;
+          animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        .modalBox {
+          width: min(440px, 100%);
+          background: rgba(245, 240, 232, 0.92);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(0,0,0,0.08);
+          border-radius: 20px;
+          padding: 28px;
+          box-shadow: 0 24px 80px rgba(0,0,0,0.12);
+          animation: modalSlide 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes modalSlide {
+          0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modalBox h3 {
+          margin: 0 0 6px;
+          font-size: 20px;
+          background: linear-gradient(135deg, #b8860b, #d4a017);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .modalBox p {
+          color: #7a7a7a;
+          line-height: 1.5;
+          margin: 0 0 18px;
+          font-size: 13px;
+        }
+
+        .modalField {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin-bottom: 14px;
+        }
+
+        .modalField span {
+          color: #1a1a1a;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .modalActions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+          .shell { padding: 16px; }
+          .topbar { flex-direction: column; align-items: stretch; }
+          .topbarRight { justify-content: flex-start; }
+          .statsRow { grid-template-columns: repeat(2, 1fr); }
+          .statsRow .statCard:last-child:nth-child(odd) { grid-column: 1 / -1; }
+        }
+
+        @media (max-width: 600px) {
+          .statsRow { grid-template-columns: 1fr 1fr; }
+          .toolbarSearch { min-width: 100%; }
+        }
       `}</style>
     </main>
   );

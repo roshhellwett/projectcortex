@@ -107,10 +107,12 @@ function applySiteSettings() {
 var _securityObserver = null;
 var _securityInterval = null;
 var _enforcingLock = false;
+var _initInterval = null;
 
 function cleanup() {
   if (_securityObserver) { _securityObserver.disconnect(); _securityObserver = null; }
   if (_securityInterval) { clearInterval(_securityInterval); _securityInterval = null; }
+  // keep _initInterval alive — it runs for the page lifetime to detect SPA navigations
   document.querySelectorAll('#pagemind-panel, #pagemind-bubble, #pm-copy-paste-override')
     .forEach(el => el.remove())
   if (_thinkTimer) clearInterval(_thinkTimer)
@@ -122,8 +124,6 @@ function cleanup() {
   _bubble = null
   _panel = null
   _panelPos = null
-  _busy = false
-  _lastAction = null
 }
 
 let _lastAuthCheck = 0
@@ -269,7 +269,7 @@ if (window !== window.top) {
 
 var _lastInitTime = 0;
 if (window === window.top) {
-  setInterval(() => {
+  _initInterval = setInterval(() => {
     if (location.href !== _lastURL) {
       _lastURL = location.href
 
@@ -281,6 +281,8 @@ if (window === window.top) {
   window.addEventListener('popstate', () => {
     if (location.href !== _lastURL) {
       _lastURL = location.href
+      if (Date.now() - _lastInitTime < 1000) return;
+      _lastInitTime = Date.now();
       init()
     }
   })

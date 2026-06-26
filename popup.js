@@ -35,9 +35,10 @@ function setLoading(loading) {
 
 async function sendAction(tab, action) {
   return new Promise(resolve => {
-    const timeout = setTimeout(() => resolve(null), 5000);
     chrome.tabs.sendMessage(tab.id, { type: 'CAPTURE_SELECTION' }, capture => {
-      const selectionText = chrome.runtime.lastError ? '' : (capture?.selectionText || '');
+      if (chrome.runtime.lastError) { resolve(null); return; }
+      const selectionText = capture?.selectionText || '';
+      const timeout = setTimeout(() => resolve(null), 5000);
       chrome.tabs.sendMessage(tab.id, { type: 'RUN_ACTION', action, selectionText }, response => {
         clearTimeout(timeout);
         resolve((chrome.runtime.lastError || !response?.ok) ? null : response);

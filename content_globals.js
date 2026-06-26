@@ -29,12 +29,6 @@ var SYSTEM_PROMPT_MCQ =
   'D) <Option text>\n\n' +
   'ANSWER: <Single correct letter>';
 
-var MCQ_SELECTOR =
-  '.options, .answers, .choices, .mcq, .quiz, .question, .exam, ' +
-  '[class*="option"], [class*="answer"], [class*="choice"], ' +
-  '[class*="mcq"], [class*="quiz"], [class*="question"], ' +
-  'ol, ul, table, form, section, fieldset';
-
 var SANITIZE_RULES = [
   [/\$\$([\s\S]*?)\$\$/g, '$1'],
   [/\$([^$\n]+)\$/g, '$1'],
@@ -66,6 +60,7 @@ var _thinkTimer = null;
 var _hideTimer = null;
 
 var _bubble = null;
+var _bubbleRect = null;
 var _lastSelectionSnapshot = {
   text: '',
   context: '',

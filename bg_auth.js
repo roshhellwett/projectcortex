@@ -11,8 +11,11 @@ const API_BASE = 'https://projectcortex.vercel.app';
 const ONLINE_VERIFY_INTERVAL_MS = 60 * 1000;
 const OFFLINE_GRACE_MS = 24 * 60 * 60 * 1000;
 
+let _verifyInProgress = false;
+
 function broadcastAuthStateChanged() {
   try {
+    chrome.runtime.sendMessage({ type: 'AUTH_STATE_CHANGED' }).catch(() => {});
     chrome.tabs.query({}, (tabs) => {
       tabs.forEach(tab => {
         if (tab.id) chrome.tabs.sendMessage(tab.id, { type: 'AUTH_STATE_CHANGED' }).catch(() => {});
@@ -88,7 +91,7 @@ export async function getAuthState() {
             licenseKey: syncData.licenseKey,
             expiresAt: syncData.expiresAt,
             activatedAt: syncData.activatedAt
-          });
+          }).catch(() => {});
         }
         resolve(merged);
       });
@@ -104,8 +107,8 @@ export async function checkAuthStatus() {
   const hwid = getRawHWID();
   if (!currentInstallId || currentInstallId !== hwid) {
     currentInstallId = hwid;
-    chrome.storage.sync.set({ installId: currentInstallId });
-    chrome.storage.local.set({ installId: currentInstallId });
+    chrome.storage.sync.set({ installId: currentInstallId }).catch(() => {});
+    chrome.storage.local.set({ installId: currentInstallId }).catch(() => {});
   }
 
   if (!currentInstallId || !state.authToken) {
@@ -119,8 +122,8 @@ export async function checkAuthStatus() {
         return { locked: false, installId: currentInstallId, renewed: true };
       }
     }
-    chrome.storage.local.remove(['authToken']);
-    chrome.storage.sync.remove(['authToken']);
+    chrome.storage.local.remove(['authToken']).catch(() => {});
+    chrome.storage.sync.remove(['authToken']).catch(() => {});
     broadcastAuthStateChanged();
     return { locked: true, reason: 'EXPIRED', installId: currentInstallId };
   }
@@ -129,24 +132,45 @@ export async function checkAuthStatus() {
   const lastVerify = state.lastVerifyTime || 0;
 
   if (now - lastVerify > ONLINE_VERIFY_INTERVAL_MS) {
+    if (_verifyInProgress) {
+      const lastSuccess = state.lastSuccessfulVerify || lastVerify || 0;
+      if (now - lastSuccess > OFFLINE_GRACE_MS) return { locked: true, reason: 'OFFLINE_EXPIRED', installId: currentInstallId };
+      return { locked: false, offline: true, installId: currentInstallId };
+    }
+    _verifyInProgress = true;
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
       const res = await fetch(`${API_BASE}/api/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: state.authToken, hwid: currentInstallId })
+        body: JSON.stringify({ token: state.authToken, hwid: currentInstallId }),
+        signal: controller.signal
       });
-      const data = await res.json();
+      clearTimeout(timeout);
+      let data;
+      try { data = await res.json(); } catch { data = null; }
 
       if (!res.ok) {
-        chrome.storage.local.remove(['authToken']);
-        chrome.storage.sync.remove(['authToken']);
+        if (res.status >= 500) {
+          const lastSuccess = state.lastSuccessfulVerify || lastVerify || 0;
+          if (now - lastSuccess > OFFLINE_GRACE_MS) {
+            chrome.storage.local.remove(['authToken']).catch(() => {});
+            chrome.storage.sync.remove(['authToken']).catch(() => {});
+            broadcastAuthStateChanged();
+            return { locked: true, reason: 'OFFLINE_EXPIRED', installId: currentInstallId };
+          }
+          return { locked: false, offline: true, installId: currentInstallId };
+        }
+        chrome.storage.local.remove(['authToken']).catch(() => {});
+        chrome.storage.sync.remove(['authToken']).catch(() => {});
         broadcastAuthStateChanged();
         return { locked: true, reason: data.error || 'EXPIRED', installId: currentInstallId };
       }
 
       if (data.token) {
-        chrome.storage.local.set({ authToken: data.token });
-        chrome.storage.sync.set({ authToken: data.token });
+        chrome.storage.local.set({ authToken: data.token }).catch(() => {});
+        chrome.storage.sync.set({ authToken: data.token }).catch(() => {});
       }
 
       if (data.licenseKey) {
@@ -155,22 +179,24 @@ export async function checkAuthStatus() {
           expiresAt: data.expiresAt,
           activatedAt: data.activatedAt
         };
-        chrome.storage.local.set(licenseData);
-        chrome.storage.sync.set(licenseData);
+        chrome.storage.local.set(licenseData).catch(() => {});
+        chrome.storage.sync.set(licenseData).catch(() => {});
       }
 
-      chrome.storage.local.set({ lastVerifyTime: now, lastSuccessfulVerify: now, seed: data.seed });
+      chrome.storage.local.set({ lastVerifyTime: now, lastSuccessfulVerify: now, seed: data.seed }).catch(() => {});
       return { locked: false, seed: data.seed, installId: currentInstallId };
 
     } catch (e) {
       const lastSuccess = state.lastSuccessfulVerify || lastVerify || 0;
       if (now - lastSuccess > OFFLINE_GRACE_MS) {
-        chrome.storage.local.remove(['authToken']);
-        chrome.storage.sync.remove(['authToken']);
+        chrome.storage.local.remove(['authToken']).catch(() => {});
+        chrome.storage.sync.remove(['authToken']).catch(() => {});
         broadcastAuthStateChanged();
         return { locked: true, reason: 'OFFLINE_EXPIRED', installId: currentInstallId };
       }
       return { locked: false, offline: true, installId: currentInstallId };
+    } finally {
+      _verifyInProgress = false;
     }
   }
 
@@ -185,8 +211,8 @@ export async function quickAuthCheck() {
       const renewed = await activateLicense(state.licenseKey);
       if (renewed?.success) return { locked: false, installId: state.installId, renewed: true };
     }
-    chrome.storage.local.remove(['authToken']);
-    chrome.storage.sync.remove(['authToken']);
+    chrome.storage.local.remove(['authToken']).catch(() => {});
+    chrome.storage.sync.remove(['authToken']).catch(() => {});
     broadcastAuthStateChanged();
     return { locked: true, reason: 'EXPIRED', installId: state.installId };
   }
@@ -202,26 +228,30 @@ export async function activateLicense(licenseKey) {
   let installId = getRawHWID();
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
     const res = await fetch(`${API_BASE}/api/activate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ licenseKey, installId })
+      body: JSON.stringify({ licenseKey, installId }),
+      signal: controller.signal
     });
-    const data = await res.json();
+    clearTimeout(timeout);
+    let data;
+    try { data = await res.json(); } catch { data = null; }
 
     if (!res.ok) {
-      return { success: false, error: data.error };
+      return { success: false, error: data?.error || `Server returned ${res.status}` };
     }
 
-    const authData = { 
-      authToken: data.token, 
-      installId: installId,
-      licenseKey: data.licenseKey,
-      expiresAt: data.expiresAt,
-      activatedAt: data.activatedAt
-    };
-    chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() });
-    chrome.storage.sync.set(authData);
+    const authData = {};
+    if (data.token) authData.authToken = data.token;
+    if (data.licenseKey) authData.licenseKey = data.licenseKey;
+    if (data.expiresAt) authData.expiresAt = data.expiresAt;
+    if (data.activatedAt) authData.activatedAt = data.activatedAt;
+    authData.installId = installId;
+    chrome.storage.local.set({ ...authData, lastVerifyTime: Date.now() }).catch(() => {});
+    chrome.storage.sync.set(authData).catch(() => {});
 
     broadcastAuthStateChanged();
 

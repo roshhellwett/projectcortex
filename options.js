@@ -35,15 +35,36 @@ function getHostnameFromUrl(url) {
 }
 
 function getStorage(keys) {
-    return new Promise(resolve => chrome.storage.sync.get(keys, resolve));
+    return new Promise(resolve => {
+        chrome.storage.sync.get(keys, data => {
+            if (chrome.runtime.lastError) {
+                console.warn('[Cortex] Storage read error:', chrome.runtime.lastError.message);
+            }
+            resolve(data || {});
+        });
+    });
 }
 
 function setStorage(data) {
-    return new Promise(resolve => chrome.storage.sync.set(data, resolve));
+    return new Promise(resolve => {
+        chrome.storage.sync.set(data, () => {
+            if (chrome.runtime.lastError) {
+                console.warn('[Cortex] Storage write error:', chrome.runtime.lastError.message);
+            }
+            resolve();
+        });
+    });
 }
 
 function getLocalStorage(keys) {
-    return new Promise(resolve => chrome.storage.local.get(keys, resolve));
+    return new Promise(resolve => {
+        chrome.storage.local.get(keys, data => {
+            if (chrome.runtime.lastError) {
+                console.warn('[Cortex] Local storage read error:', chrome.runtime.lastError.message);
+            }
+            resolve(data || {});
+        });
+    });
 }
 
 async function getCurrentHostname() {
@@ -68,51 +89,6 @@ function parseJwt(token) {
         return JSON.parse(jsonPayload);
     } catch (e) {
         return null;
-    }
-}
-
-function getRawHWID() {
-    try {
-        let gl;
-        if (typeof OffscreenCanvas !== 'undefined') {
-            const canvas = new OffscreenCanvas(1, 1);
-            gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        } else if (typeof document !== 'undefined') {
-            const canvas = document.createElement('canvas');
-            gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        }
-
-        let renderer = 'unknown_renderer';
-        let vendor = 'unknown_vendor';
-
-        if (gl) {
-            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-            if (debugInfo) {
-                renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'unknown';
-                vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'unknown';
-            }
-        }
-
-        const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 2;
-        const rawString = `${vendor}||${renderer}||${cores}`;
-
-        let hash = 0;
-        for (let i = 0; i < rawString.length; i++) {
-            const char = rawString.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-
-        return 'hw_' + Math.abs(hash).toString(16) + 'c' + cores;
-    } catch (e) {
-        const fallbackStr = (typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown_agent');
-        let hash = 0;
-        for (let i = 0; i < fallbackStr.length; i++) {
-            const char = fallbackStr.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return 'hw_fb_' + Math.abs(hash).toString(16);
     }
 }
 
@@ -209,8 +185,11 @@ async function loadSettings() {
     }
 
     if (localData.expiresAt && $('dispDaysLeft')) {
-        const days = Math.max(0, Math.ceil((new Date(localData.expiresAt) - new Date()) / (1000 * 60 * 60 * 24)));
-        $('dispDaysLeft').textContent = days;
+        const expires = new Date(localData.expiresAt);
+        if (!isNaN(expires.getTime())) {
+            const days = Math.max(0, Math.ceil((expires - new Date()) / (1000 * 60 * 60 * 24)));
+            $('dispDaysLeft').textContent = days;
+        }
     }
 
     let displayActivatedAt = localData.activatedAt;
@@ -221,7 +200,9 @@ async function loadSettings() {
 
     if (displayActivatedAt && $('dispActivatedAt')) {
         const d = new Date(displayActivatedAt);
-        $('dispActivatedAt').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        if (!isNaN(d.getTime())) {
+            $('dispActivatedAt').textContent = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
     }
 
     if ($('copyLicenseBtn') && !$('copyLicenseBtn').dataset.bound) {
@@ -254,15 +235,18 @@ async function loadSettings() {
     }
 
     const whitelist = data.activeWindowsWhitelist || {};
-    if (whitelist[currentSiteHostname]) toggleBtn.classList.add('active');
+    if (whitelist[currentSiteHostname]) { toggleBtn.classList.add('active'); toggleBtn.setAttribute('aria-checked', 'true'); }
 
     const copyWhitelist = data.copyPasteWhitelist || {};
-    if (copyWhitelist[currentSiteHostname]) copyPasteToggle.classList.add('active');
+    if (copyWhitelist[currentSiteHostname]) { copyPasteToggle.classList.add('active'); copyPasteToggle.setAttribute('aria-checked', 'true'); }
 
     if (data.model) {
         const match = [...modelEl.options].some(o => o.value === data.model);
         if (match) {
             modelEl.value = data.model;
+            if (data.model === 'custom' && data.customModel) {
+                customModelEl.value = data.customModel;
+            }
         } else {
             modelEl.value = 'custom';
             customModelEl.value = data.customModel || data.model;
@@ -274,7 +258,7 @@ async function loadSettings() {
 }
 
 function updateUI() {
-    customEpWrap.classList.toggle('visible', providerEl.value === 'custom');
+    customEpWrap.style.display = providerEl.value === 'custom' ? 'block' : 'none';
     customModelWrap.style.display = modelEl.value === 'custom' ? 'block' : 'none';
 }
 
@@ -301,18 +285,32 @@ function updateKeyHint() {
 
 (async function init() {
     const checkLockStatus = () => {
-        const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
-        chrome.runtime.sendMessage({ type: 'CHECK_AUTH', rawHWID }, res => {
+        const lockOverlay = document.getElementById('lockOverlay');
+        const mainContainer = document.getElementById('mainContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        const hideLoading = () => {
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => { if (loadingOverlay) loadingOverlay.style.display = 'none'; }, 500);
+            }
+        };
+
+        chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+            if (chrome.runtime.lastError) {
+                lockOverlay.style.opacity = '1';
+                lockOverlay.style.pointerEvents = 'auto';
+                mainContainer.style.filter = 'blur(10px)';
+                hideLoading();
+                return;
+            }
+
             if (res && res.installId) {
                 const lockIdEl = document.getElementById('optionsInstallId');
                 const creditsIdEl = document.getElementById('optionsCreditsInstallId');
                 if (lockIdEl) lockIdEl.textContent = res.installId;
                 if (creditsIdEl) creditsIdEl.textContent = res.installId;
             }
-
-            const lockOverlay = document.getElementById('lockOverlay');
-            const mainContainer = document.getElementById('mainContainer');
-            const loadingOverlay = document.getElementById('loadingOverlay');
 
             if (res && res.locked) {
                 lockOverlay.style.opacity = '1';
@@ -325,11 +323,10 @@ function updateKeyHint() {
                 mainContainer.style.filter = 'none';
             }
 
-            if (loadingOverlay) {
-                loadingOverlay.style.opacity = '0';
-                setTimeout(() => loadingOverlay.style.display = 'none', 400);
-            }
+            hideLoading();
         });
+
+        setTimeout(hideLoading, 5000);
     };
 
     checkLockStatus();
@@ -354,9 +351,7 @@ function updateKeyHint() {
             activateBtn.textContent = 'Verifying...';
             activateBtn.disabled = true;
 
-            const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : 'unknown_hwid';
-
-            chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key, rawHWID: rawHWID }, res => {
+            chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
                 activateBtn.textContent = 'Activate License';
                 activateBtn.disabled = false;
 
@@ -370,7 +365,9 @@ function updateKeyHint() {
                     authStatus.style.color = '#059669';
                     authStatus.textContent = 'Activated successfully!';
                     setTimeout(() => {
-                        document.getElementById('lockOverlay').style.display = 'none';
+                        document.getElementById('lockOverlay').style.opacity = '0';
+                        document.getElementById('lockOverlay').style.pointerEvents = 'none';
+                        document.getElementById('mainContainer').style.opacity = '1';
                         document.getElementById('mainContainer').style.filter = 'none';
                         document.getElementById('mainContainer').style.pointerEvents = 'auto';
                     }, 800);
@@ -395,13 +392,16 @@ function updateKeyHint() {
         keyEl.type = keyEl.type === 'password' ? 'text' : 'password';
     });
 
-    toggleBtn.addEventListener('click', () => {
-        toggleBtn.classList.toggle('active');
-    });
+    const toggleSwitch = (el) => {
+        const active = el.classList.toggle('active');
+        el.setAttribute('aria-checked', String(active));
+    };
 
-    copyPasteToggle.addEventListener('click', () => {
-        copyPasteToggle.classList.toggle('active');
-    });
+    toggleBtn.addEventListener('click', () => toggleSwitch(toggleBtn));
+    toggleBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSwitch(toggleBtn); } });
+
+    copyPasteToggle.addEventListener('click', () => toggleSwitch(copyPasteToggle));
+    copyPasteToggle.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSwitch(copyPasteToggle); } });
 
     saveBtn.addEventListener('click', async () => {
         try {
@@ -603,7 +603,7 @@ function updateKeyHint() {
                 showStatus('err', `✗ ${providerLabel} network error: ${e.message}`);
             }
         } finally {
-            testBtn.textContent = '🧪 Test Connection';
+            testBtn.textContent = 'Test Connection';
             testBtn.disabled = false;
         }
     });
@@ -645,7 +645,7 @@ function showStatus(type, msg) {
 }
 
 function fitToScreen() {
-    const wrapper = document.querySelector('.dashboard-wrapper');
+    const wrapper = document.querySelector('.container');
     if (!wrapper) return;
 
     wrapper.style.zoom = 1; 

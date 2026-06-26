@@ -66,7 +66,7 @@
 
     .hdr-title {
       font-weight: 800;
-      font-size: 14px;
+      font-size: 13px;
       color: #d4a017;
       letter-spacing: -0.02em;
     }
@@ -91,15 +91,15 @@
       text-transform: uppercase;
     }
 
-    .bd { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .bd { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 
     .btn-main {
       width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
       background: rgba(212, 160, 23, 0.1);
       border: 1px solid rgba(212, 160, 23, 0.25);
       color: #d4a017;
-      font-size: 13px; font-weight: 700;
-      padding: 11px; border-radius: 10px;
+      font-size: 12px; font-weight: 700;
+      padding: 10px; border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative; overflow: hidden;
@@ -111,15 +111,16 @@
       box-shadow: 0 8px 24px rgba(212, 160, 23, 0.15);
     }
     .btn-main:active { transform: scale(0.97) translateY(0); transition-duration: 0.08s; }
+    .btn-main:disabled, .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; pointer-events: none; }
 
     .action-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
     }
 
     .btn-action {
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
       background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);
-      padding: 12px 10px; border-radius: 10px;
+      padding: 10px 8px; border-radius: 12px;
       color: #6b6b6b;
       font-size: 11px; font-weight: 600; text-align: center;
       cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -137,7 +138,8 @@
     .btn-action:hover svg { opacity: 1; transform: scale(1.12); }
     .btn-action:active { transform: scale(0.95) translateY(0); transition-duration: 0.08s; }
 
-    .btn-action.primary { grid-column: 1 / -1; flex-direction: row; text-align: left; justify-content: flex-start; padding: 12px 14px; }
+    .btn-action.primary { grid-column: 1 / -1; flex-direction: row; text-align: left; justify-content: flex-start; padding: 10px 12px; }
+    .btn-action.primary:last-child { margin-top: 4px; }
 
     .loading {
       display: none; align-items: center; justify-content: center; gap: 8px;
@@ -212,12 +214,12 @@
         <span>Correct Answer</span>
       </button>
 
-      <button class="btn-action" id="define">
+      <button class="btn-action primary" id="define">
         <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <span>Define</span>
       </button>
 
-      <button class="btn-action primary" id="openSettings" style="margin-top: 4px;">
+      <button class="btn-action primary" id="openSettings">
         <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>Extension Settings</span>
       </button>

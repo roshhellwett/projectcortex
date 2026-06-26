@@ -10,22 +10,35 @@
     <style>
         :root {
             --bg: #e1d7c2;
-            --surface: rgba(245, 240, 232, 0.7);
-            --surface-raised: rgba(255, 255, 255, 0.6);
+            --bg-deep: #d4c8b0;
+            --surface: rgba(245, 240, 232, 0.72);
+            --surface-raised: rgba(255, 255, 255, 0.65);
             --border: rgba(0, 0, 0, 0.06);
-            --border-highlight: rgba(212, 160, 23, 0.2);
+            --border-hover: rgba(212, 160, 23, 0.25);
+            --border-focus: rgba(212, 160, 23, 0.4);
             --text: #1a1a1a;
-            --text-muted: #6b6b6b;
+            --text-muted: #7a7a7a;
+            --text-dim: #9a9a9a;
             --accent-1: #b8860b;
             --accent-2: #d4a017;
-            --accent-gradient: linear-gradient(135deg, #b8860b, #d4a017);
+            --accent-3: #e8b830;
+            --accent-gradient: linear-gradient(135deg, #b8860b, #d4a017, #e8b830);
+            --accent-gradient-subtle: linear-gradient(135deg, rgba(184, 134, 11, 0.15), rgba(212, 160, 23, 0.08));
             --success: #059669;
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
+            --success-bg: rgba(5, 150, 105, 0.1);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 8px 32px rgba(212, 160, 23, 0.2);
+            --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 20px;
+            --radius-xl: 28px;
             --spring: cubic-bezier(0.22, 1, 0.36, 1);
             --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,186 +55,392 @@
             align-items: center;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(212, 160, 23, 0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(184, 134, 11, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.08); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.15); }
 
-        @keyframes springUp {
-            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(24px) scale(0.98); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        @keyframes shimmer {
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes shimmerSlide {
             to { background-position: 200% center; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes scaleIn {
+            0% { opacity: 0; transform: scale(0.92); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         .header {
             width: 100%;
-            background: rgba(225, 215, 194, 0.9);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: rgba(225, 215, 194, 0.82);
+            backdrop-filter: blur(28px) saturate(1.2);
+            -webkit-backdrop-filter: blur(28px) saturate(1.2);
             border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
             display: flex;
             justify-content: center;
-            padding: 14px 24px;
+            padding: 12px 24px;
         }
 
         .header-content {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1040px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .header-logo {
+        .header-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
+        }
+
+        .header-logo-wrap {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(212, 160, 23, 0.25);
+            flex-shrink: 0;
+        }
+
+        .header-logo-wrap img {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0);
+        }
+
+        .header-title {
             font-weight: 800;
-            font-size: 16px;
-            letter-spacing: 0.05em;
+            font-size: 17px;
+            letter-spacing: -0.02em;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .header-logo img { width: 26px; height: 26px; }
-        
-        .header-logo span.brand {
-            color: var(--accent-2);
-        }
-
-        .header-logo span.os-label {
-            font-size: 9px;
-            font-weight: 700;
+        .header-badge {
+            font-size: 8px;
+            font-weight: 800;
             font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
             color: var(--success);
             text-transform: uppercase;
-            letter-spacing: 0.12em;
-            margin-left: 8px;
-            padding: 3px 7px;
-            background: rgba(5, 150, 105, 0.1);
-            border: 1px solid rgba(5, 150, 105, 0.25);
-            border-radius: 4px;
+            letter-spacing: 0.15em;
+            padding: 4px 10px;
+            background: var(--success-bg);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            border-radius: 6px;
+            margin-left: 4px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .header-actions a {
-            color: var(--accent-2);
+            color: var(--text-muted);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 13px;
-            font-weight: 600;
-            transition: color 0.2s;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border);
+            transition: all 0.3s var(--spring);
         }
-        .header-actions a:hover { color: #d4a017; }
+        .header-actions a:hover {
+            color: var(--accent-2);
+            background: rgba(255, 255, 255, 0.6);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
 
         .container {
             width: 100%;
-            max-width: 1000px;
-            padding: 48px 24px 80px;
+            max-width: 1040px;
+            padding: 28px 24px 80px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            animation: springUp 0.6s var(--spring) forwards;
+            gap: 22px;
+            animation: fadeSlideUp 0.7s var(--spring) forwards;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-head {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .page-head-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .page-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--accent-gradient);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+            flex-shrink: 0;
+        }
+
+        .page-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #000;
         }
 
         .page-title {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 800;
-            color: var(--accent-2);
             letter-spacing: -0.03em;
-            margin-bottom: 6px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .page-desc {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 12px;
             font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            margin-bottom: 24px;
+            padding-left: 56px;
+        }
+
+        .update-panel {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.02));
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 18px 22px;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.06);
+            transition: all 0.4s var(--spring);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .update-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(5, 150, 105, 0.3), transparent);
+        }
+
+        .update-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: rgba(5, 150, 105, 0.12);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.4s;
+        }
+
+        .update-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .update-body h3 {
+            color: var(--success);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .update-body p {
+            color: rgba(5, 150, 105, 0.65);
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 12px;
         }
 
         .layout-grid {
             display: grid;
-            grid-template-columns: 1.8fr 1fr;
-            gap: 24px;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 22px;
             align-items: start;
         }
 
-        @media (max-width: 850px) {
+        @media (max-width: 860px) {
             .layout-grid { grid-template-columns: 1fr; }
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
         }
 
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 28px;
+            padding: 22px;
             box-shadow: var(--shadow-sm);
-            transition: transform 0.4s var(--ease-out), border-color 0.4s;
+            transition: all 0.5s var(--ease-out);
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--border-highlight), transparent);
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
             opacity: 0;
-            transition: opacity 0.4s;
+            transition: opacity 0.5s;
         }
 
         .card:hover {
-            border-color: rgba(212, 160, 23, 0.2);
-            transform: translateY(-2px);
+            border-color: rgba(212, 160, 23, 0.15);
+            transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
         .card:hover::before { opacity: 1; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         .card-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 18px;
+        }
+
+        .card-header-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: var(--accent-gradient-subtle);
+            border: 1px solid rgba(212, 160, 23, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: var(--accent-2);
+        }
+
+        .card-header-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .card-header-text {
             font-size: 11px;
             font-weight: 700;
             font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.18em;
             color: var(--accent-2);
             text-transform: uppercase;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
         }
 
-        .card-header::before {
-            content: '\25B8';
-            color: var(--success);
+        .card-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .field { display: flex; flex-direction: column; gap: 8px; }
-        
+        .card-section + .card-section {
+            margin-top: 4px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         label {
             font-size: 13px;
             font-weight: 600;
             color: var(--text);
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        label .label-hint {
+            font-weight: 400;
+            color: var(--text-dim);
+            font-size: 12px;
         }
 
         input, select {
             width: 100%;
-            padding: 14px 16px;
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(0, 0, 0, 0.07);
             border-radius: var(--radius-md);
             color: var(--text);
             font-size: 14px;
@@ -229,317 +448,806 @@
             outline: none;
             transition: all 0.3s var(--ease-out);
             -webkit-appearance: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        input::placeholder {
+            color: var(--text-dim);
         }
 
         select {
-            padding-right: 40px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            padding-right: 44px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
             cursor: pointer;
         }
 
-        input:hover, select:hover { border-color: rgba(212, 160, 23, 0.25); }
+        input:hover, select:hover {
+            border-color: rgba(212, 160, 23, 0.2);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
         input:focus, select:focus {
             border-color: var(--accent-2);
-            box-shadow: 0 0 0 1px rgba(212, 160, 23, 0.3), inset 0 2px 4px rgba(0,0,0,0.06);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.12), inset 0 2px 4px rgba(0, 0, 0, 0.04);
         }
 
-        select optgroup { background: #f5f0e8; color: var(--text-muted); font-weight: 600; }
-        select option { background: #f5f0e8; color: var(--text); }
+        select optgroup {
+            background: #f5f0e8;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 8px 4px;
+        }
+        select option {
+            background: #f5f0e8;
+            color: var(--text);
+            padding: 8px;
+        }
 
-        .hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-        .hint a { color: var(--accent-2); text-decoration: none; }
-        
-        .input-wrap { position: relative; display: flex; align-items: center; }
+        .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .hint a {
+            color: var(--accent-2);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .hint a:hover {
+            color: var(--accent-3);
+            text-decoration: underline;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
         .eye-btn {
-            position: absolute; right: 12px;
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; padding: 4px; transition: color 0.2s;
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
         }
-        .eye-btn:hover { color: var(--text); }
+        .eye-btn:hover {
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.04);
+        }
 
         .btn {
             background: var(--surface-raised);
             color: var(--text);
             border: 1px solid var(--border);
-            padding: 14px 24px;
+            padding: 10px 18px;
             border-radius: var(--radius-md);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s var(--spring);
+            transition: all 0.35s var(--spring);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             box-shadow: var(--shadow-sm);
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .btn:hover {
-            background: rgba(0, 0, 0, 0.03);
-            border-color: rgba(212, 160, 23, 0.3);
+            background: rgba(255, 255, 255, 0.8);
+            border-color: var(--border-hover);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-md);
         }
-        .btn:active { transform: scale(0.97); }
+        .btn:hover::after { opacity: 1; }
+        .btn:active {
+            transform: scale(0.97);
+            transition-duration: 0.08s;
+        }
+        .btn:disabled,
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
 
         .btn-primary {
             background: var(--accent-gradient);
             border: none;
             color: #000;
             font-weight: 800;
-            box-shadow: 0 4px 16px rgba(212, 160, 23, 0.3);
+            box-shadow: 0 4px 20px rgba(212, 160, 23, 0.3);
         }
         .btn-primary:hover {
-            background: linear-gradient(135deg, #c9951e, #b8860b);
-            box-shadow: 0 8px 24px rgba(212, 160, 23, 0.35);
+            box-shadow: 0 8px 32px rgba(212, 160, 23, 0.4);
+            transform: translateY(-2px);
         }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 16px rgba(5, 150, 105, 0.25);
+        }
+        .btn-success:hover {
+            background: #047857;
+            box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-group .btn { flex: 1; }
 
         .toggle-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px; background: rgba(0,0,0,0.02);
-            border: 1px solid var(--border); border-radius: var(--radius-md);
-        }
-        .toggle-info { display: flex; flex-direction: column; gap: 4px; }
-        .toggle-label { font-size: 14px; font-weight: 600; color: var(--text); }
-        .toggle-switch {
-            width: 48px; height: 26px; background: rgba(0,0,0,0.15);
-            border-radius: 13px; cursor: pointer; padding: 3px; display: flex;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             transition: all 0.3s;
         }
-        .toggle-switch.active { background: var(--accent-gradient); }
-        .toggle-circle {
-            width: 20px; height: 20px; background: #fff; border-radius: 50%;
-            transition: transform 0.4s var(--spring); box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .toggle-switch.active .toggle-circle { transform: translateX(22px); }
 
-        #updatePanel {
-            display: flex; align-items: flex-start; gap: 16px;
-            background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.02));
-            border: 1px solid rgba(5, 150, 105, 0.25);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.08);
+        .toggle-row:hover {
+            background: rgba(0, 0, 0, 0.035);
+            border-color: rgba(212, 160, 23, 0.12);
         }
-        #updateIconBox {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(5, 150, 105, 0.15); color: var(--success);
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+
+        .toggle-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .toggle-switch {
+            width: 48px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 14px;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            transition: all 0.35s var(--spring);
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 16px;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-gradient);
+        }
+
+        .toggle-circle {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.45s var(--spring);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+            position: relative;
+            z-index: 1;
+        }
+
+        .toggle-switch.active .toggle-circle {
+            transform: translateX(20px);
+            box-shadow: 0 2px 8px rgba(212, 160, 23, 0.3);
+        }
+
+        .license-badge {
+            font-size: 9px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+
+        .license-badge.active {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+        }
+
+        .license-badge.inactive {
+            background: var(--error-bg);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .copy-field {
+            display: flex;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: border-color 0.3s;
+        }
+
+        .copy-field:hover {
+            border-color: rgba(212, 160, 23, 0.15);
+        }
+
+        .copy-field span {
+            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+            font-size: 13px;
+            color: var(--accent-2);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .copy-btn:hover {
+            color: var(--accent-2);
+            background: rgba(212, 160, 23, 0.1);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            background: rgba(0, 0, 0, 0.04);
+            border-color: rgba(212, 160, 23, 0.1);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .stat-value.subtle {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .info-card {
+            text-align: center;
+            font-size: 13px;
+            padding: 20px;
+            background: var(--surface);
+        }
+
+        .info-card-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+            margin: 2px 0;
+        }
+
+        .info-card a {
+            color: var(--accent-2);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .info-card a:hover {
+            color: var(--accent-3);
+        }
+
+        #status {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            min-height: 24px;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s;
+        }
+
+        #status.ok {
+            color: var(--success);
+            background: var(--success-bg);
+        }
+
+        #status.err {
+            color: var(--error);
+            background: var(--error-bg);
         }
 
         #loadingOverlay {
-            position: fixed; inset: 0; background: var(--bg); z-index: 2000;
-            display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+            opacity: 1;
         }
+
         #lockOverlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s;
+            position: fixed;
+            inset: 0;
+            background: rgba(225, 215, 194, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
         }
+
         .lock-box {
-            background: var(--surface); padding: 48px; border-radius: 24px;
-            border: 1px solid rgba(212, 160, 23, 0.2); text-align: center;
-            width: 100%; max-width: 440px; box-shadow: var(--shadow-lg);
+            background: var(--surface);
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(212, 160, 23, 0.15);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            animation: scaleIn 0.5s var(--spring);
+        }
+
+        .lock-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--error);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            transition: all 0.3s;
+        }
+
+        .lock-box h2 {
+            font-size: 22px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .lock-box > p {
+            color: var(--text-muted);
+            margin-bottom: 22px;
+            font-size: 14px;
+        }
+
+        .lock-input {
+            text-align: center;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 15px !important;
+            padding: 14px 16px !important;
+        }
+
+        .lock-input::placeholder {
+            letter-spacing: 0.05em;
+            text-transform: none;
+            font-weight: 400;
+        }
+
+        .lock-divider {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .lock-divider p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: #1a1a1a;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.5s var(--spring);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        #toast svg {
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 16px 60px; gap: 16px; }
+            .card { padding: 18px; }
+            .page-title { font-size: 22px; }
+            .page-icon { width: 36px; height: 36px; }
+            .page-desc { padding-left: 0; }
+            .page-head-top { flex-wrap: wrap; }
+            .stat-grid { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .header { padding: 10px 16px; }
+            .header-actions a span { display: none; }
+            .lock-box { padding: 24px; margin: 12px; }
+            .layout-grid { gap: 16px; }
+            .col { gap: 16px; }
+            .update-panel { padding: 14px 18px; }
         }
     </style>
 </head>
 <body>
 
     <div id="loadingOverlay">
-        <div style="width: 32px; height: 32px; border: 2px solid rgba(0,0,0,0.08); border-top-color: #d4a017; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="width: 36px; height: 36px; border: 3px solid rgba(0,0,0,0.06); border-top-color: var(--accent-2); border-radius: 50%; animation: spin 1s linear infinite;"></div>
     </div>
 
     <div id="lockOverlay">
         <div class="lock-box">
-            <div style="width: 64px; height: 64px; background: rgba(239,68,68,0.08); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <div class="lock-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <h2 style="font-size: 24px; color: #d4a017; margin-bottom: 12px; font-weight: 800;">Activation Required</h2>
-            <p style="color: var(--text-muted); margin-bottom: 32px;">Enter your license key to unlock the system.</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-                <input type="text" id="optionsLicenseInput" placeholder="CORTEX-XXXX-XXXX" style="text-align: center; letter-spacing: 0.1em; text-transform: uppercase; color: #d4a017;" />
-                <button id="optionsActivateBtn" class="btn btn-primary">Unlock Cortex</button>
+            <h2>Activation Required</h2>
+            <p>Enter your license key to unlock the system.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="text" id="optionsLicenseInput" class="lock-input" placeholder="CORTEX-XXXX-XXXX" />
+                <button id="optionsActivateBtn" class="btn btn-primary" style="padding: 14px; font-size: 15px;">Unlock Cortex</button>
             </div>
-            <div id="optionsAuthStatus" style="color: #ef4444; font-size: 13px; margin-top: 16px; min-height: 20px;"></div>
-            
-            <div style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border);">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Or restore an existing backup from another device.</p>
+            <div id="optionsAuthStatus" style="color: var(--error); font-size: 13px; margin-top: 16px; min-height: 20px;"></div>
+
+            <div class="lock-divider">
+                <p>Or restore an existing backup from another device.</p>
                 <div style="display: flex; gap: 12px;">
-                    <button id="exportBtnLock" class="btn" style="flex: 1; padding: 10px;">Export</button>
-                    <button id="importBtnLock" class="btn" style="flex: 1; padding: 10px;">Import</button>
+                    <button id="exportBtnLock" class="btn btn-ghost" style="flex: 1;">Export Backup</button>
+                    <button id="importBtnLock" class="btn btn-ghost" style="flex: 1;">Import Backup</button>
                     <input type="file" id="importFileLock" accept=".json" style="display: none;" />
                 </div>
             </div>
-            <div style="margin-top: 24px; font-size: 12px; color: #d4a017; font-family: 'JetBrains Mono', monospace;">\u25C9 ID: <span id="optionsInstallId">...</span></div>
+            <div style="margin-top: 24px; font-size: 12px; color: var(--accent-2); font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                ID: <span id="optionsInstallId">...</span>
+            </div>
         </div>
     </div>
 
     <header class="header">
         <div class="header-content">
-            <div class="header-logo">
-                <img src="icons/logo48.png" onerror="this.style.display='none'" alt="">
-                <span class="brand">Project Cortex</span>
-                <span class="os-label">\u25B8 ZENITH_OS</span>
+            <div class="header-brand">
+                <div class="header-logo-wrap">
+                    <img src="icons/logo48.png" onerror="this.style.display='none'" alt="">
+                </div>
+                <span class="header-title">Project Cortex</span>
+                <span class="header-badge">&#9656; ZENITH_OS</span>
             </div>
             <div class="header-actions">
-                <a href="mailto:zenithprojects@icloud.com"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="16" r="1"/><path d="M12 13v-1a3 3 0 1 1 4-2.83"/></svg> Support</a>
+                <a href="mailto:zenithprojects@icloud.com">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="16" r="1"/><path d="M12 13v-1a3 3 0 1 1 4-2.83"/></svg>
+                    <span>Support</span>
+                </a>
             </div>
         </div>
     </header>
 
     <main class="container" id="mainContainer" style="opacity: 0;">
-        
-        <div>
-            <h1 class="page-title">Settings & Preferences</h1>
-            <p class="page-desc">\u25B8 configure your intelligence providers and system preferences.</p>
+
+        <div class="page-head">
+            <div class="page-head-top">
+                <div class="page-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="page-title">Settings &amp; Preferences</h1>
+                    <p class="page-desc">&#9656; configure your intelligence providers and system preferences.</p>
+                </div>
+            </div>
         </div>
 
-        <div id="updatePanel">
-            <div id="updateIconBox">
+        <div class="update-panel" id="updatePanel">
+            <div class="update-icon-box" id="updateIconBox">
                 <svg id="updateIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.138-6.32"/><circle cx="12" cy="12" r="2"/><path d="M20 4v6h-6"/></svg>
             </div>
-            <div style="flex: 1; min-width: 0;">
-                <h3 id="updateTitle" style="color: var(--success); margin-bottom: 8px; font-size: 18px;">Extension Up to Date</h3>
-                <p id="updateDesc" style="color: rgba(5, 150, 105, 0.7); font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
-                    You are running the latest version. Your configuration is fully synchronized and secure.
-                </p>
+            <div class="update-body">
+                <h3 id="updateTitle">Extension Up to Date</h3>
+                <p id="updateDesc">You are running the latest version. Your configuration is fully synchronized and secure.</p>
                 <a id="updateLink" href="#" style="text-decoration: none; pointer-events: none;">
-                    <button id="updateBtn" class="btn" style="background: rgba(5, 150, 105, 0.12); color: var(--success); border: 1px solid rgba(5, 150, 105, 0.25);" disabled>Up to Date</button>
+                    <button id="updateBtn" class="btn btn-success" style="padding: 10px 20px; font-size: 13px;" disabled>Up to Date</button>
                 </a>
             </div>
         </div>
 
         <div class="layout-grid">
-            <div style="display: flex; flex-direction: column; gap: 24px;">
-                
+            <div class="col">
+
                 <div class="card">
-                    <div class="card-header">API Configuration</div>
-                    <div class="field">
-                        <label>API Provider</label>
-                        <select id="apiProvider">
-                            <option value="groq">Groq (groq.com) — Free & Fast</option>
-                            <option value="openrouter">OpenRouter (openrouter.ai)</option>
-                            <option value="custom">Custom Endpoint</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label>API Key</label>
-                        <div class="input-wrap">
-                            <input type="password" id="apiKey" placeholder="gsk_…  or your custom key" />
-                            <button class="eye-btn" id="toggleKey"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-5 0-9 4-9 7s4 7 9 7 9-4 9-7-4-7-9-7z"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="10" x2="12" y2="8"/></svg></button>
+                    <div class="card-header">
+                        <div class="card-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                         </div>
-                        <p class="hint">Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+                        <span class="card-header-text">API Configuration</span>
                     </div>
-                    <div class="field" id="customEpWrap" style="display: none;">
-                        <label>Custom Endpoint URL</label>
-                        <input type="text" id="customEndpoint" placeholder="https://openrouter.ai/api/v1/chat/completions" />
+                    <div class="card-section">
+                        <div class="field">
+                            <label>API Provider</label>
+                            <select id="apiProvider">
+                                <option value="groq">Groq (groq.com) — Free &amp; Fast</option>
+                                <option value="openrouter">OpenRouter (openrouter.ai)</option>
+                                <option value="custom">Custom Endpoint</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>API Key</label>
+                            <div class="input-wrap">
+                                <input type="password" id="apiKey" placeholder="gsk_v1_…  or your custom key" />
+                                <button class="eye-btn" id="toggleKey">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-5 0-9 4-9 7s4 7 9 7 9-4 9-7-4-7-9-7z"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="10" x2="12" y2="8"/></svg>
+                                </button>
+                            </div>
+                            <p class="hint">Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
+                        </div>
+                        <div class="field" id="customEpWrap" style="display: none;">
+                            <label>Custom Endpoint URL</label>
+                            <input type="text" id="customEndpoint" placeholder="https://openrouter.ai/api/v1/chat/completions" />
+                        </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">Model Selection</div>
-                    <div class="field">
-                        <label>AI Model</label>
-                        <select id="model">
-                            <optgroup label="— Groq (Free Tier) —">
-                                <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning</option>
-                                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
-                                <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
-                                <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
-                            </optgroup>
-                            <optgroup label="— OpenRouter (Free Tier) —">
-                                <option value="openrouter/free">Recommended — Auto-routes to best free</option>
-                                <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning & coding</option>
-                                <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality</option>
-                            </optgroup>
-                            <option value="custom">Custom model name…</option>
-                        </select>
+                    <div class="card-header">
+                        <div class="card-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        </div>
+                        <span class="card-header-text">Model Selection</span>
                     </div>
-                    <div class="field" id="customModelWrap" style="display:none">
-                        <label>Custom Model Name</label>
-                        <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
+                    <div class="card-section">
+                        <div class="field">
+                            <label>AI Model</label>
+                            <select id="model">
+                                <optgroup label="— Groq (Free Tier) —">
+                                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning</option>
+                                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
+                                    <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
+                                    <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
+                                </optgroup>
+                                <optgroup label="— OpenRouter (Free Tier) —">
+                                    <option value="openrouter/free">Recommended — Auto-routes to best free</option>
+                                    <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning &amp; coding</option>
+                                    <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality</option>
+                                </optgroup>
+                                <option value="custom">Custom model name…</option>
+                            </select>
+                        </div>
+                        <div class="field" id="customModelWrap" style="display:none">
+                            <label>Custom Model Name</label>
+                            <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
+                        </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">Utilities</div>
-                    <div class="toggle-row">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Always Active Window</div>
-                            <div class="hint">Prevents sites from detecting background tabs.</div>
+                    <div class="card-header">
+                        <div class="card-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
                         </div>
-                        <div class="toggle-switch" id="activeWindowToggle"><div class="toggle-circle"></div></div>
+                        <span class="card-header-text">Utilities</span>
                     </div>
-                    <div class="toggle-row">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Enable Copy & Paste</div>
-                            <div class="hint">Allow selection/copy/right-click on <span id="siteLabel">current site</span>.</div>
+                    <div class="card-section">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Always Active Window</div>
+                                <div class="hint">Prevents sites from detecting background tabs.</div>
+                            </div>
+                            <div class="toggle-switch" id="activeWindowToggle" role="switch" tabindex="0" aria-checked="false"><div class="toggle-circle"></div></div>
                         </div>
-                        <div class="toggle-switch" id="copyPasteToggle"><div class="toggle-circle"></div></div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="toggle-label">Enable Copy &amp; Paste</div>
+                                <div class="hint">Allow selection/copy/right-click on <span id="siteLabel">current site</span>.</div>
+                            </div>
+                            <div class="toggle-switch" id="copyPasteToggle" role="switch" tabindex="0" aria-checked="false"><div class="toggle-circle"></div></div>
+                        </div>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 16px; margin-top: 8px;">
-                    <button class="btn btn-primary" id="saveBtn" style="flex: 1;">Save Settings</button>
-                    <button class="btn" id="testBtn">Test Connection</button>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="saveBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        Save Settings
+                    </button>
+                    <button class="btn" id="testBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Test Connection
+                    </button>
                 </div>
-                <div id="status" style="color: var(--success); font-size: 14px; font-weight: 600; text-align: center; min-height: 20px;"></div>
+                <div id="status"></div>
 
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 24px;">
-                
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
-                        <span style="font-weight: 700; color: var(--accent-2);">License Details</span>
-                        <span id="licenseBadge" style="font-size: 10px; padding: 4px 10px; border-radius: 4px; background: rgba(5, 150, 105, 0.1); color: var(--success); font-weight: 700; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(5, 150, 105, 0.25); text-transform: uppercase;">ACTIVE</span>
-                    </div>
-                    
-                    <div class="field">
-                        <label style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Activation ID</label>
-                        <div style="display: flex; background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px; align-items: center; justify-content: space-between;">
-                            <span id="dispLicenseKey" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #d4a017;">••••••••</span>
-                            <button id="copyLicenseBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-                        </div>
-                    </div>
+            <div class="col">
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
-                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Days Left</div>
-                            <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="dispDaysLeft">--</div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-icon" style="background: rgba(5, 150, 105, 0.12); border-color: rgba(5, 150, 105, 0.15); color: var(--success);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </div>
-                        <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
-                            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Activated</div>
-                            <div style="font-size: 14px; font-weight: 600;" id="dispActivatedAt">--</div>
+                        <span class="card-header-text" style="flex: 1;">License Details</span>
+                        <span id="licenseBadge" class="license-badge active">ACTIVE</span>
+                    </div>
+                    <div class="card-section">
+                        <div class="field">
+                            <label>Activation ID</label>
+                            <div class="copy-field">
+                                <span id="dispLicenseKey">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</span>
+                                <button class="copy-btn" id="copyLicenseBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Days Left</div>
+                                <div class="stat-value" id="dispDaysLeft">--</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Activated</div>
+                                <div class="stat-value subtle" id="dispActivatedAt">--</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">Data Backup</div>
-                    <p class="hint" style="margin-bottom: 20px;">Export your Identity, License Key, and API settings to a secure backup file.</p>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn" id="exportBtn" style="flex: 1; padding: 12px; font-size: 13px;">Export</button>
-                        <button class="btn" id="importBtn" style="flex: 1; padding: 12px; font-size: 13px;">Import</button>
-                        <input type="file" id="importFile" accept=".json" style="display: none;" />
+                    <div class="card-header">
+                        <div class="card-header-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </div>
+                        <span class="card-header-text">Data Backup</span>
+                    </div>
+                    <div class="card-section">
+                        <p class="hint" style="margin-bottom: 4px;">Export your Identity, License Key, and API settings to a secure backup file.</p>
+                        <div style="display: flex; gap: 12px; margin-top: 12px;">
+                            <button class="btn btn-ghost" id="exportBtn" style="flex: 1;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Export
+                            </button>
+                            <button class="btn btn-ghost" id="importBtn" style="flex: 1;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Import
+                            </button>
+                            <input type="file" id="importFile" accept=".json" style="display: none;" />
+                        </div>
                     </div>
                 </div>
 
-                <div class="card" style="text-align: center; font-size: 13px; padding: 24px;">
-                    <div style="margin-bottom: 8px;"><strong style="color: var(--accent-2);">\u25C9 Install ID:</strong> <span id="optionsCreditsInstallId" style="user-select: all; font-family: 'JetBrains Mono', monospace; color: var(--accent-2);">Loading...</span></div>
-                    <div style="margin-bottom: 4px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: var(--accent-2); text-decoration: none;">Zenith Open Source Projects</a></div>
-                    <div>Developer: <a href="https://github.com/roshhellwett" target="_blank" style="color: var(--accent-2); text-decoration: none;">roshhellwett</a></div>
+                <div class="card info-card">
+                    <div class="info-card-inner">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                            <strong style="color: var(--accent-2);">Install ID:</strong>
+                            <span id="optionsCreditsInstallId" style="user-select: all; font-family: 'JetBrains Mono', monospace; color: var(--accent-2); font-size: 12px;">Loading...</span>
+                        </div>
+                        <div class="info-divider"></div>
+                        <div style="color: var(--text-muted); font-size: 12px; line-height: 1.8;">
+                            Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank">Zenith Open Source Projects</a><br/>
+                            Developer: <a href="https://github.com/roshhellwett" target="_blank">roshhellwett</a>
+                        </div>
+                    </div>
                 </div>
 
             </div>
         </div>
 
     </main>
+
+    <div id="toast">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Settings saved
+    </div>
 
     <script src="options.js"></script>
 </body>

@@ -15,7 +15,7 @@ const extractHostname = url => {
 };
 
 chrome.runtime.onInstalled.addListener(() => {
-  checkAuthStatus();
+  checkAuthStatus().catch(() => {});
   chrome.alarms.create('authCheck', { periodInMinutes: 1 });
 
   chrome.contextMenus.create({
@@ -41,11 +41,11 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  checkAuthStatus();
+  checkAuthStatus().catch(() => {});
 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'authCheck') {
-    checkAuthStatus();
+    checkAuthStatus().catch(() => {});
   }
 });
 
@@ -70,7 +70,7 @@ chrome.commands.onCommand.addListener((command) => {
   if (command === "open_panel") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0] && tabs[0].id) {
-        chrome.tabs.sendMessage(tabs[0].id, { type: 'RUN_ACTION', action: 'open_panel' });
+        chrome.tabs.sendMessage(tabs[0].id, { type: 'RUN_ACTION', action: 'open_panel' }).catch(() => {});
       }
     });
   }
@@ -78,17 +78,17 @@ chrome.commands.onCommand.addListener((command) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === 'CHECK_AUTH') {
-    checkAuthStatus().then(sendResponse);
+    checkAuthStatus().then(sendResponse).catch(() => {});
     return true;
   }
 
   if (message.type === 'ACTIVATE_LICENSE') {
-    activateLicense(message.licenseKey).then(sendResponse);
+    activateLicense(message.licenseKey).then(sendResponse).catch(() => {});
     return true;
   }
 
   if (message.type === 'AI_REQUEST') {
-    handleAIRequest(message.payload, sendResponse, sender?.tab?.id);
+    handleAIRequest(message.payload, sendResponse, sender?.tab?.id).catch(() => {});
     return true; 
   }
   if (message.type === 'AI_ABORT') {

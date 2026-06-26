@@ -175,7 +175,7 @@ function renderOptions(options) {
     div.className = 'pm-option'
     div.id = 'pm-opt-' + opt.index
     div.innerHTML = `
-      <div class="pm-option-badge">${label}</div>
+      <div class="pm-option-badge">${esc(label)}</div>
       <div class="pm-option-text">${esc(opt.text)}</div>
     `
     list.appendChild(div)
@@ -210,7 +210,7 @@ function showCorrectAnswer(question, options, matched) {
   cardEl.innerHTML = `
     <div class="pm-answer-kicker">Correct Answer</div>
     <div class="pm-answer-value">
-      <div class="pm-answer-num">${matched.label}</div>
+      <div class="pm-answer-num">${esc(matched.label)}</div>
       <div class="pm-answer-txt">${esc(sanitizeText(matched.text))}</div>
     </div>
     <div class="pm-answer-note">Selected by Cortex after matching the question and answer options.</div>
@@ -223,6 +223,11 @@ function showCorrectAnswer(question, options, matched) {
 function openPanel() {
   const panel = document.getElementById('pagemind-panel')
   if (!panel) return
+  panel.classList.remove('pm-minimized', 'pm-expanded')
+  const yellow = document.getElementById('pm-minimize-btn')
+  if (yellow) yellow.style.opacity = '1'
+  const green = document.getElementById('pm-expand-btn')
+  if (green) green.style.transform = 'scale(1)'
   if (!panel.classList.contains('pm-open')) {
     if (_panelPos) {
       let x = _panelPos.x;
@@ -318,12 +323,12 @@ function buildPanelHTML() {
       <div id="pm-state-welcome" class="pm-state">
         <div class="pm-section-label">\u25B8 Quick Actions</div>
         <div class="pm-actions-grid">
-          <button class="pm-action-btn" id="pm-action-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>
-          <button class="pm-action-btn" id="pm-action-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>
-          <button class="pm-action-btn" id="pm-action-summarize" aria-label="Summarize">\uD83D\uDCC4 Summarize</button>
-          <button class="pm-action-btn" id="pm-action-define" aria-label="Define">\uD83D\uDCD6 Define</button>
+          <button class="pm-action-btn" id="pm-action-correct" aria-label="Find Correct Answer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Correct Answer</button>
+          <button class="pm-action-btn" id="pm-action-factcheck" aria-label="Fact Check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Fact Check</button>
+          <button class="pm-action-btn" id="pm-action-summarize" aria-label="Summarize"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Summarize</button>
+          <button class="pm-action-btn" id="pm-action-define" aria-label="Define"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Define</button>
         </div>
-        <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings">\u2699\uFE0F Settings</button>
+        <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
         <div class="pm-divider"></div>
         <div class="pm-section-label">\u25B8 Ask About Page</div>
         <p class="pm-welcome-hint">Type a question related to this page in the field below.</p>
@@ -369,7 +374,7 @@ function buildPanelHTML() {
           <div style="display: flex; gap: 8px; justify-content: center; margin-top: 16px;">
             <button class="pm-back-btn" id="pm-error-back-btn" aria-label="Go back from error" style="margin: 0;">\u2190 Back</button>
             <button class="pm-back-btn" id="pm-error-retry" aria-label="Retry last action" style="margin: 0;">\u21BB Retry</button>
-            <button class="pm-back-btn" id="pm-error-settings-btn" aria-label="Open Settings" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
+            <button class="pm-back-btn" id="pm-error-settings-btn" aria-label="Open Settings" style="margin: 0; display: none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</button>
           </div>
           <div style="margin-top: 14px; font-size: 11px; color: #888; text-align: center;">Need help? <a href="mailto:zenithprojects@icloud.com" style="color: #d4a017; text-decoration: none;">zenithprojects@icloud.com</a></div>
         </div>
@@ -401,10 +406,10 @@ function createBubble() {
       '</button>' +
       '<div id="pm-bubble-menu" aria-label="ProjectCortex selection actions">' +
         '<div style="padding: 0 4px"><input type="text" id="pm-bubble-input" placeholder="Ask anything..." autocomplete="off"></div>' +
-        '<button id="pm-bubble-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>' +
-        '<button id="pm-bubble-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>' +
-        '<button id="pm-bubble-define" aria-label="Define">\uD83D\uDCD6 Define</button>' +
-        '<button id="pm-bubble-summarize" aria-label="Summarize Selection">\uD83D\uDCC4 Summarize</button>' +
+        '<button id="pm-bubble-correct" aria-label="Find Correct Answer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Correct Answer</button>' +
+        '<button id="pm-bubble-factcheck" aria-label="Fact Check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Fact Check</button>' +
+        '<button id="pm-bubble-define" aria-label="Define"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Define</button>' +
+        '<button id="pm-bubble-summarize" aria-label="Summarize Selection"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Summarize</button>' +
         '<button id="pm-bubble-hide" aria-label="Hide">\u2205 Hide</button>' +
       '</div>'
     document.body.appendChild(_bubble)
@@ -418,7 +423,26 @@ function createBubble() {
       e.stopPropagation()
       _bubble.classList.toggle('expanded')
       if (_bubble.classList.contains('expanded')) {
-        keepBubbleInViewport()
+        let rect = null
+        const sel = getDeepSelection()
+        if (sel && sel.rangeCount > 0) {
+          try { rect = sel.getRangeAt(0).getBoundingClientRect() } catch (_) {}
+        }
+        if (!rect || !rect.width) rect = _bubbleRect
+        if (rect) {
+          const bw = _bubble.offsetWidth
+          const bh = _bubble.offsetHeight
+          let left = rect.left + rect.width / 2 - bw / 2
+          let top = rect.bottom + 8
+          if (top + bh > window.innerHeight) top = rect.top - bh - 8
+          if (left < 8) left = 8
+          if (left + bw > window.innerWidth - 8) left = window.innerWidth - bw - 8
+          if (top < 8) top = 8
+          _bubble.style.left = left + 'px'
+          _bubble.style.top = top + 'px'
+        } else {
+          keepBubbleInViewport()
+        }
         setTimeout(() => _bubble.querySelector('#pm-bubble-input')?.focus(), 60)
       }
     })
@@ -520,6 +544,8 @@ function showBubble(sel) {
       return
     }
 
+    _bubbleRect = rect
+
     _bubble.classList.add('visible')
     _bubble.classList.remove('expanded')
     const bw = _bubble.offsetWidth
@@ -576,8 +602,7 @@ function clamp(v, min, max) {
 }
 
 function initDragger() {
-  const header = document.querySelector('.pm-header')
-  if (!header) return
+  if (!_panel) return
 
   if (!_panelPos) {
     try {
@@ -598,17 +623,15 @@ function initDragger() {
     } catch (_) {}
   }
 
-  header.addEventListener('mousedown', e => {
-    if (e.target.closest('button, input, select, textarea')) return
+  _panel.addEventListener('mousedown', e => {
+    if (e.target.closest('button, input, select, textarea, .pm-traffic-light, .pm-icon-btn')) return
     
-    const panel = document.getElementById('pagemind-panel')
-    if (panel && panel.classList.contains('pm-minimized')) {
+    if (_panel.classList.contains('pm-minimized')) {
       minimizePanel()
       return
     }
     
     _drag = true
-    if (!_panel) return
     const rect = _panel.getBoundingClientRect()
     _sx = e.clientX
     _sy = e.clientY
@@ -714,10 +737,8 @@ function wireActionButtons() {
       activateBtn.textContent = 'Verifying...';
       activateBtn.disabled = true;
 
-      const rawHWID = typeof getRawHWID === 'function' ? getRawHWID() : null;
-
       try {
-        chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key, rawHWID }, res => {
+        chrome.runtime.sendMessage({ type: 'ACTIVATE_LICENSE', licenseKey: key }, res => {
           activateBtn.textContent = 'Activate License';
           activateBtn.disabled = false;
 
@@ -733,7 +754,6 @@ function wireActionButtons() {
             activateBtn.textContent = 'Success!';
             setTimeout(() => {
               activateBtn.textContent = 'Activate License';
-              showState('welcome');
               init();
             }, 1500);
           } else {
@@ -865,9 +885,11 @@ function initSelectionListeners() {
   })
 
   document.addEventListener('selectionchange', () => {
-    if (Date.now() - _clickedOutsideAt < 500) { _clickedOutsideAt = 0; return }
     if (_bubble?.classList.contains('expanded')) return
-    scheduleBubbleCheck(300)
+    const sel = getDeepSelection()
+    if (sel && !sel.isCollapsed && sel.toString().trim()) {
+      scheduleBubbleCheck(100)
+    }
   })
 
   let _scrollTimer = null
@@ -924,12 +946,12 @@ function initSelectionListeners() {
       const lastElement = focusableElements[focusableElements.length - 1]
       
       if (e.shiftKey) {
-        if (document.activeElement === firstElement || !panel.contains(document.activeElement)) {
+        if (document.activeElement === firstElement) {
           e.preventDefault()
           lastElement.focus()
         }
       } else {
-        if (document.activeElement === lastElement || !panel.contains(document.activeElement)) {
+        if (document.activeElement === lastElement) {
           e.preventDefault()
           firstElement.focus()
         }

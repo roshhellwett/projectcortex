@@ -25,12 +25,12 @@
     --pm-accent-green-glow: rgba(5, 150, 105, 0.35);
     --pm-accent-green-bg: rgba(5, 150, 105, 0.1);
     --pm-terminal-green: #059669;
-    --pm-radius: 16px;
-    --pm-radius-sm: 10px;
+    --pm-radius: 18px;
+    --pm-radius-sm: 12px;
     --pm-radius-xs: 6px;
-    --pm-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--pm-border) inset;
-    --pm-shadow-lg: 0 40px 120px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
-    --pm-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(212, 160, 23, 0.15) inset;
+    --pm-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--pm-border) inset;
+    --pm-shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+    --pm-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.13), 0 0 0 1px rgba(212, 160, 23, 0.15) inset;
     --pm-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --pm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --pm-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -43,8 +43,8 @@
 #pagemind-bubble * {
     font-family: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
     box-sizing: border-box !important;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
 }
 
 @keyframes pmBorderGlow {
@@ -70,7 +70,7 @@
     left: -430px;
     transform: translateY(-50%);
     z-index: 2147483646 !important;
-    width: 380px !important;
+    width: 340px !important;
     max-width: calc(100vw - 32px) !important;
     max-height: 80vh !important;
     background: var(--pm-surface) !important;
@@ -142,6 +142,7 @@
     transform: none;
     will-change: opacity !important;
     transition: opacity 0.3s var(--pm-ease-out) !important;
+    cursor: grab !important;
 }
 
 #pagemind-panel.pm-dragging {
@@ -149,31 +150,32 @@
     user-select: none !important;
     opacity: 0.97 !important;
     box-shadow: var(--pm-shadow-lg) !important;
+    cursor: grabbing !important;
 }
 
 #pagemind-panel .pm-header {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 10px 14px !important;
+    padding: 8px 12px !important;
     border-bottom: 1px solid var(--pm-border) !important;
     background: rgba(225, 215, 194, 0.98) !important;
     flex-shrink: 0 !important;
     cursor: grab !important;
     position: relative !important;
-    min-height: 42px !important;
+    min-height: 36px !important;
 }
 
 #pagemind-panel .pm-traffic-lights {
     display: flex !important;
-    gap: 7px !important;
+    gap: 5px !important;
     flex-shrink: 0 !important;
     align-items: center !important;
 }
 
 #pagemind-panel .pm-traffic-light {
-    width: 12px !important;
-    height: 12px !important;
+    width: 10px !important;
+    height: 10px !important;
     border-radius: 50% !important;
     border: none !important;
     cursor: pointer !important;
@@ -248,7 +250,7 @@
 }
 
 #pagemind-panel.pm-expanded {
-    width: 520px !important;
+    width: 480px !important;
     max-width: calc(100vw - 32px) !important;
     max-height: 90vh !important;
     transition: width 0.4s var(--pm-spring), left 0.5s var(--pm-spring), opacity 0.35s var(--pm-ease-out) !important;
@@ -257,7 +259,7 @@
 #pagemind-panel.pm-minimized {
     width: auto !important;
     min-width: 200px !important;
-    max-height: 42px !important;
+    max-height: 36px !important;
     overflow: hidden !important;
     border-radius: var(--pm-radius-sm) !important;
     cursor: pointer !important;
@@ -276,21 +278,14 @@
     cursor: pointer !important;
 }
 
-#pagemind-panel.pm-dragging {
-    transition: none !important;
-    user-select: none !important;
-    opacity: 0.97 !important;
-    box-shadow: var(--pm-shadow-lg) !important;
-}
-
 #pagemind-panel .pm-logo {
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 6px !important;
 }
 
 #pagemind-panel .pm-logo-text {
-    font-size: 15px !important;
+    font-size: 13px !important;
     font-weight: 800 !important;
     color: var(--pm-accent) !important;
     letter-spacing: 0.05em !important;
@@ -299,14 +294,14 @@
 }
 
 #pagemind-panel .pm-badge {
-    font-size: 9px !important;
+    font-size: 8px !important;
     font-weight: 800 !important;
     font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     background: rgba(5, 150, 105, 0.1) !important;
     color: var(--pm-terminal-green) !important;
     border: 1px solid rgba(5, 150, 105, 0.25) !important;
-    border-radius: 4px !important;
-    padding: 3px 7px !important;
+    border-radius: 3px !important;
+    padding: 2px 5px !important;
     margin: 0 !important;
     letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
@@ -318,8 +313,8 @@
 }
 
 #pagemind-panel .pm-icon-btn {
-    width: 28px !important;
-    height: 28px !important;
+    width: 24px !important;
+    height: 24px !important;
     border-radius: 8px !important;
     background: transparent !important;
     border: none !important;
@@ -346,7 +341,7 @@
 }
 
 #pagemind-panel .pm-page-info {
-    padding: 8px 16px !important;
+    padding: 6px 12px !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
     background: rgba(0, 0, 0, 0.03) !important;
     flex-shrink: 0 !important;
@@ -379,7 +374,7 @@
     flex: 1 !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
-    padding: 14px 16px !important;
+    padding: 10px 14px !important;
     scrollbar-width: thin !important;
     scrollbar-color: rgba(0,0,0,0.06) transparent !important;
     background: linear-gradient(rgba(225, 215, 194, 0.82), rgba(225, 215, 194, 0.82)), url('icons/background.png') !important;
@@ -439,12 +434,12 @@
 #pagemind-panel .pm-actions-grid .pm-action-btn:nth-child(4) { animation-delay: 0.2s !important; }
 
 #pagemind-panel .pm-section-label {
-    font-size: 9px !important;
+    font-size: 8px !important;
     font-weight: 800 !important;
     font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     color: var(--pm-accent) !important;
     text-transform: uppercase !important;
-    margin: 0 0 10px 0 !important;
+    margin: 0 0 8px 0 !important;
     padding: 0 !important;
     letter-spacing: 0.15em !important;
 }
@@ -452,17 +447,17 @@
 #pagemind-panel .pm-actions-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    margin-bottom: 10px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
 }
 
 #pagemind-panel .pm-action-btn {
     background: rgba(0, 0, 0, 0.03) !important;
     border: 1px solid rgba(0, 0, 0, 0.06) !important;
     color: var(--pm-text) !important;
-    padding: 10px 12px !important;
-    border-radius: var(--pm-radius-sm) !important;
-    font-size: 12px !important;
+    padding: 8px 10px !important;
+    border-radius: 12px !important;
+    font-size: 11px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     display: flex !important;
@@ -554,12 +549,12 @@
 #pagemind-panel .pm-divider {
     height: 1px !important;
     background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent) !important;
-    margin: 14px 0 !important;
+    margin: 10px 0 !important;
     border: none !important;
 }
 
 #pagemind-panel .pm-welcome-hint {
-    font-size: 12px !important;
+    font-size: 11px !important;
     color: var(--pm-text-muted) !important;
     margin: 0 0 4px 0 !important;
     line-height: 1.6 !important;
@@ -570,8 +565,8 @@
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 20px !important;
-    padding: 60px 20px !important;
+    gap: 16px !important;
+    padding: 40px 20px !important;
 }
 
 #pagemind-panel .pm-skeleton-loader {
@@ -584,7 +579,7 @@
 }
 
 #pagemind-panel .pm-skeleton-line {
-    height: 12px !important;
+    height: 10px !important;
     background: linear-gradient(90deg, rgba(212, 160, 23, 0.06) 25%, rgba(212, 160, 23, 0.18) 50%, rgba(212, 160, 23, 0.06) 75%) !important;
     background-size: 300% 100% !important;
     animation: pmSkeletonShimmer 2s infinite var(--pm-ease-in-out) !important;
@@ -601,7 +596,7 @@
 }
 
 #pagemind-panel .pm-loading-label {
-    font-size: 11px !important;
+    font-size: 10px !important;
     color: var(--pm-accent) !important;
     text-transform: uppercase !important;
     letter-spacing: 0.12em !important;
@@ -612,7 +607,7 @@
 }
 
 #pagemind-panel .pm-loading-sub {
-    font-size: 9px !important;
+    font-size: 8px !important;
     color: #888 !important;
     margin-top: 6px !important;
     padding: 0 !important;
@@ -625,11 +620,11 @@
     align-items: center !important;
     justify-content: space-between !important;
     gap: 12px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 10px !important;
 }
 
 #pagemind-panel .pm-result-action {
-    font-size: 10px !important;
+    font-size: 9px !important;
     font-weight: 700 !important;
     font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     color: var(--pm-terminal-green) !important;
@@ -643,10 +638,10 @@
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     color: #888 !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
-    padding: 6px 13px !important;
+    padding: 5px 10px !important;
     border-radius: 7px !important;
     transition: all 0.25s var(--pm-ease-out) !important;
     white-space: nowrap !important;
@@ -673,10 +668,10 @@
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     color: #888 !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
-    padding: 6px 13px !important;
+    padding: 5px 10px !important;
     border-radius: 7px !important;
     transition: all 0.25s var(--pm-ease-out) !important;
     white-space: nowrap !important;
@@ -703,9 +698,9 @@
 }
 
 #pagemind-panel .pm-result-body {
-    font-size: 13.5px !important;
+    font-size: 12.5px !important;
     color: var(--pm-text) !important;
-    line-height: 1.8 !important;
+    line-height: 1.7 !important;
     margin: 0 !important;
     padding: 0 !important;
     white-space: normal !important;
@@ -714,7 +709,7 @@
 }
 
 #pagemind-panel .pm-result-body p {
-    margin: 0 0 12px 0 !important;
+    margin: 0 0 10px 0 !important;
 }
 
 #pagemind-panel .pm-result-body p:last-child {
@@ -735,10 +730,10 @@
     display: inline-flex !important;
     align-items: center !important;
     gap: 8px !important;
-    margin: 16px 0 10px 0 !important;
+    margin: 12px 0 8px 0 !important;
     padding: 0 !important;
     color: var(--pm-accent) !important;
-    font-size: 10px !important;
+    font-size: 9px !important;
     font-weight: 900 !important;
     font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     letter-spacing: 0.16em !important;
@@ -768,8 +763,8 @@
     background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)) !important;
     border: 1px solid rgba(0,0,0,0.06) !important;
     border-radius: 10px !important;
-    padding: 11px 12px !important;
-    margin: 7px 0 !important;
+    padding: 9px 10px !important;
+    margin: 6px 0 !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.3) !important;
     transition: all 0.3s var(--pm-ease-out) !important;
 }
@@ -803,7 +798,7 @@
 #pagemind-panel .pm-list-content {
     flex: 1 !important;
     min-width: 0 !important;
-    color: #4a4a4a !important;
+    color: var(--pm-text-muted) !important;
     line-height: 1.6 !important;
 }
 
@@ -822,8 +817,8 @@
 
 #pagemind-panel .pm-cursor {
     display: inline-block !important;
-    width: 6px !important;
-    height: 1.1em !important;
+    width: 5px !important;
+    height: 1em !important;
     background: linear-gradient(180deg, var(--pm-accent-deep), var(--pm-accent)) !important;
     margin-left: 2px !important;
     animation: pmBlink 0.85s step-end infinite !important;
@@ -838,8 +833,8 @@
 }
 
 #pagemind-panel .pm-result-footer {
-    margin-top: 16px !important;
-    padding-top: 12px !important;
+    margin-top: 12px !important;
+    padding-top: 10px !important;
     border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
     display: flex !important;
     justify-content: flex-end !important;
@@ -849,9 +844,9 @@
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
     color: #888 !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 600 !important;
-    padding: 7px 15px !important;
+    padding: 5px 10px !important;
     cursor: pointer !important;
     border-radius: 7px !important;
     transition: all 0.25s var(--pm-ease-out) !important;
@@ -876,11 +871,11 @@
 }
 
 #pagemind-panel .pm-mcq-question {
-    font-size: 13.5px !important;
+    font-size: 12.5px !important;
     color: #1a1a1a !important;
     font-weight: 750 !important;
-    margin: 0 0 12px 0 !important;
-    padding: 13px 14px !important;
+    margin: 0 0 10px 0 !important;
+    padding: 10px 12px !important;
     border: 1px solid rgba(0,0,0,0.08) !important;
     border-radius: 12px !important;
     background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)) !important;
@@ -892,7 +887,7 @@
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
-    margin: 0 0 16px 0 !important;
+    margin: 0 0 12px 0 !important;
     padding: 0 !important;
 }
 
@@ -903,7 +898,7 @@
     background: rgba(0, 0, 0, 0.02) !important;
     border: 1px solid var(--pm-border-light) !important;
     border-radius: 12px !important;
-    padding: 11px 12px !important;
+    padding: 9px 10px !important;
     margin: 0 !important;
     transition: all 0.25s var(--pm-ease-out) !important;
 }
@@ -930,25 +925,35 @@
 #pagemind-panel .pm-option-num,
 #pagemind-panel .pm-option-tick {
     flex-shrink: 0 !important;
-    width: 24px !important;
-    height: 24px !important;
+}
+
+#pagemind-panel .pm-option-num {
+    width: 20px !important;
+    height: 20px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-weight: 700 !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     margin: 0 !important;
     padding: 0 !important;
-}
-
-#pagemind-panel .pm-option-num {
     background: rgba(0,0,0,0.05) !important;
     border: 1px solid rgba(0,0,0,0.08) !important;
     color: #888 !important;
 }
 
 #pagemind-panel .pm-option-tick {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    font-size: 10px !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: rgba(5, 150, 105, 0.2) !important;
     border: 1px solid rgba(5, 150, 105, 0.4) !important;
     color: #059669 !important;
@@ -956,7 +961,7 @@
 
 #pagemind-panel .pm-option-text {
     flex: 1 !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
     color: #555 !important;
     line-height: 1.5 !important;
     margin: 0 !important;
@@ -970,14 +975,14 @@
 
 #pagemind-panel .pm-option-badge {
     flex-shrink: 0 !important;
-    width: 24px !important;
-    height: 24px !important;
+    width: 20px !important;
+    height: 20px !important;
     border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     font-weight: 700 !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     margin: 0 !important;
     padding: 0 !important;
     background: rgba(0,0,0,0.05) !important;
@@ -995,9 +1000,9 @@
     background: radial-gradient(circle at 10% 0%, rgba(212, 160, 23, 0.1), transparent 42%), linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(5, 150, 105, 0.04)) !important;
     border: 1px solid rgba(5, 150, 105, 0.42) !important;
     border-radius: 14px !important;
-    padding: 16px !important;
+    padding: 12px !important;
     margin: 0 !important;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.12), 0 0 22px rgba(5, 150, 105, 0.12), 0 0 0 1px rgba(5, 150, 105, 0.14) inset !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 16px rgba(5, 150, 105, 0.1), 0 0 0 1px rgba(5, 150, 105, 0.14) inset !important;
     animation: pmAnswerGlow 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
@@ -1012,7 +1017,7 @@
     font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     color: var(--pm-terminal-green) !important;
     text-transform: uppercase !important;
-    margin: 0 0 10px 0 !important;
+    margin: 0 0 8px 0 !important;
     padding: 0 !important;
     letter-spacing: 0.18em !important;
 }
@@ -1020,21 +1025,21 @@
 #pagemind-panel .pm-answer-value {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 10px !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
 #pagemind-panel .pm-answer-num {
     flex-shrink: 0 !important;
-    width: 34px !important;
-    height: 34px !important;
+    width: 26px !important;
+    height: 26px !important;
     border-radius: 50% !important;
     background: linear-gradient(135deg, rgba(5, 150, 105, 0.2), rgba(5, 150, 105, 0.1)) !important;
     border: 1px solid rgba(5, 150, 105, 0.4) !important;
     color: #059669 !important;
     font-weight: 800 !important;
-    font-size: 15px !important;
+    font-size: 12px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1044,7 +1049,7 @@
 }
 
 #pagemind-panel .pm-answer-txt {
-    font-size: 15px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     color: #065f46 !important;
     line-height: 1.4 !important;
@@ -1053,11 +1058,11 @@
 }
 
 #pagemind-panel .pm-answer-note {
-    margin-top: 12px !important;
-    padding-top: 11px !important;
+    margin-top: 10px !important;
+    padding-top: 9px !important;
     border-top: 1px solid rgba(5, 150, 105, 0.16) !important;
     color: #4a9e7e !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
     line-height: 1.5 !important;
     font-style: italic !important;
 }
@@ -1066,28 +1071,28 @@
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 16px !important;
-    padding: 50px 20px !important;
+    gap: 10px !important;
+    padding: 24px 20px !important;
     text-align: center !important;
     animation: pmFadeIn 0.35s var(--pm-spring) !important;
 }
 
 #pagemind-panel .pm-error-wrap svg {
-    width: 40px !important;
-    height: 40px !important;
+    width: 32px !important;
+    height: 32px !important;
     color: #ef4444 !important;
     opacity: 0.6 !important;
 }
 
 #pagemind-panel .pm-error-icon {
-    font-size: 28px !important;
+    font-size: 24px !important;
     margin: 0 !important;
     padding: 0 !important;
     opacity: 0.5 !important;
 }
 
 #pagemind-panel .pm-error-msg {
-    font-size: 13px !important;
+    font-size: 12px !important;
     color: #666 !important;
     line-height: 1.6 !important;
     margin: 0 !important;
@@ -1101,7 +1106,7 @@
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
-    padding: 10px 14px !important;
+    padding: 8px 12px !important;
     border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
     background: rgba(225, 215, 194, 0.3) !important;
     flex-shrink: 0 !important;
@@ -1113,8 +1118,8 @@
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px !important;
     color: #1a1a1a !important;
-    font-size: 12px !important;
-    padding: 10px 12px !important;
+    font-size: 11px !important;
+    padding: 8px 10px !important;
     outline: none !important;
     transition: all 0.25s var(--pm-ease-out) !important;
     font-family: inherit !important;
@@ -1132,8 +1137,8 @@
 }
 
 #pagemind-panel #pm-ask-send {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
     border-radius: 10px !important;
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
@@ -1183,8 +1188,8 @@
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px !important;
     color: #1a1a1a !important;
-    font-size: 12px !important;
-    padding: 10px 12px !important;
+    font-size: 11px !important;
+    padding: 8px 10px !important;
     outline: none !important;
     transition: all 0.3s var(--pm-ease-out) !important;
     font-family: inherit !important;
@@ -1197,9 +1202,13 @@
     box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
+#pagemind-panel .pm-ask-input::placeholder {
+    color: #aaa !important;
+}
+
 .pm-ask-send {
-    width: 36px !important;
-    height: 36px !important;
+    width: 32px !important;
+    height: 32px !important;
     border-radius: 10px !important;
     background: rgba(0, 0, 0, 0.04) !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
@@ -1256,7 +1265,7 @@
     border-radius: var(--pm-radius) !important;
     padding: 5px !important;
     background: rgba(245, 240, 232, 0.98) !important;
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.04) inset !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0,0,0,0.04) inset !important;
 }
 
 #pm-bubble-trigger {
@@ -1275,6 +1284,11 @@
     font-size: 14px !important;
     font-family: 'Inter', 'Outfit', -apple-system, sans-serif !important;
     line-height: 1 !important;
+}
+
+.pm-bubble-letter {
+    pointer-events: none !important;
+    user-select: none !important;
 }
 
 #pm-bubble-trigger:hover {
@@ -1307,8 +1321,8 @@
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: var(--pm-radius-sm) !important;
     color: #1a1a1a !important;
-    padding: 10px 12px !important;
-    font-size: 13px !important;
+    padding: 8px 10px !important;
+    font-size: 11px !important;
     margin-bottom: 6px !important;
     outline: none !important;
     box-sizing: border-box !important;
@@ -1343,9 +1357,9 @@
     background: transparent !important;
     border: none !important;
     color: var(--pm-text) !important;
-    font-size: 13px !important;
+    font-size: 11px !important;
     font-weight: 500 !important;
-    padding: 10px 12px !important;
+    padding: 8px 10px !important;
     text-align: left !important;
     border-radius: var(--pm-radius-sm) !important;
     cursor: pointer !important;
@@ -1415,13 +1429,13 @@
 
 #pagemind-panel h1, #pagemind-panel h2, #pagemind-panel h3 {
     color: #1a1a1a !important;
-    margin: 16px 0 8px 0 !important;
+    margin: 14px 0 6px 0 !important;
     font-weight: 600 !important;
 }
 
-#pagemind-panel h1 { font-size: 1.3em !important; }
-#pagemind-panel h2 { font-size: 1.15em !important; }
-#pagemind-panel h3 { font-size: 1.05em !important; }
+#pagemind-panel h1 { font-size: 1.2em !important; }
+#pagemind-panel h2 { font-size: 1.1em !important; }
+#pagemind-panel h3 { font-size: 1em !important; }
 
 #pagemind-panel .pm-list-item {
     display: flex !important;

@@ -129,6 +129,10 @@ export function abortAIRequest(tabId) {
 }
 
 export async function handleAIRequest(payload, sendResponse, tabId) {
+  if (!payload) {
+    try { sendResponse({ error: 'Invalid request: empty payload' }); } catch (e) {}
+    return;
+  }
   const {
     prompt, systemPrompt, apiKey,
     apiProvider = 'groq', customEndpoint = '',
@@ -168,6 +172,8 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
     return true;
   };
 
+  const cleanupRequest = () => { if (tabId) activeRequests.delete(tabId); };
+
   while (attempt <= MAX_RETRIES) {
     const controller = new AbortController();
     if (tabId) activeRequests.set(tabId, controller);
@@ -195,6 +201,7 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
       clearTimeout(timeout);
 
       if (res.ok) {
+        cleanupRequest();
         if (!data?.choices?.[0]?.message) {
           safeRespond({ error: `The model responded with an unexpected format. This may be a ${apiProvider} compatibility issue. Try a different model.` });
           return;
@@ -207,6 +214,7 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
         safeRespond({ result: content });
         return;
       }
+      cleanupRequest();
 
       const errInfo = classifyError(res.status, data, apiProvider);
       if (!errInfo.retryable) {
@@ -218,6 +226,7 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
       return;
     } catch (err) {
       clearTimeout(timeout);
+      cleanupRequest();
 
       if (err.name === 'AbortError') {
         if (tabId && !activeRequests.has(tabId)) {
@@ -234,5 +243,6 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
     }
   }
 
+  cleanupRequest();
   safeRespond({ error: lastError || `Request failed after retries. ${apiProvider === PROVIDER_OPENROUTER ? 'OpenRouter free tier may be overloaded. Try adding $10 credits for higher limits.' : 'Check your API key and network.'}` });
 }

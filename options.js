@@ -160,8 +160,8 @@ async function checkUpdate() {
 
                     const updateDesc = $('updateDesc');
                     if (updateDesc) {
-                        updateDesc.style.color = '#ffb3b3';
-                        updateDesc.innerHTML = 'A new version of ProjectCortex is available. To ensure uninterrupted service, please update immediately.<br><br><strong style="color: #fff;">Important:</strong> Before updating, you MUST export your settings backup below. You will need to import it after installing the new version to restore your license and configuration.';
+                        updateDesc.style.color = '#dc2626';
+                        updateDesc.innerHTML = 'A new version of ProjectCortex is available. To ensure uninterrupted service, please update immediately.<br><br><strong style="color: #1a1a1a;">Important:</strong> Before updating, you MUST export your settings backup below. You will need to import it after installing the new version to restore your license and configuration.';
                     }
 
                     const updateLink = $('updateLink');
@@ -233,7 +233,7 @@ async function loadSettings() {
             const toast = $('toast');
             if (toast) {
                 const originalHtml = toast.innerHTML;
-                toast.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d1ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> License Key Copied`;
+                toast.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> License Key Copied`;
                 toast.style.opacity = '1';
                 toast.style.transform = 'translateX(-50%) translateY(0)';
                 setTimeout(() => {
@@ -350,7 +350,7 @@ function updateKeyHint() {
             if (!key) return;
 
             authStatus.textContent = '';
-            authStatus.style.color = '#ededed';
+            authStatus.style.color = '#888';
             activateBtn.textContent = 'Verifying...';
             activateBtn.disabled = true;
 
@@ -361,13 +361,13 @@ function updateKeyHint() {
                 activateBtn.disabled = false;
 
                 if (chrome.runtime.lastError) {
-                    authStatus.style.color = '#ff4444';
+                    authStatus.style.color = '#ef4444';
                     authStatus.textContent = 'Extension backend unreachable. Please reload the extension.';
                     return;
                 }
 
                 if (res && res.success) {
-                    authStatus.style.color = '#4ade80';
+                    authStatus.style.color = '#059669';
                     authStatus.textContent = 'Activated successfully!';
                     setTimeout(() => {
                         document.getElementById('lockOverlay').style.display = 'none';
@@ -375,7 +375,7 @@ function updateKeyHint() {
                         document.getElementById('mainContainer').style.pointerEvents = 'auto';
                     }, 800);
                 } else {
-                    authStatus.style.color = '#ff4444';
+                    authStatus.style.color = '#ef4444';
                     authStatus.textContent = res?.error || 'Activation failed.';
                 }
             });

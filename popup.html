@@ -9,9 +9,9 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      width: 280px;
-      background: #030305;
-      color: #e0e0e5;
+      width: 300px;
+      background: #e1d7c2;
+      color: #1a1a1a;
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
       font-size: 13px;
       overflow: hidden;
@@ -24,26 +24,40 @@
       100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
 
-    /* --- HEADER --- */
     .hdr {
       position: relative;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px;
-      background: linear-gradient(180deg, rgba(16,16,24,0.9), rgba(10,10,15,0.9));
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      gap: 10px;
+      padding: 12px 14px;
+      background: rgba(225, 215, 194, 0.98);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
 
     .hdr::after {
       content: '';
       position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(168,85,247,0.4), rgba(99,102,241,0.4), transparent);
+      background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.3), rgba(212, 160, 23, 0.3), transparent);
     }
 
+    .traffic-lights {
+      display: flex;
+      gap: 6px;
+      margin-right: 6px;
+      align-items: center;
+    }
+
+    .traffic-light {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .traffic-light.red { background: #ff5f57; }
+    .traffic-light.yellow { background: #ffbd2e; }
+    .traffic-light.green { background: #28c840; }
+
     .hdr-icon {
-      width: 24px; height: 24px;
-      filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.5));
+      width: 20px; height: 20px;
+      flex-shrink: 0;
     }
 
     .hdr-text {
@@ -53,46 +67,50 @@
     .hdr-title {
       font-weight: 800;
       font-size: 14px;
-      background: linear-gradient(135deg, #fff, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #d4a017;
       letter-spacing: -0.02em;
     }
 
     .hdr-subtitle {
-      font-size: 10px; font-weight: 600;
-      color: #888; text-transform: uppercase; letter-spacing: 0.1em;
+      font-size: 8px; font-weight: 700;
+      color: #059669;
+      text-transform: uppercase; letter-spacing: 0.18em;
+      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
     }
 
     .hdr-badge {
       margin-left: auto;
-      font-size: 9px; font-weight: 800;
-      color: #fff; background: linear-gradient(135deg, #6366f1, #a855f7);
-      padding: 4px 8px; border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
-      letter-spacing: 0.05em;
+      font-size: 8px; font-weight: 800;
+      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+      color: #059669;
+      background: rgba(5, 150, 105, 0.1);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      padding: 3px 8px;
+      border-radius: 5px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    /* --- BODY --- */
-    .bd { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .bd { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
 
     .btn-main {
       width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(168,85,247,0.1));
-      border: 1px solid rgba(168,85,247,0.3);
-      color: #e0e0e5; font-size: 13px; font-weight: 600;
-      padding: 12px; border-radius: 8px;
-      cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      background: rgba(212, 160, 23, 0.1);
+      border: 1px solid rgba(212, 160, 23, 0.25);
+      color: #d4a017;
+      font-size: 13px; font-weight: 700;
+      padding: 11px; border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative; overflow: hidden;
     }
     .btn-main:hover {
-      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
-      border-color: rgba(168,85,247,0.5);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(168,85,247,0.2);
-      color: #fff;
+      background: rgba(212, 160, 23, 0.18);
+      border-color: rgba(212, 160, 23, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(212, 160, 23, 0.15);
     }
-    .btn-main:active { transform: scale(0.97); }
+    .btn-main:active { transform: scale(0.97) translateY(0); transition-duration: 0.08s; }
 
     .action-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -100,58 +118,76 @@
 
     .btn-action {
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-      padding: 14px 10px; border-radius: 8px;
-      color: #aaa; font-size: 11px; font-weight: 600; text-align: center;
-      cursor: pointer; transition: all 0.25s ease;
+      background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);
+      padding: 12px 10px; border-radius: 10px;
+      color: #6b6b6b;
+      font-size: 11px; font-weight: 600; text-align: center;
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative; overflow: hidden;
     }
-    .btn-action svg { width: 18px; height: 18px; opacity: 0.8; transition: all 0.25s ease; }
+    .btn-action svg { width: 16px; height: 16px; opacity: 0.7; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
     
     .btn-action:hover {
-      background: rgba(255,255,255,0.06); color: #fff;
-      border-color: rgba(255,255,255,0.15);
+      background: rgba(212, 160, 23, 0.08);
+      border-color: rgba(212, 160, 23, 0.25);
+      color: #d4a017;
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
-    .btn-action:hover svg { opacity: 1; transform: scale(1.1); }
-    .btn-action:active { transform: scale(0.95); }
+    .btn-action:hover svg { opacity: 1; transform: scale(1.12); }
+    .btn-action:active { transform: scale(0.95) translateY(0); transition-duration: 0.08s; }
 
-    .btn-action.primary { grid-column: 1 / -1; flex-direction: row; text-align: left; justify-content: flex-start; padding: 14px 16px; }
+    .btn-action.primary { grid-column: 1 / -1; flex-direction: row; text-align: left; justify-content: flex-start; padding: 12px 14px; }
 
-    /* --- FOOTER & LOADERS --- */
     .loading {
       display: none; align-items: center; justify-content: center; gap: 8px;
-      padding: 12px 0 0 0; color: #888; font-size: 10px; font-weight: 700;
+      padding: 10px 0 0 0;
+      color: #d4a017;
+      font-size: 10px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.15em;
+      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
     }
     .loading.visible { display: flex; }
     .spinner {
-      width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.1);
-      border-top-color: #a855f7; border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      width: 10px; height: 10px; border: 2px solid rgba(0,0,0,0.08);
+      border-top-color: #d4a017; border-radius: 50%;
+      animation: pmSpin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pmSpin { to { transform: rotate(360deg); } }
 
     .ftr {
-      padding: 12px; text-align: center; font-size: 10px;
-      color: #555; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.04);
+      padding: 10px; text-align: center; font-size: 9px;
+      color: #888;
+      background: rgba(225, 215, 194, 0.5);
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
+      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+      line-height: 1.5;
     }
-    .ftr a { color: rgba(168,85,247,0.7); text-decoration: none; transition: color 0.2s; }
-    .ftr a:hover { color: #c084fc; }
+    .ftr a { color: #d4a017; text-decoration: none; transition: color 0.2s; }
+    .ftr a:hover { color: #d4a017; }
 
   </style>
 </head>
 <body>
   
   <div class="hdr">
-    <svg class="hdr-icon" viewBox="0 0 24 24" fill="none">
-      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="url(#popGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <defs><linearGradient id="popGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="50%" stop-color="#a855f7"/><stop offset="100%" stop-color="#ec4899"/></linearGradient></defs>
+    <div class="traffic-lights">
+      <span class="traffic-light red"></span>
+      <span class="traffic-light yellow"></span>
+      <span class="traffic-light green"></span>
+    </div>
+    <svg class="hdr-icon" viewBox="0 0 32 32" fill="none">
+      <rect x="2" y="6" width="28" height="20" rx="3" fill="#e1d7c2" stroke="#d4a017" stroke-width="2"/>
+      <path d="M6 10h4v2H6zM12 10h4v2h-4zM20 10h6v2h-6z" fill="#d4a017" opacity="0.8"/>
+      <path d="M6 15h20v1H6z" fill="#65675e"/>
+      <path d="M6 18h14v1H6z" fill="#65675e"/>
+      <path d="M6 21h8v1H6z" fill="#65675e"/>
     </svg>
     <div class="hdr-text">
       <div class="hdr-title">ProjectCortex</div>
-      <div class="hdr-subtitle">Powered by Zenith</div>
+      <div class="hdr-subtitle">\u25B8 ZENITH_OS</div>
     </div>
-    <div class="hdr-badge">V9.0</div>
+    <div class="hdr-badge">v10.0</div>
   </div>
 
   <div class="bd">
@@ -162,39 +198,39 @@
 
     <div class="action-grid">
       <button class="btn-action primary" id="summarize">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span>Summarize Current Page</span>
       </button>
 
       <button class="btn-action" id="factCheck">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <span>Fact Check</span>
       </button>
 
       <button class="btn-action" id="correctAnswers">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         <span>Correct Answer</span>
       </button>
 
       <button class="btn-action" id="define">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         <span>Define</span>
       </button>
 
       <button class="btn-action primary" id="openSettings" style="margin-top: 4px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>Extension Settings</span>
       </button>
     </div>
-    <div id="pm-error" style="display: none; color: #ff6b6b; font-size: 12px; font-weight: 500; text-align: center; margin-top: 4px; padding: 8px; background: rgba(255, 107, 107, 0.1); border-radius: 8px; border: 1px solid rgba(255, 107, 107, 0.2);"></div>
+    <div id="pm-error" style="display: none; color: #ef4444; font-size: 12px; font-weight: 500; text-align: center; margin-top: 4px; padding: 8px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);"></div>
     
     <div class="loading" id="loading"><div class="spinner"></div> Processing...</div>
   </div>
 
   <div class="ftr">
-    <div style="margin-bottom: 4px; color: #888;">Install ID: <span id="popupInstallId" style="user-select: all; font-family: monospace; color: #e0e0e5;">Loading...</span></div>
-    <div style="margin-bottom: 4px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank">Zenith Open Source Projects</a></div>
-    <div style="margin-bottom: 4px;">Developer: <a href="https://github.com/roshhellwett" target="_blank">roshhellwett</a></div>
+    <div style="margin-bottom: 3px;">\u25C9 Install ID: <span id="popupInstallId" style="user-select: all; color: #d4a017;">Loading...</span></div>
+    <div style="margin-bottom: 3px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank">Zenith Open Source Projects</a></div>
+    <div style="margin-bottom: 3px;">Dev: <a href="https://github.com/roshhellwett" target="_blank">roshhellwett</a></div>
     <div>Support: <a href="mailto:zenithprojects@icloud.com">zenithprojects@icloud.com</a></div>
   </div>
 

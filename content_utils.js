@@ -109,6 +109,7 @@ function sanitizeText(text) {
 
 function parseMarkdown(text) {
   if (!text) return ''
+  text = text.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
   let html = esc(text)
   
   html = html

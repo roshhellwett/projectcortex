@@ -150,6 +150,7 @@ function typeHtml(el, htmlString, speed) {
 }
 
 function showGenericResult(actionLabel, content) {
+  content = content.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
   const htmlContent = parseMarkdown(content)
   const actionEl = document.getElementById('pm-result-action')
   const genericEl = document.getElementById('pm-generic-result')
@@ -244,52 +245,78 @@ function openPanel() {
 
 function closePanel() {
   const panel = document.getElementById('pagemind-panel')
-  if (panel) panel.classList.remove('pm-open')
+  if (panel) {
+    panel.classList.remove('pm-open')
+    panel.classList.remove('pm-expanded')
+    panel.classList.remove('pm-minimized')
+  }
+}
+
+function minimizePanel() {
+  const panel = document.getElementById('pagemind-panel')
+  if (!panel) return
+  panel.classList.toggle('pm-minimized')
+  if (panel.classList.contains('pm-minimized')) {
+    const yellow = document.getElementById('pm-minimize-btn')
+    if (yellow) yellow.style.opacity = '0.5'
+  } else {
+    const yellow = document.getElementById('pm-minimize-btn')
+    if (yellow) yellow.style.opacity = '1'
+  }
+}
+
+function toggleExpand() {
+  const panel = document.getElementById('pagemind-panel')
+  if (!panel) return
+  panel.classList.toggle('pm-expanded')
+  const green = document.getElementById('pm-expand-btn')
+  if (green) {
+    green.style.transform = panel.classList.contains('pm-expanded') ? 'scale(1.2)' : 'scale(1)'
+  }
 }
 
 function buildPanelHTML() {
   return `
     <div class="pm-header">
       <div class="pm-logo">
-        <img src="${chrome.runtime.getURL('icons/logo48.png')}" alt="ProjectCortex">
         <span class="pm-logo-text">Cortex</span>
-        <span class="pm-badge">AI</span>
+        <span class="pm-badge">OS v10</span>
       </div>
-      <div class="pm-header-actions">
-        <button class="pm-icon-btn" id="pm-close-btn" aria-label="Close Cortex panel">
-          <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+      <div class="pm-traffic-lights">
+        <button class="pm-traffic-light red" id="pm-close-btn" aria-label="Close panel" title="Close"></button>
+        <button class="pm-traffic-light yellow" id="pm-minimize-btn" aria-label="Minimize panel" title="Minimize"></button>
+        <button class="pm-traffic-light green" id="pm-expand-btn" aria-label="Expand panel" title="Expand"></button>
       </div>
     </div>
 
     <div class="pm-page-info">
-      <div class="pm-page-type">AI ASSISTANT</div>
+      <div class="pm-page-type">\u25B8 AI ASSISTANT / ZENITH_OS</div>
       <div class="pm-page-title">Select text or use actions below</div>
     </div>
 
     <div class="pm-body">
 
       <div id="pm-state-locked" class="pm-state" style="text-align: center;">
-        <div style="width: 48px; height: 48px; background: rgba(239,68,68,0.1); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+        <div style="width: 48px; height: 48px; background: rgba(239,68,68,0.08); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         </div>
-        <h2 id="pm-lock-title" style="font-size: 16px; color: #fff; margin: 0 0 8px 0;">Activation Required</h2>
-        <p id="pm-lock-message" style="font-size: 13px; color: #aaa; margin-bottom: 16px; line-height: 1.4;">
-          Your subscription has been ended. Please enter a new activation key to start using this SaaS.
+        <h2 id="pm-lock-title" style="font-size: 16px; color: #d4a017; margin: 0 0 8px 0; font-weight: 800;">Activation Required</h2>
+        <p id="pm-lock-message" style="font-size: 13px; color: #666; margin-bottom: 16px; line-height: 1.4;">
+          Enter a new activation key to unlock the system.
         </p>
         <div style="display: flex; flex-direction: column; gap: 8px; text-align: left;">
-            <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 13px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"/>
-            <div id="pm-license-error" style="color: #ff4444; font-size: 11px; display: none;"></div>
-            <button class="pm-action-btn" id="pm-action-activate" aria-label="Activate License" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); color: #fff; border: none; font-weight: bold;">Activate License</button>
-            <div style="margin-top: 6px; font-size: 11px; color: #666; text-align: center;">
-              Install ID: <span id="pm-install-id" style="color: #888; font-family: monospace; user-select: all;">...</span><br/>
-              Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a>
+            <input type="text" id="pm-license-input" placeholder="CORTEX-XXXX-XXXX" style="width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.03); color: #d4a017; border: 1px solid rgba(212,160,23,0.3); padding: 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);"/>
+            <div id="pm-license-error" style="color: #ef4444; font-size: 11px; display: none;"></div>
+            <button class="pm-action-btn" id="pm-action-activate" aria-label="Activate License" style="width: 100%; text-align: center; justify-content: center; background: linear-gradient(135deg, #b8860b, #d4a017); color: #000; border: none; font-weight: 800;">Unlock Cortex</button>
+            <div style="margin-top: 6px; font-size: 11px; color: #888; text-align: center;">
+              Install ID: <span id="pm-install-id" style="color: #d4a017; font-family: 'JetBrains Mono', monospace; user-select: all;">...</span><br/>
+              Need a key? <a href="mailto:zenithprojects@icloud.com" style="color: #d4a017; text-decoration: none;">zenithprojects@icloud.com</a>
             </div>
         </div>
       </div>
 
       <div id="pm-state-welcome" class="pm-state">
-        <div class="pm-section-label">Quick Actions</div>
+        <div class="pm-section-label">\u25B8 Quick Actions</div>
         <div class="pm-actions-grid">
           <button class="pm-action-btn" id="pm-action-correct" aria-label="Find Correct Answer">\uD83C\uDFAF Correct Answer</button>
           <button class="pm-action-btn" id="pm-action-factcheck" aria-label="Fact Check">\uD83D\uDD0D Fact Check</button>
@@ -298,7 +325,7 @@ function buildPanelHTML() {
         </div>
         <button class="pm-action-btn" id="pm-action-settings" aria-label="Open Settings">\u2699\uFE0F Settings</button>
         <div class="pm-divider"></div>
-        <div class="pm-section-label">Ask About Page</div>
+        <div class="pm-section-label">\u25B8 Ask About Page</div>
         <p class="pm-welcome-hint">Type a question related to this page in the field below.</p>
       </div>
 
@@ -344,7 +371,7 @@ function buildPanelHTML() {
             <button class="pm-back-btn" id="pm-error-retry" aria-label="Retry last action" style="margin: 0;">\u21BB Retry</button>
             <button class="pm-back-btn" id="pm-error-settings-btn" aria-label="Open Settings" style="margin: 0; display: none;">\u2699\uFE0F Settings</button>
           </div>
-          <div style="margin-top: 14px; font-size: 11px; color: #666; text-align: center;">Need help? <a href="mailto:zenithprojects@icloud.com" style="color: #00D1FF; text-decoration: none;">zenithprojects@icloud.com</a></div>
+          <div style="margin-top: 14px; font-size: 11px; color: #888; text-align: center;">Need help? <a href="mailto:zenithprojects@icloud.com" style="color: #d4a017; text-decoration: none;">zenithprojects@icloud.com</a></div>
         </div>
       </div>
 
@@ -356,10 +383,10 @@ function buildPanelHTML() {
           <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-      <div style="font-size: 10px; color: #666; text-align: center; padding: 10px 8px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); line-height: 1.4;">
-        Install ID: <span id="pm-credits-install-id" style="font-family: monospace; user-select: all; color: #aaa;">...</span><br/>
-        <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: #888; text-decoration: none;">Zenith Open Source Projects</a> | 
-        Dev: <a href="https://github.com/roshhellwett" target="_blank" style="color: #888; text-decoration: none;">roshhellwett</a>
+      <div style="font-size: 10px; color: #888; text-align: center; padding: 8px; background: rgba(225, 215, 194, 0.3); border-top: 1px solid rgba(0, 0, 0, 0.04); line-height: 1.5; font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;">
+        <span style="color: #059669;">\u25C9</span> Install ID: <span id="pm-credits-install-id" style="font-family: 'JetBrains Mono', monospace; user-select: all; color: #d4a017;">...</span><br/>
+        <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: #d4a017; text-decoration: none;">Zenith OS \u2014 Open Source</a> \u00B7 
+        <a href="https://github.com/roshhellwett" target="_blank" style="color: #d4a017; text-decoration: none;">roshhellwett</a>
       </div>
   `
 }
@@ -370,7 +397,7 @@ function createBubble() {
     _bubble.id = 'pagemind-bubble'
     _bubble.innerHTML =
       '<button id="pm-bubble-trigger" aria-label="Open ProjectCortex actions" title="ProjectCortex">' +
-        '<img src="' + chrome.runtime.getURL('icons/logo48.png') + '" alt="">' +
+        '<span class="pm-bubble-letter">C</span>' +
       '</button>' +
       '<div id="pm-bubble-menu" aria-label="ProjectCortex selection actions">' +
         '<div style="padding: 0 4px"><input type="text" id="pm-bubble-input" placeholder="Ask anything..." autocomplete="off"></div>' +
@@ -573,6 +600,13 @@ function initDragger() {
 
   header.addEventListener('mousedown', e => {
     if (e.target.closest('button, input, select, textarea')) return
+    
+    const panel = document.getElementById('pagemind-panel')
+    if (panel && panel.classList.contains('pm-minimized')) {
+      minimizePanel()
+      return
+    }
+    
     _drag = true
     if (!_panel) return
     const rect = _panel.getBoundingClientRect()
@@ -715,7 +749,9 @@ function wireActionButtons() {
       }
     });
 
-    document.getElementById('pm-close-btn')?.addEventListener('click', closePanel)
+    document.getElementById('pm-close-btn')?.addEventListener('click', e => { e.stopPropagation(); closePanel() })
+    document.getElementById('pm-minimize-btn')?.addEventListener('click', e => { e.stopPropagation(); minimizePanel() })
+    document.getElementById('pm-expand-btn')?.addEventListener('click', e => { e.stopPropagation(); toggleExpand() })
     const bubbleInput = document.getElementById('pm-bubble-input')
     if (bubbleInput) {
       bubbleInput.addEventListener('keydown', e => e.stopPropagation())

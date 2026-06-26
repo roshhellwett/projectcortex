@@ -51,7 +51,7 @@ export default function Home() {
           position: 'fixed',
           top: 0, left: 0, width: '100%', height: '100%',
           pointerEvents: 'none', zIndex: 9998,
-          background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(192, 132, 252, 0.08), transparent 40%)`,
+          background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(212, 160, 23, 0.08), transparent 40%)`,
           transition: 'background 0.1s ease'
         }}
       />
@@ -60,7 +60,7 @@ export default function Home() {
       <nav className="navbar-wrapper">
         <div className="navbar-inner">
           <a href="#" className="logo-circle" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-            <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', mixBlendMode: 'screen' }} />
+            <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
           </a>
           
           <div className="nav-links-pill">
@@ -95,9 +95,9 @@ export default function Home() {
           
           {/* Scroll Indicator */}
           <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', opacity: 0.6, animation: 'bounce 2s infinite' }}>
-            <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#fff' }}>Scroll</span>
-            <div style={{ width: '20px', height: '32px', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '12px', display: 'flex', justifyContent: 'center', padding: '4px' }}>
-              <div style={{ width: '4px', height: '6px', background: '#fff', borderRadius: '2px', animation: 'scrollWheel 1.5s infinite' }}></div>
+            <span style={{ fontSize: '10px', letterSpacing: '2px', textTransform: 'uppercase', color: '#1a1a1a' }}>Scroll</span>
+            <div style={{ width: '20px', height: '32px', border: '2px solid rgba(0,0,0,0.2)', borderRadius: '12px', display: 'flex', justifyContent: 'center', padding: '4px' }}>
+              <div style={{ width: '4px', height: '6px', background: '#1a1a1a', borderRadius: '2px', animation: 'scrollWheel 1.5s infinite' }}></div>
             </div>
           </div>
 
@@ -106,7 +106,7 @@ export default function Home() {
           <div className="mockup-container">
             <div className="mockup-header">
               <div className="mockup-brand">
-                <img src="/logo.png" alt="Cortex Logo" style={{ mixBlendMode: 'screen' }} />
+                <img src="/logo.png" alt="Cortex Logo" />
                 <span className="mockup-title">Cortex</span>
                 <span className="mockup-badge">AI</span>
               </div>
@@ -204,13 +204,13 @@ export default function Home() {
           <div className="mockup-container flat">
             <div className="mockup-header">
               <div className="mockup-brand">
-                <img src="/logo.png" alt="Cortex Logo" style={{ mixBlendMode: 'screen' }} />
+                <img src="/logo.png" alt="Cortex Logo" />
                 <span className="mockup-title">Cortex</span>
                 <span className="mockup-badge">AI</span>
               </div>
               <div className="mockup-close">×</div>
             </div>
-            <div className="mockup-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '16px 20px' }}>
+            <div className="mockup-section" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '16px 20px' }}>
               <div className="mockup-section-title muted" style={{ marginBottom: '4px' }}>AI ASSISTANT</div>
               <div className="mockup-text-muted">React Documentation</div>
             </div>
@@ -236,13 +236,13 @@ export default function Home() {
           <div className="mockup-container flat">
             <div className="mockup-header">
               <div className="mockup-brand">
-                <img src="/logo.png" alt="Cortex Logo" style={{ mixBlendMode: 'screen' }} />
+                <img src="/logo.png" alt="Cortex Logo" />
                 <span className="mockup-title">Cortex</span>
                 <span className="mockup-badge">AI</span>
               </div>
               <div className="mockup-close">×</div>
             </div>
-            <div className="mockup-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '16px 20px' }}>
+            <div className="mockup-section" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '16px 20px' }}>
               <div className="mockup-section-title muted" style={{ marginBottom: '4px' }}>AI ASSISTANT</div>
               <div className="mockup-text-muted">AWS Certification Quiz</div>
             </div>
@@ -279,13 +279,13 @@ export default function Home() {
           <div className="mockup-container flat">
             <div className="mockup-header">
               <div className="mockup-brand">
-                <img src="/logo.png" alt="Cortex Logo" style={{ mixBlendMode: 'screen' }} />
+                <img src="/logo.png" alt="Cortex Logo" />
                 <span className="mockup-title">Cortex</span>
                 <span className="mockup-badge">AI</span>
               </div>
               <div className="mockup-close">×</div>
             </div>
-            <div className="mockup-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '16px 20px' }}>
+            <div className="mockup-section" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '16px 20px' }}>
               <div className="mockup-section-title muted" style={{ marginBottom: '4px' }}>AI ASSISTANT</div>
               <div className="mockup-text-muted">GitHub Pull Request</div>
             </div>
@@ -316,7 +316,7 @@ export default function Home() {
       <footer className="footer-section reveal">
         <div className="container footer-content">
           <div className="footer-brand">
-            <img src="/logo.png" alt="Cortex Logo" style={{ width: '24px', height: '24px', borderRadius: '6px', mixBlendMode: 'screen' }} />
+            <img src="/logo.png" alt="Cortex Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
             <span style={{ fontWeight: 700, letterSpacing: '0.5px' }}>ProjectCortex</span>
           </div>
           <div className="footer-links">

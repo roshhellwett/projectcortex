@@ -13,10 +13,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import './../globals.css';
 
 const statusTone = {
-  active: { bg: 'rgba(34, 197, 94, .12)', fg: '#86efac', border: 'rgba(34, 197, 94, .28)' },
-  unused: { bg: 'rgba(59, 130, 246, .12)', fg: '#93c5fd', border: 'rgba(59, 130, 246, .28)' },
-  expired: { bg: 'rgba(245, 158, 11, .14)', fg: '#fcd34d', border: 'rgba(245, 158, 11, .28)' },
-  revoked: { bg: 'rgba(239, 68, 68, .14)', fg: '#fca5a5', border: 'rgba(239, 68, 68, .28)' }
+  active: { bg: 'rgba(5, 150, 105, .10)', fg: '#059669', border: 'rgba(5, 150, 105, .25)' },
+  unused: { bg: 'rgba(212, 160, 23, .10)', fg: '#b8860b', border: 'rgba(212, 160, 23, .25)' },
+  expired: { bg: 'rgba(245, 158, 11, .10)', fg: '#b45309', border: 'rgba(245, 158, 11, .25)' },
+  revoked: { bg: 'rgba(239, 68, 68, .10)', fg: '#dc2626', border: 'rgba(239, 68, 68, .25)' }
 };
 
 function fmtDate(value) {
@@ -419,52 +419,54 @@ export default function AdminDashboard() {
       )}
 
       <style jsx>{`
-        .adminShell { min-height: 100vh; padding: 28px; background: #07080a; color: #f8fafc; font-family: Inter, Outfit, system-ui, sans-serif; }
+        .adminShell { min-height: 100vh; padding: 28px; background: #e1d7c2; color: #1a1a1a; font-family: Inter, Outfit, system-ui, sans-serif; }
         .loginShell { display: grid; place-items: center; }
-        .loginPanel { width: min(420px, calc(100vw - 32px)); display: grid; gap: 16px; padding: 36px; border: 1px solid #23262d; background: #101217; border-radius: 8px; box-shadow: 0 24px 80px rgba(0,0,0,.5); }
+        .loginPanel { width: min(420px, calc(100vw - 32px)); display: grid; gap: 16px; padding: 36px; border: 1px solid rgba(0,0,0,.08); background: #f5f0e8; border-radius: 8px; box-shadow: 0 24px 80px rgba(0,0,0,.08); }
         .loginPanel img { width: 52px; height: 52px; }
         .loginPanel h1, .adminTopbar h1 { margin: 0; font-size: 28px; letter-spacing: 0; }
-        .loginPanel p { color: #9ca3af; margin: 0 0 6px; line-height: 1.5; }
-        input, select { color: #f8fafc; background: #0b0d12; border: 1px solid #2b3038; border-radius: 8px; padding: 11px 12px; outline: none; min-height: 42px; box-sizing: border-box; }
-        input:focus, select:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56,189,248,.12); }
-        .adminButton, .rowActions button, .bulkBar button { border: 1px solid #2b3038; background: #151922; color: #f8fafc; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 650; cursor: pointer; }
-        .adminButton.primary { background: #f8fafc; color: #09090b; border-color: #f8fafc; }
+        .loginPanel p { color: #6b6b6b; margin: 0 0 6px; line-height: 1.5; }
+        input, select { color: #1a1a1a; background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,.1); border-radius: 8px; padding: 11px 12px; outline: none; min-height: 42px; box-sizing: border-box; }
+        input:focus, select:focus { border-color: #d4a017; box-shadow: 0 0 0 3px rgba(212,160,23,.12); }
+        .adminButton, .rowActions button, .bulkBar button { border: 1px solid rgba(0,0,0,.08); background: rgba(0,0,0,.04); color: #1a1a1a; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 650; cursor: pointer; }
+        .adminButton.primary { background: #d4a017; color: #fff; border-color: #d4a017; }
+        .adminButton.primary:hover { background: #b8860b; }
         .adminButton.danger { background: #dc2626; border-color: #dc2626; color: white; }
-        .adminButton.ghost:hover, .rowActions button:hover, .bulkBar button:hover { background: #202634; }
-        .adminVersionBadge { border: 1px solid rgba(56,189,248,.28); background: rgba(56,189,248,.1); color: #bae6fd; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 800; cursor: pointer; }
-        .adminVersionBadge:hover { background: rgba(56,189,248,.16); color: #f0f9ff; }
-        .adminError { color: #fecaca; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); padding: 10px; border-radius: 8px; }
+        .adminButton.ghost:hover, .rowActions button:hover, .bulkBar button:hover { background: rgba(0,0,0,.06); }
+        .adminVersionBadge { border: 1px solid rgba(212,160,23,.28); background: rgba(212,160,23,.1); color: #b8860b; border-radius: 8px; min-height: 38px; padding: 0 14px; font-weight: 800; cursor: pointer; }
+        .adminVersionBadge:hover { background: rgba(212,160,23,.16); color: #1a1a1a; }
+        .adminError { color: #dc2626; background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.2); padding: 10px; border-radius: 8px; }
         .adminTopbar { display: flex; justify-content: space-between; gap: 18px; align-items: center; margin-bottom: 22px; }
-        .adminEyebrow { color: #38bdf8; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+        .adminEyebrow { color: #d4a017; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
         .adminTopActions, .adminToolbar, .bulkBar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .adminStats { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 12px; margin-bottom: 18px; }
-        .adminStat { background: #101217; border: 1px solid #23262d; border-radius: 8px; padding: 16px; }
-        .adminStat span, td small { display: block; color: #9ca3af; font-size: 12px; }
+        .adminStat { background: #f5f0e8; border: 1px solid rgba(0,0,0,.08); border-radius: 8px; padding: 16px; }
+        .adminStat span, td small { display: block; color: #6b6b6b; font-size: 12px; }
         .adminStat strong { font-size: 30px; }
-        .adminTabs { display: flex; gap: 8px; border-bottom: 1px solid #23262d; margin-bottom: 18px; }
-        .adminTabs button { background: transparent; color: #9ca3af; border: 0; padding: 14px 16px; text-transform: capitalize; cursor: pointer; }
-        .adminTabs button.active { color: #f8fafc; box-shadow: inset 0 -2px #38bdf8; }
+        .adminTabs { display: flex; gap: 8px; border-bottom: 1px solid rgba(0,0,0,.08); margin-bottom: 18px; }
+        .adminTabs button { background: transparent; color: #6b6b6b; border: 0; padding: 14px 16px; text-transform: capitalize; cursor: pointer; }
+        .adminTabs button.active { color: #1a1a1a; box-shadow: inset 0 -2px #d4a017; }
         .adminWorkspace { display: grid; gap: 14px; }
         .adminToolbar input { flex: 1; min-width: 260px; }
-        .bulkBar { background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.24); border-radius: 8px; padding: 10px; }
-        .adminTableWrap { overflow: auto; border: 1px solid #23262d; border-radius: 8px; background: #0d0f14; }
+        .bulkBar { background: rgba(212,160,23,.08); border: 1px solid rgba(212,160,23,.2); border-radius: 8px; padding: 10px; }
+        .adminTableWrap { overflow: auto; border: 1px solid rgba(0,0,0,.08); border-radius: 8px; background: rgba(245,240,232,.7); }
         .adminTable { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1060px; }
-        th, td { padding: 12px; border-bottom: 1px solid #23262d; text-align: left; vertical-align: middle; }
-        th { color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; background: #11141b; }
-        .keyButton { background: transparent; border: 0; color: #e5e7eb; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; cursor: pointer; padding: 0; }
-        .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: #cbd5e1; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(0,0,0,.06); text-align: left; vertical-align: middle; }
+        th { color: #6b6b6b; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; background: rgba(0,0,0,.04); }
+        .keyButton { background: transparent; border: 0; color: #1a1a1a; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; cursor: pointer; padding: 0; }
+        .keyButton:hover { color: #d4a017; }
+        .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: #6b6b6b; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
         .statusPill { border: 1px solid; border-radius: 999px; padding: 4px 9px; font-weight: 800; text-transform: uppercase; font-size: 11px; }
         .rowActions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
         .rowActions button { min-height: 30px; padding: 0 9px; font-size: 12px; }
-        .dangerText { color: #fca5a5 !important; }
-        .emptyCell { text-align: center; color: #9ca3af; padding: 34px; }
-        .adminToast { position: fixed; right: 24px; bottom: 24px; z-index: 40; background: #f8fafc; color: #09090b; padding: 12px 16px; border-radius: 8px; font-weight: 800; box-shadow: 0 16px 48px rgba(0,0,0,.45); }
-        .adminModalBackdrop { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.72); z-index: 50; padding: 20px; }
-        .adminModal { width: min(460px, 100%); background: #101217; border: 1px solid #2b3038; border-radius: 8px; padding: 24px; box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+        .dangerText { color: #dc2626 !important; }
+        .emptyCell { text-align: center; color: #6b6b6b; padding: 34px; }
+        .adminToast { position: fixed; right: 24px; bottom: 24px; z-index: 40; background: #1a1a1a; color: #e1d7c2; padding: 12px 16px; border-radius: 8px; font-weight: 800; box-shadow: 0 16px 48px rgba(0,0,0,.1); }
+        .adminModalBackdrop { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.4); z-index: 50; padding: 20px; }
+        .adminModal { width: min(460px, 100%); background: #f5f0e8; border: 1px solid rgba(0,0,0,.1); border-radius: 8px; padding: 24px; box-shadow: 0 24px 80px rgba(0,0,0,.1); }
         .adminModal h3 { margin: 0 0 8px; font-size: 22px; }
-        .adminModal p { color: #9ca3af; line-height: 1.5; margin: 0 0 18px; }
+        .adminModal p { color: #6b6b6b; line-height: 1.5; margin: 0 0 18px; }
         .adminField { display: grid; gap: 7px; margin-bottom: 12px; }
-        .adminField span { color: #cbd5e1; font-size: 12px; font-weight: 800; }
+        .adminField span { color: #1a1a1a; font-size: 12px; font-weight: 800; }
         .adminModalActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         @media (max-width: 900px) { .adminTopbar { align-items: stretch; flex-direction: column; } .adminStats { grid-template-columns: repeat(2, 1fr); } .adminShell { padding: 16px; } }
       `}</style>

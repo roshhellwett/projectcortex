@@ -58,14 +58,14 @@ export default function Guide() {
           position: 'fixed',
           top: 0, left: 0, width: '100%', height: '100%',
           pointerEvents: 'none', zIndex: 9998,
-          background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(192, 132, 252, 0.08), transparent 40%)`,
+          background: `radial-gradient(circle 600px at ${mousePos.x}px ${mousePos.y}px, rgba(212, 160, 23, 0.08), transparent 40%)`,
           transition: 'background 0.1s ease'
         }}
       />
       <nav className="navbar-wrapper">
         <div className="navbar-inner">
           <Link href="/" className="logo-circle" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-            <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px', mixBlendMode: 'screen' }} />
+            <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
           </Link>
           
           <div className="nav-links-pill">
@@ -90,7 +90,7 @@ export default function Guide() {
         </div>
 
         {}
-        <div className="reveal" style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6), 0 0 80px rgba(138, 43, 226, 0.2)', background: 'var(--glass-bg)', backdropFilter: 'blur(24px)', marginBottom: '60px', transition: 'box-shadow 0.4s ease, border-color 0.4s ease' }}>
+        <div className="reveal" style={{ position: 'relative', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--glass-border)', boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6), 0 0 80px rgba(212, 160, 23, 0.15)', background: 'var(--glass-bg)', backdropFilter: 'blur(24px)', marginBottom: '60px', transition: 'box-shadow 0.4s ease, border-color 0.4s ease' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '40px', background: 'rgba(255, 255, 255, 0.02)', borderBottom: '1px solid var(--glass-border)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: '8px', zIndex: 10 }}>
              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ff5f56', border: '1px solid rgba(0,0,0,0.1)' }}></div>
              <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#ffbd2e', border: '1px solid rgba(0,0,0,0.1)' }}></div>
@@ -114,7 +114,7 @@ export default function Guide() {
           {}
           <div className="feature-card reveal float-anim" style={{ animationDelay: '0s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>1</div>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(212,160,23,0.3)' }}>1</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Download & Prepare</h2>
             </div>
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
@@ -127,7 +127,7 @@ export default function Guide() {
           {}
           <div className="feature-card reveal float-anim" style={{ animationDelay: '1s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>2</div>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(212,160,23,0.3)' }}>2</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Relocate to C: Drive</h2>
             </div>
             <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', margin: '0 0 16px 0' }}>
@@ -142,7 +142,7 @@ export default function Guide() {
           {}
           <div className="feature-card reveal float-anim" style={{ animationDelay: '2s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>3</div>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(212,160,23,0.3)' }}>3</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Browser Installation</h2>
             </div>
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
@@ -157,7 +157,7 @@ export default function Guide() {
           {}
           <div className="feature-card reveal float-anim" style={{ animationDelay: '3s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(138,43,226,0.3)' }}>4</div>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: '700', fontSize: '18px', border: '1px solid rgba(212,160,23,0.3)' }}>4</div>
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Configuration & Activation</h2>
             </div>
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
@@ -228,7 +228,7 @@ export default function Guide() {
       <footer className="footer-section reveal">
         <div className="container footer-content">
           <div className="footer-brand">
-            <img src="/logo.png" alt="Cortex Logo" style={{ width: '24px', height: '24px', borderRadius: '6px', mixBlendMode: 'screen' }} />
+            <img src="/logo.png" alt="Cortex Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
             <span style={{ fontWeight: 700, letterSpacing: '0.5px' }}>ProjectCortex</span>
           </div>
           <div className="footer-links">

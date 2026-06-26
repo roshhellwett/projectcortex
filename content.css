@@ -9,28 +9,31 @@
  */
 
 :root {
-    --pm-surface: rgba(14, 14, 18, 0.88);
-    --pm-surface-hover: rgba(255, 255, 255, 0.06);
-    --pm-border: rgba(255, 255, 255, 0.1);
-    --pm-border-light: rgba(255, 255, 255, 0.06);
-    --pm-text: #e2e8f0;
-    --pm-text-muted: #8896b0;
-    --pm-text-bright: #ffffff;
-    --pm-accent-1: #6366f1;
-    --pm-accent-2: #a855f7;
-    --pm-accent-3: #ec4899;
-    --pm-accent-primary: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
-    --pm-accent-glow: rgba(168, 85, 247, 0.35);
-    --pm-accent-green: #10b981;
-    --pm-accent-green-glow: rgba(16, 185, 129, 0.35);
-    --pm-accent-green-bg: rgba(16, 185, 129, 0.12);
-    --pm-radius: 18px;
-    --pm-radius-sm: 12px;
-    --pm-radius-xs: 8px;
-    --pm-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--pm-border) inset;
-    --pm-shadow-lg: 0 40px 120px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-    --pm-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    --pm-surface: rgba(245, 240, 232, 0.95);
+    --pm-surface-hover: rgba(212, 160, 23, 0.06);
+    --pm-border: rgba(0, 0, 0, 0.08);
+    --pm-border-light: rgba(0, 0, 0, 0.04);
+    --pm-text: #1a1a1a;
+    --pm-text-muted: #6b6b6b;
+    --pm-text-bright: #1a1a1a;
+    --pm-accent: #d4a017;
+    --pm-accent-deep: #b8860b;
+    --pm-accent-warm: #c9951e;
+    --pm-accent-primary: linear-gradient(135deg, #b8860b, #d4a017, #c9951e);
+    --pm-accent-glow: rgba(212, 160, 23, 0.35);
+    --pm-accent-green: #059669;
+    --pm-accent-green-glow: rgba(5, 150, 105, 0.35);
+    --pm-accent-green-bg: rgba(5, 150, 105, 0.1);
+    --pm-terminal-green: #059669;
+    --pm-radius: 16px;
+    --pm-radius-sm: 10px;
+    --pm-radius-xs: 6px;
+    --pm-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--pm-border) inset;
+    --pm-shadow-lg: 0 40px 120px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+    --pm-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(212, 160, 23, 0.15) inset;
+    --pm-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --pm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --pm-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
     --pm-transition: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -48,6 +51,17 @@
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+@keyframes pmSlideIn {
+    0% { opacity: 0; left: -430px; filter: blur(8px); }
+    60% { filter: blur(0); }
+    100% { opacity: 1; left: 20px; filter: blur(0); }
+}
+
+@keyframes pmSlideOut {
+    0% { opacity: 1; left: 20px; }
+    100% { opacity: 0; left: -430px; filter: blur(4px); }
 }
 
 #pagemind-panel {
@@ -68,8 +82,8 @@
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
-    transition: left 0.5s var(--pm-spring), opacity 0.35s var(--pm-ease-out) !important;
-    will-change: left, opacity !important;
+    transition: left 0.55s var(--pm-spring), opacity 0.4s var(--pm-ease-out), filter 0.4s var(--pm-ease-out) !important;
+    will-change: left, opacity, filter !important;
     opacity: 0 !important;
     pointer-events: none !important;
     padding: 0 !important;
@@ -81,7 +95,7 @@
     position: absolute !important;
     inset: -1px !important;
     border-radius: calc(var(--pm-radius) + 1px) !important;
-    background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.2), rgba(236,72,153,0.15), rgba(99,102,241,0.3)) !important;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.35), rgba(212, 160, 23, 0.25), rgba(201, 149, 30, 0.15), rgba(184, 134, 11, 0.35)) !important;
     background-size: 300% 300% !important;
     animation: pmBorderGlow 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
     z-index: -1 !important;
@@ -97,38 +111,29 @@
     opacity: 1 !important;
     left: 20px;
     pointer-events: all !important;
-    animation: pmPanelFadeIn 0.55s var(--pm-spring) forwards !important;
+    animation: pmSlideIn 0.6s var(--pm-spring) forwards !important;
 }
 
 #pagemind-panel.pm-open .pm-header {
-    animation: pmHeaderSlideIn 0.4s var(--pm-spring) 0.1s both !important;
+    animation: pmHeaderSlideIn 0.45s var(--pm-spring) 0.12s both !important;
 }
 
 #pagemind-panel.pm-open .pm-body {
-    animation: pmBodyFadeIn 0.4s var(--pm-ease-out) 0.15s both !important;
+    animation: pmBodyFadeIn 0.45s var(--pm-ease-out) 0.18s both !important;
+}
+
+#pagemind-panel.pm-open .pm-ask-bar {
+    animation: pmBodyFadeIn 0.4s var(--pm-ease-out) 0.24s both !important;
 }
 
 @keyframes pmHeaderSlideIn {
-    from { opacity: 0; transform: translateY(-8px); }
+    from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pmBodyFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pmPanelFadeIn {
-    0% {
-        opacity: 0;
-        filter: blur(12px);
-        margin-left: -24px;
-    }
-    100% {
-        opacity: 1;
-        filter: blur(0px);
-        margin-left: 0;
-    }
 }
 
 #pagemind-panel.pm-positioned {
@@ -150,67 +155,161 @@
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 14px 18px !important;
-    border-bottom: 1px solid var(--pm-border-light) !important;
-    background: rgba(255, 255, 255, 0.03) !important;
+    padding: 10px 14px !important;
+    border-bottom: 1px solid var(--pm-border) !important;
+    background: rgba(225, 215, 194, 0.98) !important;
     flex-shrink: 0 !important;
     cursor: grab !important;
     position: relative !important;
+    min-height: 42px !important;
 }
 
-#pagemind-panel.pm-dragging .pm-header {
-    cursor: grabbing !important;
+#pagemind-panel .pm-traffic-lights {
+    display: flex !important;
+    gap: 7px !important;
+    flex-shrink: 0 !important;
+    align-items: center !important;
+}
+
+#pagemind-panel .pm-traffic-light {
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    transition: all 0.15s ease !important;
+    outline: none !important;
+}
+
+#pagemind-panel .pm-traffic-light.red {
+    background: #ff5f57 !important;
+}
+#pagemind-panel .pm-traffic-light.red:hover {
+    background: #ff3b30 !important;
+    transform: scale(1.15) !important;
+}
+#pagemind-panel .pm-traffic-light.red::after {
+    content: '\00D7' !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: rgba(0,0,0,0.5) !important;
+    opacity: 0 !important;
+    transition: opacity 0.15s ease !important;
+    line-height: 1 !important;
+}
+#pagemind-panel .pm-traffic-light.red:hover::after {
+    opacity: 1 !important;
+}
+
+#pagemind-panel .pm-traffic-light.yellow {
+    background: #ffbd2e !important;
+}
+#pagemind-panel .pm-traffic-light.yellow:hover {
+    background: #ffa800 !important;
+    transform: scale(1.15) !important;
+}
+#pagemind-panel .pm-traffic-light.yellow::after {
+    content: '\2212' !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: rgba(0,0,0,0.5) !important;
+    opacity: 0 !important;
+    transition: opacity 0.15s ease !important;
+    line-height: 1 !important;
+}
+#pagemind-panel .pm-traffic-light.yellow:hover::after {
+    opacity: 1 !important;
+}
+
+#pagemind-panel .pm-traffic-light.green {
+    background: #28c840 !important;
+}
+#pagemind-panel .pm-traffic-light.green:hover {
+    background: #1fa834 !important;
+    transform: scale(1.15) !important;
+}
+#pagemind-panel .pm-traffic-light.green::after {
+    content: '+' !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: rgba(0,0,0,0.5) !important;
+    opacity: 0 !important;
+    transition: opacity 0.15s ease !important;
+    line-height: 1 !important;
+}
+#pagemind-panel .pm-traffic-light.green:hover::after {
+    opacity: 1 !important;
+}
+
+#pagemind-panel.pm-expanded {
+    width: 520px !important;
+    max-width: calc(100vw - 32px) !important;
+    max-height: 90vh !important;
+    transition: width 0.4s var(--pm-spring), left 0.5s var(--pm-spring), opacity 0.35s var(--pm-ease-out) !important;
+}
+
+#pagemind-panel.pm-minimized {
+    width: auto !important;
+    min-width: 200px !important;
+    max-height: 42px !important;
+    overflow: hidden !important;
+    border-radius: var(--pm-radius-sm) !important;
+    cursor: pointer !important;
+}
+
+#pagemind-panel.pm-minimized .pm-body,
+#pagemind-panel.pm-minimized .pm-ask-bar,
+#pagemind-panel.pm-minimized .pm-page-info,
+#pagemind-panel.pm-minimized .pm-result-footer,
+#pagemind-panel.pm-minimized > div:last-child {
+    display: none !important;
+}
+
+#pagemind-panel.pm-minimized .pm-header {
+    border-bottom: none !important;
+    cursor: pointer !important;
+}
+
+#pagemind-panel.pm-dragging {
+    transition: none !important;
+    user-select: none !important;
+    opacity: 0.97 !important;
+    box-shadow: var(--pm-shadow-lg) !important;
 }
 
 #pagemind-panel .pm-logo {
     display: flex !important;
     align-items: center !important;
-    gap: 10px !important;
-}
-
-#pagemind-panel .pm-logo img {
-    width: 20px !important;
-    height: 20px !important;
-    object-fit: contain !important;
-    filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4)) !important;
-    border-radius: 4px !important;
+    gap: 8px !important;
 }
 
 #pagemind-panel .pm-logo-text {
     font-size: 15px !important;
     font-weight: 800 !important;
-    background: var(--pm-accent-primary) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
+    color: var(--pm-accent) !important;
     letter-spacing: 0.05em !important;
     margin: 0 !important;
     padding: 0 !important;
-    background-size: 200% auto !important;
-    animation: pmShine 4s linear infinite !important;
-}
-
-@keyframes pmShine {
-    to { background-position: 200% center; }
 }
 
 #pagemind-panel .pm-badge {
-    font-size: 8px !important;
+    font-size: 9px !important;
     font-weight: 800 !important;
-    background: rgba(168, 85, 247, 0.15) !important;
-    color: #c084fc !important;
-    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    background: rgba(5, 150, 105, 0.1) !important;
+    color: var(--pm-terminal-green) !important;
+    border: 1px solid rgba(5, 150, 105, 0.25) !important;
     border-radius: 4px !important;
-    padding: 2px 7px !important;
+    padding: 3px 7px !important;
     margin: 0 !important;
-    letter-spacing: 0.05em !important;
-    box-shadow: 0 0 12px var(--pm-accent-glow) !important;
-    animation: pmBadgePulse 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
-}
-
-@keyframes pmBadgePulse {
-    0%, 100% { box-shadow: 0 0 12px var(--pm-accent-glow); }
-    50% { box-shadow: 0 0 24px var(--pm-accent-glow); }
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
 }
 
 #pagemind-panel .pm-header-actions {
@@ -224,7 +323,7 @@
     border-radius: 8px !important;
     background: transparent !important;
     border: none !important;
-    color: #555 !important;
+    color: #888 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -236,8 +335,8 @@
 }
 
 #pagemind-panel .pm-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #fff !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+    color: #1a1a1a !important;
     transform: scale(1.08) !important;
 }
 
@@ -247,28 +346,26 @@
 }
 
 #pagemind-panel .pm-page-info {
-    padding: 10px 18px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-    background: rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 16px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    background: rgba(0, 0, 0, 0.03) !important;
     flex-shrink: 0 !important;
 }
 
 #pagemind-panel .pm-page-type {
     font-size: 9px !important;
     font-weight: 700 !important;
-    background: linear-gradient(135deg, #6366f1, #a855f7) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    margin: 0 0 3px 0 !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    color: var(--pm-terminal-green) !important;
+    margin: 0 0 2px 0 !important;
     padding: 0 !important;
-    letter-spacing: 0.2em !important;
+    letter-spacing: 0.15em !important;
     text-transform: uppercase !important;
 }
 
 #pagemind-panel .pm-page-title {
-    font-size: 12px !important;
-    color: #777 !important;
+    font-size: 11px !important;
+    color: var(--pm-text-muted) !important;
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1.4 !important;
@@ -281,13 +378,19 @@
 #pagemind-panel .pm-body {
     flex: 1 !important;
     overflow-y: auto !important;
-    padding: 16px 18px !important;
+    overflow-x: hidden !important;
+    padding: 14px 16px !important;
     scrollbar-width: thin !important;
-    scrollbar-color: rgba(255,255,255,0.1) transparent !important;
+    scrollbar-color: rgba(0,0,0,0.06) transparent !important;
+    background: linear-gradient(rgba(225, 215, 194, 0.82), rgba(225, 215, 194, 0.82)), url('icons/background.png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    position: relative !important;
 }
 
 #pagemind-panel .pm-body::-webkit-scrollbar {
-    width: 3px !important;
+    width: 4px !important;
 }
 
 #pagemind-panel .pm-body::-webkit-scrollbar-track {
@@ -295,13 +398,13 @@
 }
 
 #pagemind-panel .pm-body::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.08) !important;
-    border-radius: 6px !important;
+    background: rgba(0,0,0,0.06) !important;
+    border-radius: 8px !important;
     transition: background 0.3s var(--pm-ease-out) !important;
 }
 
 #pagemind-panel .pm-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.18) !important;
+    background: rgba(0,0,0,0.16) !important;
 }
 
 #pagemind-panel .pm-state {
@@ -310,14 +413,14 @@
 
 #pagemind-panel .pm-state.active {
     display: block !important;
-    animation: pmFadeIn 0.35s var(--pm-spring) !important;
+    animation: pmFadeIn 0.4s var(--pm-spring) !important;
 }
 
 @keyframes pmFadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px) scale(0.97);
-        filter: blur(2px);
+        transform: translateY(12px) scale(0.96);
+        filter: blur(4px);
     }
     to {
         opacity: 1;
@@ -326,32 +429,38 @@
     }
 }
 
+#pagemind-panel .pm-actions-grid .pm-action-btn {
+    animation: pmFadeIn 0.4s var(--pm-spring) both !important;
+}
+
+#pagemind-panel .pm-actions-grid .pm-action-btn:nth-child(1) { animation-delay: 0.05s !important; }
+#pagemind-panel .pm-actions-grid .pm-action-btn:nth-child(2) { animation-delay: 0.1s !important; }
+#pagemind-panel .pm-actions-grid .pm-action-btn:nth-child(3) { animation-delay: 0.15s !important; }
+#pagemind-panel .pm-actions-grid .pm-action-btn:nth-child(4) { animation-delay: 0.2s !important; }
+
 #pagemind-panel .pm-section-label {
-    font-size: 10px !important;
+    font-size: 9px !important;
     font-weight: 800 !important;
-    background: var(--pm-accent-primary) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    color: var(--pm-accent) !important;
     text-transform: uppercase !important;
-    margin: 0 0 12px 0 !important;
+    margin: 0 0 10px 0 !important;
     padding: 0 !important;
     letter-spacing: 0.15em !important;
-    background-size: 200% auto !important;
 }
 
 #pagemind-panel .pm-actions-grid {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 10px !important;
 }
 
 #pagemind-panel .pm-action-btn {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.06) !important;
-    color: var(--pm-text-bright) !important;
-    padding: 11px 14px !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    color: var(--pm-text) !important;
+    padding: 10px 12px !important;
     border-radius: var(--pm-radius-sm) !important;
     font-size: 12px !important;
     font-weight: 600 !important;
@@ -372,7 +481,7 @@
     position: absolute !important;
     inset: 0 !important;
     border-radius: inherit !important;
-    background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.1), transparent 60%) !important;
+    background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), rgba(212, 160, 23, 0.08), transparent 60%) !important;
     opacity: 0 !important;
     transition: opacity 0.3s ease !important;
     pointer-events: none !important;
@@ -388,24 +497,18 @@
 }
 
 #pagemind-panel #pm-action-activate {
-    animation: pmPulseGlow 2.5s infinite !important;
-    background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%) !important;
+    background: var(--pm-accent-primary) !important;
     background-size: 200% auto !important;
-    color: #fff !important;
+    color: #000 !important;
     border: none !important;
-    animation: pmPulseGlow 2.5s infinite, pmGradientShift 5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+    font-weight: 800 !important;
+    animation: pmGradientShift 5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
 @keyframes pmGradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
-}
-
-@keyframes pmPulseGlow {
-    0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.5); }
-    65% { box-shadow: 0 0 0 16px rgba(99,102,241,0); }
-    100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
 }
 
 #pagemind-panel #pm-license-input.pm-invalid,
@@ -417,18 +520,20 @@
 }
 
 @keyframes pmShake {
-    10%, 90% { transform: translate3d(-1px, 0, 0); }
-    20%, 80% { transform: translate3d(2px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-    40%, 60% { transform: translate3d(4px, 0, 0); }
+    0% { transform: translate3d(0, 0, 0); }
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(3px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
+    40%, 60% { transform: translate3d(5px, 0, 0); }
+    100% { transform: translate3d(0, 0, 0); }
 }
 
 #pagemind-panel .pm-action-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
-    color: #fff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5) !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    border-color: rgba(212, 160, 23, 0.3) !important;
+    color: var(--pm-accent) !important;
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.08) inset !important;
 }
 
 #pagemind-panel .pm-action-btn:focus-visible,
@@ -437,7 +542,7 @@
 #pagemind-panel .pm-copy-btn:focus-visible,
 #pagemind-panel .pm-icon-btn:focus-visible,
 #pagemind-panel #pm-ask-send:focus-visible {
-    outline: 2px solid rgba(168,85,247,0.6) !important;
+    outline: 2px solid rgba(212, 160, 23, 0.6) !important;
     outline-offset: 2px !important;
 }
 
@@ -448,14 +553,14 @@
 
 #pagemind-panel .pm-divider {
     height: 1px !important;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent) !important;
-    margin: 18px 0 !important;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent) !important;
+    margin: 14px 0 !important;
     border: none !important;
 }
 
 #pagemind-panel .pm-welcome-hint {
     font-size: 12px !important;
-    color: #555 !important;
+    color: var(--pm-text-muted) !important;
     margin: 0 0 4px 0 !important;
     line-height: 1.6 !important;
 }
@@ -480,34 +585,39 @@
 
 #pagemind-panel .pm-skeleton-line {
     height: 12px !important;
-    background: linear-gradient(90deg, rgba(99,102,241,0.08) 25%, rgba(168,85,247,0.15) 50%, rgba(236,72,153,0.08) 75%) !important;
+    background: linear-gradient(90deg, rgba(212, 160, 23, 0.06) 25%, rgba(212, 160, 23, 0.18) 50%, rgba(212, 160, 23, 0.06) 75%) !important;
     background-size: 300% 100% !important;
-    animation: pmSkeletonShimmer 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1) !important;
+    animation: pmSkeletonShimmer 2s infinite var(--pm-ease-in-out) !important;
     border-radius: 6px !important;
 }
 
+#pagemind-panel .pm-skeleton-line:last-child {
+    width: 65% !important;
+}
+
 @keyframes pmSkeletonShimmer {
-    0% { background-position: 300% 0; opacity: 0.45; }
-    50% { opacity: 0.95; }
-    100% { background-position: -300% 0; opacity: 0.45; }
+    0% { background-position: 300% 0; }
+    100% { background-position: -300% 0; }
 }
 
 #pagemind-panel .pm-loading-label {
     font-size: 11px !important;
-    color: #777 !important;
+    color: var(--pm-accent) !important;
     text-transform: uppercase !important;
     letter-spacing: 0.12em !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
 }
 
 #pagemind-panel .pm-loading-sub {
     font-size: 9px !important;
-    color: #555 !important;
+    color: #888 !important;
     margin-top: 6px !important;
     padding: 0 !important;
     letter-spacing: 0.05em !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
 }
 
 #pagemind-panel .pm-result-header {
@@ -515,16 +625,14 @@
     align-items: center !important;
     justify-content: space-between !important;
     gap: 12px !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 14px !important;
 }
 
 #pagemind-panel .pm-result-action {
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
-    background: linear-gradient(135deg, #4ade80, #22d3ee) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    color: var(--pm-terminal-green) !important;
     text-transform: uppercase !important;
     letter-spacing: 0.1em !important;
     margin: 0 !important;
@@ -532,8 +640,8 @@
 }
 
 #pagemind-panel .pm-back-btn {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
     color: #888 !important;
     font-size: 11px !important;
     font-weight: 600 !important;
@@ -547,11 +655,11 @@
 }
 
 #pagemind-panel .pm-back-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: var(--pm-text-bright) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+    color: var(--pm-accent) !important;
+    border-color: rgba(212, 160, 23, 0.3) !important;
     transform: translateY(-1.5px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
 }
 
 #pagemind-panel .pm-error-actions {
@@ -562,9 +670,9 @@
 }
 
 #pagemind-panel .pm-retry-btn {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #bbb !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: #888 !important;
     font-size: 11px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -577,11 +685,11 @@
 }
 
 #pagemind-panel .pm-retry-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: var(--pm-text-bright) !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+    color: var(--pm-accent) !important;
+    border-color: rgba(212, 160, 23, 0.3) !important;
     transform: translateY(-1.5px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
 }
 
 #pagemind-panel .pm-retry-btn:active {
@@ -595,9 +703,9 @@
 }
 
 #pagemind-panel .pm-result-body {
-    font-size: 13px !important;
+    font-size: 13.5px !important;
     color: var(--pm-text) !important;
-    line-height: 1.7 !important;
+    line-height: 1.8 !important;
     margin: 0 !important;
     padding: 0 !important;
     white-space: normal !important;
@@ -605,36 +713,51 @@
     word-break: break-word !important;
 }
 
+#pagemind-panel .pm-result-body p {
+    margin: 0 0 12px 0 !important;
+}
+
+#pagemind-panel .pm-result-body p:last-child {
+    margin-bottom: 0 !important;
+}
+
 #pagemind-panel .pm-result-body strong {
-    color: #f8fafc !important;
+    color: var(--pm-accent) !important;
     font-weight: 800 !important;
 }
 
 #pagemind-panel .pm-result-body em {
-    color: #d6d3d1 !important;
+    color: #888 !important;
     font-style: italic !important;
 }
 
 #pagemind-panel .pm-section-title {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 7px !important;
-    margin: 14px 0 8px 0 !important;
+    gap: 8px !important;
+    margin: 16px 0 10px 0 !important;
     padding: 0 !important;
-    color: #67e8f9 !important;
+    color: var(--pm-accent) !important;
     font-size: 10px !important;
     font-weight: 900 !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     letter-spacing: 0.16em !important;
     text-transform: uppercase !important;
 }
 
 #pagemind-panel .pm-section-title::before {
     content: '' !important;
-    width: 7px !important;
-    height: 7px !important;
+    width: 6px !important;
+    height: 6px !important;
     border-radius: 999px !important;
-    background: linear-gradient(135deg, #22c55e, #22d3ee) !important;
-    box-shadow: 0 0 12px rgba(34, 211, 238, 0.45) !important;
+    background: linear-gradient(135deg, var(--pm-terminal-green), var(--pm-accent)) !important;
+    box-shadow: 0 0 12px rgba(212, 160, 23, 0.35) !important;
+    animation: pmDotPulse 2s var(--pm-ease-in-out) infinite !important;
+}
+
+@keyframes pmDotPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(212, 160, 23, 0.25); transform: scale(1); }
+    50% { box-shadow: 0 0 16px rgba(212, 160, 23, 0.5); transform: scale(1.15); }
 }
 
 #pagemind-panel .pm-insight-card,
@@ -642,29 +765,37 @@
     display: flex !important;
     gap: 10px !important;
     align-items: flex-start !important;
-    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.022)) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
+    background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)) !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
     border-radius: 10px !important;
     padding: 11px 12px !important;
     margin: 7px 0 !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.035) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+    transition: all 0.3s var(--pm-ease-out) !important;
+}
+
+#pagemind-panel .pm-insight-card:hover {
+    border-color: rgba(212, 160, 23, 0.15) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+    transform: translateY(-1px) !important;
 }
 
 #pagemind-panel .pm-insight-num,
 #pagemind-panel .pm-bullet {
     flex: 0 0 auto !important;
-    min-width: 24px !important;
-    height: 24px !important;
-    padding: 0 6px !important;
+    min-width: 22px !important;
+    height: 22px !important;
+    padding: 0 5px !important;
     border-radius: 999px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: rgba(34, 211, 238, 0.1) !important;
-    border: 1px solid rgba(34, 211, 238, 0.18) !important;
-    color: #67e8f9 !important;
+    background: rgba(212, 160, 23, 0.1) !important;
+    border: 1px solid rgba(212, 160, 23, 0.2) !important;
+    color: var(--pm-accent) !important;
     font-size: 10px !important;
     font-weight: 900 !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
     box-sizing: border-box !important;
 }
 
@@ -672,20 +803,20 @@
 #pagemind-panel .pm-list-content {
     flex: 1 !important;
     min-width: 0 !important;
-    color: #d4d4d8 !important;
+    color: #4a4a4a !important;
     line-height: 1.6 !important;
 }
 
 #pagemind-panel .pm-insight-content strong,
 #pagemind-panel .pm-list-content strong {
     display: inline !important;
-    color: #ffffff !important;
+    color: #1a1a1a !important;
 }
 
 #pagemind-panel .pm-insight-content em {
     display: block !important;
     margin-top: 3px !important;
-    color: #c4c4cc !important;
+    color: #666 !important;
     font-style: normal !important;
 }
 
@@ -693,7 +824,7 @@
     display: inline-block !important;
     width: 6px !important;
     height: 1.1em !important;
-    background: linear-gradient(180deg, #6366f1, #a855f7) !important;
+    background: linear-gradient(180deg, var(--pm-accent-deep), var(--pm-accent)) !important;
     margin-left: 2px !important;
     animation: pmBlink 0.85s step-end infinite !important;
     vertical-align: text-bottom !important;
@@ -707,16 +838,16 @@
 }
 
 #pagemind-panel .pm-result-footer {
-    margin-top: 18px !important;
-    padding-top: 14px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+    margin-top: 16px !important;
+    padding-top: 12px !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
     display: flex !important;
     justify-content: flex-end !important;
 }
 
 #pagemind-panel .pm-copy-btn {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
     color: #888 !important;
     font-size: 11px !important;
     font-weight: 600 !important;
@@ -732,11 +863,11 @@
 }
 
 #pagemind-panel .pm-copy-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #fff !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+    color: var(--pm-accent) !important;
+    border-color: rgba(212, 160, 23, 0.3) !important;
     transform: translateY(-1.5px) !important;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.35) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important;
 }
 
 #pagemind-panel .pm-copy-btn:active {
@@ -746,15 +877,15 @@
 
 #pagemind-panel .pm-mcq-question {
     font-size: 13.5px !important;
-    color: #f4f4f5 !important;
+    color: #1a1a1a !important;
     font-weight: 750 !important;
     margin: 0 0 12px 0 !important;
     padding: 13px 14px !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
     border-radius: 12px !important;
-    background: linear-gradient(135deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02)) !important;
+    background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)) !important;
     line-height: 1.6 !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.035) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3) !important;
 }
 
 #pagemind-panel .pm-options-list {
@@ -769,7 +900,7 @@
     display: flex !important;
     align-items: flex-start !important;
     gap: 8px !important;
-    background: rgba(255, 255, 255, 0.02) !important;
+    background: rgba(0, 0, 0, 0.02) !important;
     border: 1px solid var(--pm-border-light) !important;
     border-radius: 12px !important;
     padding: 11px 12px !important;
@@ -778,21 +909,22 @@
 }
 
 #pagemind-panel .pm-option:hover {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    transform: translateX(2px) !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border-color: rgba(212, 160, 23, 0.15) !important;
+    transform: translateX(3px) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
 }
 
 #pagemind-panel .pm-option--correct {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(20, 184, 166, 0.08)) !important;
-    border-color: rgba(16, 185, 129, 0.55) !important;
-    box-shadow: 0 0 18px rgba(16, 185, 129, 0.2), 0 0 0 1px rgba(16, 185, 129, 0.24) inset !important;
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.18), rgba(5, 150, 105, 0.08)) !important;
+    border-color: rgba(5, 150, 105, 0.55) !important;
+    box-shadow: 0 0 18px rgba(5, 150, 105, 0.2), 0 0 0 1px rgba(5, 150, 105, 0.24) inset !important;
     animation: pmCorrectPulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
 @keyframes pmCorrectPulse {
-    0%, 100% { box-shadow: 0 0 14px rgba(16, 185, 129, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.2) inset; }
-    50% { box-shadow: 0 0 24px rgba(16, 185, 129, 0.25), 0 0 0 1px rgba(16, 185, 129, 0.3) inset; }
+    0%, 100% { box-shadow: 0 0 14px rgba(5, 150, 105, 0.15), 0 0 0 1px rgba(5, 150, 105, 0.2) inset; }
+    50% { box-shadow: 0 0 24px rgba(5, 150, 105, 0.25), 0 0 0 1px rgba(5, 150, 105, 0.3) inset; }
 }
 
 #pagemind-panel .pm-option-num,
@@ -811,28 +943,28 @@
 }
 
 #pagemind-panel .pm-option-num {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #666 !important;
+    background: rgba(0,0,0,0.05) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    color: #888 !important;
 }
 
 #pagemind-panel .pm-option-tick {
-    background: rgba(16, 185, 129, 0.2) !important;
-    border: 1px solid rgba(16, 185, 129, 0.4) !important;
-    color: #4ade80 !important;
+    background: rgba(5, 150, 105, 0.2) !important;
+    border: 1px solid rgba(5, 150, 105, 0.4) !important;
+    color: #059669 !important;
 }
 
 #pagemind-panel .pm-option-text {
     flex: 1 !important;
     font-size: 13px !important;
-    color: #aaa !important;
+    color: #555 !important;
     line-height: 1.5 !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
 #pagemind-panel .pm-option--correct .pm-option-text {
-    color: #d1fae5 !important;
+    color: #065f46 !important;
     font-weight: 800 !important;
 }
 
@@ -848,39 +980,37 @@
     font-size: 11px !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #666 !important;
+    background: rgba(0,0,0,0.05) !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    color: #888 !important;
 }
 
 #pagemind-panel .pm-option--correct .pm-option-badge {
-    background: rgba(16, 185, 129, 0.2) !important;
-    border: 1px solid rgba(16, 185, 129, 0.4) !important;
-    color: #4ade80 !important;
+    background: rgba(5, 150, 105, 0.2) !important;
+    border: 1px solid rgba(5, 150, 105, 0.4) !important;
+    color: #059669 !important;
 }
 
 #pagemind-panel .pm-answer-card {
-    background: radial-gradient(circle at 10% 0%, rgba(34, 211, 238, 0.14), transparent 42%), linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(16, 185, 129, 0.05)) !important;
-    border: 1px solid rgba(16, 185, 129, 0.42) !important;
+    background: radial-gradient(circle at 10% 0%, rgba(212, 160, 23, 0.1), transparent 42%), linear-gradient(135deg, rgba(5, 150, 105, 0.12), rgba(5, 150, 105, 0.04)) !important;
+    border: 1px solid rgba(5, 150, 105, 0.42) !important;
     border-radius: 14px !important;
     padding: 16px !important;
     margin: 0 !important;
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24), 0 0 22px rgba(16, 185, 129, 0.16), 0 0 0 1px rgba(16, 185, 129, 0.14) inset !important;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.12), 0 0 22px rgba(5, 150, 105, 0.12), 0 0 0 1px rgba(5, 150, 105, 0.14) inset !important;
     animation: pmAnswerGlow 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
 @keyframes pmAnswerGlow {
-    0%, 100% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.12), 0 0 0 1px rgba(16, 185, 129, 0.15) inset; }
-    50% { box-shadow: 0 0 32px rgba(16, 185, 129, 0.22), 0 0 0 1px rgba(16, 185, 129, 0.3) inset; }
+    0%, 100% { box-shadow: 0 0 16px rgba(5, 150, 105, 0.1), 0 0 0 1px rgba(5, 150, 105, 0.15) inset; }
+    50% { box-shadow: 0 0 32px rgba(5, 150, 105, 0.18), 0 0 0 1px rgba(5, 150, 105, 0.3) inset; }
 }
 
 #pagemind-panel .pm-answer-kicker {
     font-size: 9px !important;
     font-weight: 700 !important;
-    background: linear-gradient(135deg, #4ade80, #22d3ee) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
+    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    color: var(--pm-terminal-green) !important;
     text-transform: uppercase !important;
     margin: 0 0 10px 0 !important;
     padding: 0 !important;
@@ -900,9 +1030,9 @@
     width: 34px !important;
     height: 34px !important;
     border-radius: 50% !important;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1)) !important;
-    border: 1px solid rgba(16, 185, 129, 0.4) !important;
-    color: #4ade80 !important;
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.2), rgba(5, 150, 105, 0.1)) !important;
+    border: 1px solid rgba(5, 150, 105, 0.4) !important;
+    color: #059669 !important;
     font-weight: 800 !important;
     font-size: 15px !important;
     display: flex !important;
@@ -910,13 +1040,13 @@
     justify-content: center !important;
     margin: 0 !important;
     padding: 0 !important;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2) !important;
+    box-shadow: 0 0 10px rgba(5, 150, 105, 0.2) !important;
 }
 
 #pagemind-panel .pm-answer-txt {
     font-size: 15px !important;
     font-weight: 700 !important;
-    color: #b8f5d6 !important;
+    color: #065f46 !important;
     line-height: 1.4 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -925,8 +1055,8 @@
 #pagemind-panel .pm-answer-note {
     margin-top: 12px !important;
     padding-top: 11px !important;
-    border-top: 1px solid rgba(16, 185, 129, 0.16) !important;
-    color: #8fbfaf !important;
+    border-top: 1px solid rgba(5, 150, 105, 0.16) !important;
+    color: #4a9e7e !important;
     font-size: 11px !important;
     line-height: 1.5 !important;
     font-style: italic !important;
@@ -939,6 +1069,7 @@
     gap: 16px !important;
     padding: 50px 20px !important;
     text-align: center !important;
+    animation: pmFadeIn 0.35s var(--pm-spring) !important;
 }
 
 #pagemind-panel .pm-error-wrap svg {
@@ -957,7 +1088,7 @@
 
 #pagemind-panel .pm-error-msg {
     font-size: 13px !important;
-    color: #999 !important;
+    color: #666 !important;
     line-height: 1.6 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -970,18 +1101,18 @@
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
-    padding: 12px 16px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
-    background: rgba(0, 0, 0, 0.2) !important;
+    padding: 10px 14px !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    background: rgba(225, 215, 194, 0.3) !important;
     flex-shrink: 0 !important;
 }
 
 #pagemind-panel #pm-ask-input {
     flex: 1 !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px !important;
-    color: #ddd !important;
+    color: #1a1a1a !important;
     font-size: 12px !important;
     padding: 10px 12px !important;
     outline: none !important;
@@ -991,27 +1122,27 @@
 }
 
 #pagemind-panel #pm-ask-input:focus {
-    border-color: rgba(168, 85, 247, 0.4) !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    box-shadow: 0 0 16px rgba(168, 85, 247, 0.12) !important;
+    border-color: rgba(212, 160, 23, 0.4) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
 #pagemind-panel #pm-ask-input::placeholder {
-    color: #444 !important;
+    color: #aaa !important;
 }
 
 #pagemind-panel #pm-ask-send {
     width: 36px !important;
     height: 36px !important;
     border-radius: 10px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #666 !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: #888 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.25s var(--pm-spring) !important;
+    transition: all 0.3s var(--pm-spring) !important;
     flex-shrink: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -1025,7 +1156,7 @@
     position: absolute !important;
     inset: 0 !important;
     border-radius: inherit !important;
-    background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.15)) !important;
+    background: linear-gradient(135deg, rgba(212, 160, 23, 0.2), rgba(212, 160, 23, 0.15)) !important;
     opacity: 0 !important;
     transition: opacity 0.2s ease !important;
 }
@@ -1035,10 +1166,10 @@
 }
 
 #pagemind-panel #pm-ask-send:hover {
-    color: #fff !important;
-    border-color: rgba(168, 85, 247, 0.3) !important;
+    color: var(--pm-accent) !important;
+    border-color: rgba(212, 160, 23, 0.3) !important;
     transform: scale(1.08) !important;
-    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.18) !important;
+    box-shadow: 0 4px 16px rgba(212, 160, 23, 0.12) !important;
 }
 
 #pagemind-panel #pm-ask-send:active {
@@ -1048,45 +1179,46 @@
 
 #pagemind-panel .pm-ask-input {
     flex: 1 !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: 10px !important;
-    color: #ddd !important;
+    color: #1a1a1a !important;
     font-size: 12px !important;
     padding: 10px 12px !important;
     outline: none !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.3s var(--pm-ease-out) !important;
     font-family: inherit !important;
     margin: 0 !important;
 }
 
 #pagemind-panel .pm-ask-input:focus {
-    border-color: rgba(168, 85, 247, 0.4) !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    box-shadow: 0 0 12px rgba(168, 85, 247, 0.1) !important;
+    border-color: rgba(212, 160, 23, 0.4) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
 .pm-ask-send {
     width: 36px !important;
     height: 36px !important;
     border-radius: 10px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    color: #666 !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    color: #888 !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.3s var(--pm-ease-out) !important;
     flex-shrink: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
 }
 
 .pm-ask-send:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #fff !important;
-    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(212, 160, 23, 0.1) !important;
+    color: var(--pm-accent) !important;
+    border-color: rgba(212, 160, 23, 0.25) !important;
+    transform: scale(1.05) !important;
 }
 
 #pagemind-bubble {
@@ -1094,21 +1226,21 @@
     z-index: 2147483647 !important;
     display: flex !important;
     flex-direction: column !important;
-    background: rgba(14, 14, 18, 0.88) !important;
+    background: rgba(245, 240, 232, 0.95) !important;
     -webkit-backdrop-filter: blur(32px) saturate(160%) !important;
     backdrop-filter: blur(32px) saturate(160%) !important;
     border: none !important;
     border-radius: 999px !important;
-    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255,255,255,0.1) inset !important;
-    padding: 4px !important;
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.06) inset !important;
+    padding: 2px !important;
     gap: 2px !important;
     opacity: 0 !important;
     transform: translateY(10px) scale(0.95) !important;
     transition: opacity 0.3s var(--pm-ease-out), transform 0.4s var(--pm-spring) !important;
     will-change: transform, opacity !important;
     pointer-events: none !important;
-    width: 44px !important;
-    min-height: 44px !important;
+    width: 28px !important;
+    min-height: 28px !important;
     max-width: calc(100vw - 20px) !important;
 }
 
@@ -1116,32 +1248,45 @@
     opacity: 1 !important;
     transform: translateY(0) scale(1) !important;
     pointer-events: auto !important;
+    transition: opacity 0.35s var(--pm-ease-out), transform 0.5s var(--pm-spring) !important;
 }
 
 #pagemind-bubble.expanded {
-    width: 220px !important;
+    width: 200px !important;
     border-radius: var(--pm-radius) !important;
-    padding: 6px !important;
-    background: rgba(14, 14, 18, 0.94) !important;
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.06) inset !important;
+    padding: 5px !important;
+    background: rgba(245, 240, 232, 0.98) !important;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0,0,0,0.04) inset !important;
 }
 
 #pm-bubble-trigger {
-    width: 36px !important;
-    height: 36px !important;
-    min-height: 36px !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-height: 24px !important;
     padding: 0 !important;
     border-radius: 999px !important;
     justify-content: center !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    align-items: center !important;
+    display: flex !important;
+    background: rgba(212, 160, 23, 0.85) !important;
+    border: 1px solid rgba(212, 160, 23, 0.4) !important;
+    color: #fff !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    font-family: 'Inter', 'Outfit', -apple-system, sans-serif !important;
+    line-height: 1 !important;
 }
 
-#pm-bubble-trigger img {
-    width: 24px !important;
-    height: 24px !important;
-    display: block !important;
-    border-radius: 50% !important;
+#pm-bubble-trigger:hover {
+    background: rgba(212, 160, 23, 1) !important;
+    border-color: rgba(212, 160, 23, 0.6) !important;
+    transform: scale(1.15) !important;
+    box-shadow: 0 4px 16px rgba(212, 160, 23, 0.3) !important;
+}
+
+#pm-bubble-trigger:active {
+    transform: scale(0.92) !important;
+    transition-duration: 0.08s !important;
 }
 
 #pm-bubble-menu {
@@ -1158,10 +1303,10 @@
 
 #pm-bubble-input {
     width: 100% !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.6) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
     border-radius: var(--pm-radius-sm) !important;
-    color: #fff !important;
+    color: #1a1a1a !important;
     padding: 10px 12px !important;
     font-size: 13px !important;
     margin-bottom: 6px !important;
@@ -1172,8 +1317,9 @@
 }
 
 #pm-bubble-input:focus {
-    border-color: rgba(168, 85, 247, 0.4) !important;
-    box-shadow: 0 0 16px rgba(168, 85, 247, 0.1) !important;
+    border-color: rgba(212, 160, 23, 0.4) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
 #pagemind-bubble::before {
@@ -1181,7 +1327,7 @@
     position: absolute !important;
     inset: -1px !important;
     border-radius: inherit !important;
-    background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.15), rgba(236,72,153,0.1), rgba(99,102,241,0.25)) !important;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.3), rgba(212, 160, 23, 0.2), rgba(201, 149, 30, 0.1), rgba(184, 134, 11, 0.3)) !important;
     background-size: 300% 300% !important;
     animation: pmBorderGlow 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
     z-index: -1 !important;
@@ -1196,7 +1342,7 @@
 #pagemind-bubble button {
     background: transparent !important;
     border: none !important;
-    color: var(--pm-text-bright) !important;
+    color: var(--pm-text) !important;
     font-size: 13px !important;
     font-weight: 500 !important;
     padding: 10px 12px !important;
@@ -1224,7 +1370,7 @@
     position: absolute !important;
     inset: 0 !important;
     border-radius: inherit !important;
-    background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.08), transparent 60%) !important;
+    background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), rgba(212, 160, 23, 0.08), transparent 60%) !important;
     opacity: 0 !important;
     transition: opacity 0.25s var(--pm-ease-out) !important;
 }
@@ -1234,13 +1380,13 @@
 }
 
 #pagemind-bubble button:hover {
-    background: rgba(255, 255, 255, 0.04) !important;
-    color: #fff !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+    color: var(--pm-accent) !important;
     transform: translateX(3px) !important;
 }
 
 #pagemind-bubble button:focus-visible {
-    outline: 2px solid rgba(168,85,247,0.6) !important;
+    outline: 2px solid rgba(212, 160, 23, 0.6) !important;
     outline-offset: 1px !important;
 }
 
@@ -1250,25 +1396,25 @@
 }
 
 #pagemind-panel .pm-inline-code {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
     border-radius: 4px !important;
     padding: 2px 5px !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
     font-size: 0.9em !important;
-    color: #e5e5e5 !important;
+    color: #333 !important;
 }
 
 #pagemind-panel blockquote {
-    border-left: 3px solid rgba(168, 85, 247, 0.3) !important;
+    border-left: 3px solid rgba(212, 160, 23, 0.25) !important;
     margin: 10px 0 !important;
     padding-left: 14px !important;
-    color: #999 !important;
+    color: #666 !important;
     font-style: italic !important;
 }
 
 #pagemind-panel h1, #pagemind-panel h2, #pagemind-panel h3 {
-    color: #fff !important;
+    color: #1a1a1a !important;
     margin: 16px 0 8px 0 !important;
     font-weight: 600 !important;
 }
@@ -1284,7 +1430,7 @@
 }
 
 #pagemind-panel .pm-bullet {
-    color: #67e8f9 !important;
+    color: var(--pm-accent) !important;
     font-weight: 900 !important;
 }
 

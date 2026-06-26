@@ -9,18 +9,19 @@
     <title>ProjectCortex — Settings</title>
     <style>
         :root {
-            --bg: #030305;
-            --surface: #0a0a0f;
-            --surface-raised: #111116;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-highlight: rgba(168, 85, 247, 0.2);
-            --text: #f0f0f5;
-            --text-muted: #8a8a9a;
-            --accent-1: #6366f1;
-            --accent-2: #a855f7;
-            --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7);
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+            --bg: #e1d7c2;
+            --surface: rgba(245, 240, 232, 0.7);
+            --surface-raised: rgba(255, 255, 255, 0.6);
+            --border: rgba(0, 0, 0, 0.06);
+            --border-highlight: rgba(212, 160, 23, 0.2);
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --accent-1: #b8860b;
+            --accent-2: #d4a017;
+            --accent-gradient: linear-gradient(135deg, #b8860b, #d4a017);
+            --success: #059669;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.15);
             --radius-md: 12px;
             --radius-lg: 20px;
             --spring: cubic-bezier(0.22, 1, 0.36, 1);
@@ -43,11 +44,10 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
 
         @keyframes springUp {
             0% { opacity: 0; transform: translateY(20px) scale(0.98); }
@@ -58,10 +58,9 @@
             to { background-position: 200% center; }
         }
 
-        /* --- HEADER NAV --- */
         .header {
             width: 100%;
-            background: rgba(10, 10, 15, 0.8);
+            background: rgba(225, 215, 194, 0.9);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--border);
@@ -70,7 +69,7 @@
             z-index: 100;
             display: flex;
             justify-content: center;
-            padding: 16px 24px;
+            padding: 14px 24px;
         }
 
         .header-content {
@@ -88,19 +87,30 @@
             font-weight: 800;
             font-size: 16px;
             letter-spacing: 0.05em;
-            text-transform: uppercase;
         }
 
-        .header-logo img { width: 28px; height: 28px; }
+        .header-logo img { width: 26px; height: 26px; }
         
         .header-logo span.brand {
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-2);
+        }
+
+        .header-logo span.os-label {
+            font-size: 9px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+            color: var(--success);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-left: 8px;
+            padding: 3px 7px;
+            background: rgba(5, 150, 105, 0.1);
+            border: 1px solid rgba(5, 150, 105, 0.25);
+            border-radius: 4px;
         }
 
         .header-actions a {
-            color: var(--text-muted);
+            color: var(--accent-2);
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -109,9 +119,8 @@
             font-weight: 600;
             transition: color 0.2s;
         }
-        .header-actions a:hover { color: var(--text); }
+        .header-actions a:hover { color: #d4a017; }
 
-        /* --- MAIN CONTAINER --- */
         .container {
             width: 100%;
             max-width: 1000px;
@@ -123,24 +132,20 @@
         }
 
         .page-title {
-            font-size: 36px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff, #c084fc);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 5s linear infinite;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent-2);
             letter-spacing: -0.03em;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .page-desc {
             color: var(--text-muted);
-            font-size: 15px;
+            font-size: 14px;
+            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
             margin-bottom: 24px;
         }
 
-        /* --- LAYOUT GRID --- */
         .layout-grid {
             display: grid;
             grid-template-columns: 1.8fr 1fr;
@@ -152,7 +157,6 @@
             .layout-grid { grid-template-columns: 1fr; }
         }
 
-        /* --- CARDS --- */
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -177,23 +181,33 @@
         }
 
         .card:hover {
-            border-color: rgba(168, 85, 247, 0.15);
+            border-color: rgba(212, 160, 23, 0.2);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
         .card:hover::before { opacity: 1; }
 
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .card-header {
-            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
             font-weight: 700;
+            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
             letter-spacing: 0.15em;
-            color: #c084fc;
+            color: var(--accent-2);
             text-transform: uppercase;
             padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
         }
 
-        /* --- FORMS --- */
+        .card-header::before {
+            content: '\25B8';
+            color: var(--success);
+        }
+
         .field { display: flex; flex-direction: column; gap: 8px; }
         
         label {
@@ -206,8 +220,8 @@
         input, select {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: var(--radius-md);
             color: var(--text);
             font-size: 14px;
@@ -215,25 +229,25 @@
             outline: none;
             transition: all 0.3s var(--ease-out);
             -webkit-appearance: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
         select {
             padding-right: 40px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a8a9a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
             cursor: pointer;
         }
 
-        input:hover, select:hover { border-color: rgba(255, 255, 255, 0.15); }
+        input:hover, select:hover { border-color: rgba(212, 160, 23, 0.25); }
         input:focus, select:focus {
             border-color: var(--accent-2);
-            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3), inset 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 0 0 1px rgba(212, 160, 23, 0.3), inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
-        select optgroup { background: #111116; color: var(--text-muted); font-weight: 600; }
-        select option { background: #0a0a0f; color: var(--text); }
+        select optgroup { background: #f5f0e8; color: var(--text-muted); font-weight: 600; }
+        select option { background: #f5f0e8; color: var(--text); }
 
         .hint { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
         .hint a { color: var(--accent-2); text-decoration: none; }
@@ -246,7 +260,6 @@
         }
         .eye-btn:hover { color: var(--text); }
 
-        /* --- BUTTONS --- */
         .btn {
             background: var(--surface-raised);
             color: var(--text);
@@ -265,7 +278,8 @@
         }
 
         .btn:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.03);
+            border-color: rgba(212, 160, 23, 0.3);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
         }
@@ -274,24 +288,24 @@
         .btn-primary {
             background: var(--accent-gradient);
             border: none;
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+            color: #000;
+            font-weight: 800;
+            box-shadow: 0 4px 16px rgba(212, 160, 23, 0.3);
         }
         .btn-primary:hover {
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.5);
+            background: linear-gradient(135deg, #c9951e, #b8860b);
+            box-shadow: 0 8px 24px rgba(212, 160, 23, 0.35);
         }
 
-        /* --- TOGGLES --- */
         .toggle-row {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 16px; background: rgba(0,0,0,0.3);
+            padding: 16px; background: rgba(0,0,0,0.02);
             border: 1px solid var(--border); border-radius: var(--radius-md);
         }
         .toggle-info { display: flex; flex-direction: column; gap: 4px; }
         .toggle-label { font-size: 14px; font-weight: 600; color: var(--text); }
         .toggle-switch {
-            width: 48px; height: 26px; background: rgba(60,60,70,0.6);
+            width: 48px; height: 26px; background: rgba(0,0,0,0.15);
             border-radius: 13px; cursor: pointer; padding: 3px; display: flex;
             transition: all 0.3s;
         }
@@ -302,22 +316,20 @@
         }
         .toggle-switch.active .toggle-circle { transform: translateX(22px); }
 
-        /* --- UPDATE BANNER --- */
         #updatePanel {
             display: flex; align-items: flex-start; gap: 16px;
-            background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02));
-            border: 1px solid rgba(16,185,129,0.3);
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.02));
+            border: 1px solid rgba(5, 150, 105, 0.25);
             border-radius: var(--radius-lg);
-            padding: 24px; margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(16,185,129,0.15);
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(5, 150, 105, 0.08);
         }
         #updateIconBox {
             width: 44px; height: 44px; border-radius: 50%;
-            background: rgba(16,185,129,0.2); color: #4ade80;
+            background: rgba(5, 150, 105, 0.15); color: var(--success);
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
 
-        /* Overlays */
         #loadingOverlay {
             position: fixed; inset: 0; background: var(--bg); z-index: 2000;
             display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;
@@ -330,29 +342,27 @@
         }
         .lock-box {
             background: var(--surface); padding: 48px; border-radius: 24px;
-            border: 1px solid var(--border-highlight); text-align: center;
+            border: 1px solid rgba(212, 160, 23, 0.2); text-align: center;
             width: 100%; max-width: 440px; box-shadow: var(--shadow-lg);
         }
     </style>
 </head>
 <body>
 
-    <!-- Loaders & Overlays -->
     <div id="loadingOverlay">
-        <div style="width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.1); border-top-color: #a855f7; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        <div style="width: 32px; height: 32px; border: 2px solid rgba(0,0,0,0.08); border-top-color: #d4a017; border-radius: 50%; animation: spin 1s linear infinite;"></div>
     </div>
 
     <div id="lockOverlay">
         <div class="lock-box">
-            <div style="width: 64px; height: 64px; background: rgba(239,68,68,0.1); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M8 6h8M10 10v4M14 10v4"/><rect x="3" y="11" width="18" height="11" rx="2"/></svg>
+            <div style="width: 64px; height: 64px; background: rgba(239,68,68,0.08); color: #ef4444; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <h2 style="font-size: 24px; margin-bottom: 12px;">Activation Required</h2>
-            <p style="color: var(--text-muted); margin-bottom: 32px;">Enter your license key to unlock the extension.</p>
+            <h2 style="font-size: 24px; color: #d4a017; margin-bottom: 12px; font-weight: 800;">Activation Required</h2>
+            <p style="color: var(--text-muted); margin-bottom: 32px;">Enter your license key to unlock the system.</p>
             
             <div style="display: flex; flex-direction: column; gap: 16px;">
-                <input type="text" id="optionsLicenseInput" placeholder="CORTEX-XXXX-XXXX" style="text-align: center; letter-spacing: 0.1em; text-transform: uppercase;" />
+                <input type="text" id="optionsLicenseInput" placeholder="CORTEX-XXXX-XXXX" style="text-align: center; letter-spacing: 0.1em; text-transform: uppercase; color: #d4a017;" />
                 <button id="optionsActivateBtn" class="btn btn-primary">Unlock Cortex</button>
             </div>
             <div id="optionsAuthStatus" style="color: #ef4444; font-size: 13px; margin-top: 16px; min-height: 20px;"></div>
@@ -365,16 +375,16 @@
                     <input type="file" id="importFileLock" accept=".json" style="display: none;" />
                 </div>
             </div>
-            <div style="margin-top: 24px; font-size: 12px; color: #555;">ID: <span id="optionsInstallId">...</span></div>
+            <div style="margin-top: 24px; font-size: 12px; color: #d4a017; font-family: 'JetBrains Mono', monospace;">\u25C9 ID: <span id="optionsInstallId">...</span></div>
         </div>
     </div>
 
-    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <div class="header-logo">
                 <img src="icons/logo48.png" onerror="this.style.display='none'" alt="">
                 <span class="brand">Project Cortex</span>
+                <span class="os-label">\u25B8 ZENITH_OS</span>
             </div>
             <div class="header-actions">
                 <a href="mailto:zenithprojects@icloud.com"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="16" r="1"/><path d="M12 13v-1a3 3 0 1 1 4-2.83"/></svg> Support</a>
@@ -382,35 +392,31 @@
         </div>
     </header>
 
-    <!-- Main Dashboard -->
     <main class="container" id="mainContainer" style="opacity: 0;">
         
         <div>
             <h1 class="page-title">Settings & Preferences</h1>
-            <p class="page-desc">Configure your intelligence providers and web utilities to personalize your experience.</p>
+            <p class="page-desc">\u25B8 configure your intelligence providers and system preferences.</p>
         </div>
 
-        <!-- Update Panel (Full Width) -->
-        <div id="updatePanel" style="display: block;">
+        <div id="updatePanel">
             <div id="updateIconBox">
                 <svg id="updateIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.138-6.32"/><circle cx="12" cy="12" r="2"/><path d="M20 4v6h-6"/></svg>
             </div>
             <div style="flex: 1; min-width: 0;">
-                <h3 id="updateTitle" style="color: #4ade80; margin-bottom: 8px; font-size: 18px;">Extension Up to Date</h3>
-                <p id="updateDesc" style="color: rgba(74,222,128,0.8); font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+                <h3 id="updateTitle" style="color: var(--success); margin-bottom: 8px; font-size: 18px;">Extension Up to Date</h3>
+                <p id="updateDesc" style="color: rgba(5, 150, 105, 0.7); font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
                     You are running the latest version. Your configuration is fully synchronized and secure.
                 </p>
                 <a id="updateLink" href="#" style="text-decoration: none; pointer-events: none;">
-                    <button id="updateBtn" class="btn" style="background: rgba(16,185,129,0.15); color: #4ade80; border: 1px solid rgba(16,185,129,0.3);" disabled>Up to Date</button>
+                    <button id="updateBtn" class="btn" style="background: rgba(5, 150, 105, 0.12); color: var(--success); border: 1px solid rgba(5, 150, 105, 0.25);" disabled>Up to Date</button>
                 </a>
             </div>
         </div>
 
         <div class="layout-grid">
-            <!-- Left Column: Core Settings -->
             <div style="display: flex; flex-direction: column; gap: 24px;">
                 
-                <!-- API Config -->
                 <div class="card">
                     <div class="card-header">API Configuration</div>
                     <div class="field">
@@ -435,7 +441,6 @@
                     </div>
                 </div>
 
-                <!-- Model Config -->
                 <div class="card">
                     <div class="card-header">Model Selection</div>
                     <div class="field">
@@ -461,7 +466,6 @@
                     </div>
                 </div>
 
-                <!-- Utilities -->
                 <div class="card">
                     <div class="card-header">Utilities</div>
                     <div class="toggle-row">
@@ -480,48 +484,44 @@
                     </div>
                 </div>
 
-                <!-- Save Actions -->
                 <div style="display: flex; gap: 16px; margin-top: 8px;">
                     <button class="btn btn-primary" id="saveBtn" style="flex: 1;">Save Settings</button>
                     <button class="btn" id="testBtn">Test Connection</button>
                 </div>
-                <div id="status" style="color: #4ade80; font-size: 14px; font-weight: 600; text-align: center; min-height: 20px;"></div>
+                <div id="status" style="color: var(--success); font-size: 14px; font-weight: 600; text-align: center; min-height: 20px;"></div>
 
             </div>
 
-            <!-- Right Column: Status & Data -->
             <div style="display: flex; flex-direction: column; gap: 24px;">
                 
-                <!-- License Card -->
-                <div class="card" style="background: linear-gradient(160deg, #101016, #0a0a0f);">
+                <div class="card">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
-                        <span style="font-weight: 700;">License Details</span>
-                        <span id="licenseBadge" style="font-size: 11px; padding: 4px 10px; border-radius: 12px; background: rgba(16,185,129,0.15); color: #4ade80; font-weight: 700; border: 1px solid rgba(16,185,129,0.3);">ACTIVE</span>
+                        <span style="font-weight: 700; color: var(--accent-2);">License Details</span>
+                        <span id="licenseBadge" style="font-size: 10px; padding: 4px 10px; border-radius: 4px; background: rgba(5, 150, 105, 0.1); color: var(--success); font-weight: 700; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(5, 150, 105, 0.25); text-transform: uppercase;">ACTIVE</span>
                     </div>
                     
                     <div class="field">
                         <label style="color: var(--text-muted); font-size: 11px; text-transform: uppercase;">Activation ID</label>
-                        <div style="display: flex; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 12px; align-items: center; justify-content: space-between;">
-                            <span id="dispLicenseKey" style="font-family: monospace; font-size: 13px;">••••••••</span>
+                        <div style="display: flex; background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px; align-items: center; justify-content: space-between;">
+                            <span id="dispLicenseKey" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #d4a017;">••••••••</span>
                             <button id="copyLicenseBtn" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                        <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
                             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Days Left</div>
-                            <div style="font-size: 24px; font-weight: 700; color: #4ade80;" id="dispDaysLeft">--</div>
+                            <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="dispDaysLeft">--</div>
                         </div>
-                        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
+                        <div style="background: rgba(0,0,0,0.03); border: 1px solid var(--border); border-radius: 8px; padding: 16px;">
                             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">Activated</div>
                             <div style="font-size: 14px; font-weight: 600;" id="dispActivatedAt">--</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Backup Card -->
                 <div class="card">
-                    <div class="card-header" style="color: var(--text);">Data Backup & Sync</div>
+                    <div class="card-header">Data Backup</div>
                     <p class="hint" style="margin-bottom: 20px;">Export your Identity, License Key, and API settings to a secure backup file.</p>
                     <div style="display: flex; gap: 12px;">
                         <button class="btn" id="exportBtn" style="flex: 1; padding: 12px; font-size: 13px;">Export</button>
@@ -530,11 +530,10 @@
                     </div>
                 </div>
 
-                <!-- Credits Card -->
-                <div class="card" style="text-align: center; font-size: 13px;">
-                    <div style="margin-bottom: 8px;"><strong>Install ID:</strong> <span id="optionsCreditsInstallId" style="user-select: all; font-family: monospace; color: var(--accent-2);">Loading...</span></div>
-                    <div style="margin-bottom: 4px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: var(--accent-1); text-decoration: none;">Zenith Open Source Projects</a></div>
-                    <div>Developer: <a href="https://github.com/roshhellwett" target="_blank" style="color: var(--accent-1); text-decoration: none;">roshhellwett</a></div>
+                <div class="card" style="text-align: center; font-size: 13px; padding: 24px;">
+                    <div style="margin-bottom: 8px;"><strong style="color: var(--accent-2);">\u25C9 Install ID:</strong> <span id="optionsCreditsInstallId" style="user-select: all; font-family: 'JetBrains Mono', monospace; color: var(--accent-2);">Loading...</span></div>
+                    <div style="margin-bottom: 4px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: var(--accent-2); text-decoration: none;">Zenith Open Source Projects</a></div>
+                    <div>Developer: <a href="https://github.com/roshhellwett" target="_blank" style="color: var(--accent-2); text-decoration: none;">roshhellwett</a></div>
                 </div>
 
             </div>

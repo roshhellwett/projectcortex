@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LicenseStatus {
+  unused
+  active
+  expired
+  revoked
+}
+
+model License {
+  id           String         @id @default(uuid()) @db.Uuid
+  licenseKey   String         @unique @map("license_key") @db.VarChar(255)
+  status       LicenseStatus  @default(unused)
+  installId    String?        @map("install_id") @db.VarChar(255)
+  durationDays Int            @default(7) @map("duration_days")
+  activatedAt  DateTime?      @map("activated_at") @db.Timestamptz()
+  expiresAt    DateTime?      @map("expires_at") @db.Timestamptz()
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@index([status])
+  @@index([installId])
+  @@map("licenses")
+}
+
+model ApiLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  installId  String?  @map("install_id") @db.VarChar(255)
+  actionType String?  @map("action_type") @db.VarChar(100)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("api_logs")
+}
+
+model UserFeedback {
+  id        String   @id @default(uuid()) @db.Uuid
+  installId String?  @map("install_id") @db.VarChar(255)
+  rating    Int?     @db.SmallInt
+  message   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  @@map("user_feedback")
+}
+
+model AppSetting {
+  id    String @id @db.VarChar(100)
+  value String @db.Text
+
+  @@map("app_settings")
+}

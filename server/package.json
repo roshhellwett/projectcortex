@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^7.8.0",
     "@supabase/supabase-js": "^2.108.1",
     "jsonwebtoken": "^9.0.3",
     "next": "16.2.9",
@@ -17,7 +18,9 @@
   },
   "devDependencies": {
     "eslint": "^9",
-    "eslint-config-next": "16.2.9"
+    "eslint-config-next": "16.2.9",
+    "prisma": "^7.8.0",
+    "supabase": "^2.109.0"
   },
   "overrides": {
     "postcss": "^8.5.10"

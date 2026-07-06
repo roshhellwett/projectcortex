@@ -120,7 +120,7 @@ export default function Guide() {
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
               <li><strong>Download</strong> the project using the button in the top right.</li>
               <li><strong>Extract</strong> the downloaded project archive.</li>
-              <li>Inside the extracted files, you will find a folder named <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v10.0.0</code>.</li>
+              <li>Inside the extracted files, you will find a folder named <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v11.0.0</code>.</li>
             </ul>
           </div>
 
@@ -131,11 +131,11 @@ export default function Guide() {
               <h2 style={{ fontSize: '1.4rem', fontWeight: '600', color: 'var(--foreground)', margin: 0 }}>Relocate to C: Drive</h2>
             </div>
             <p style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', margin: '0 0 16px 0' }}>
-              <strong>Cut and paste</strong> that <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v10.0.0</code> folder into your root <strong>C:\\ drive</strong>. 
+              <strong>Cut and paste</strong> that <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: 'var(--foreground)' }}>Cortex-v11.0.0</code> folder into your root <strong>C:\\ drive</strong>. 
             </p>
             <div style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-              <span style={{ color: '#a1a1aa', fontSize: '14px', fontFamily: 'monospace' }}>C:\\Cortex-v10.0.0</span>
+              <span style={{ color: '#a1a1aa', fontSize: '14px', fontFamily: 'monospace' }}>C:\\Cortex-v11.0.0</span>
             </div>
           </div>
 
@@ -150,7 +150,7 @@ export default function Guide() {
               <li>Click on <strong>Extensions</strong>.</li>
               <li>Turn ON <strong>Developer mode</strong>.</li>
               <li>Click on the <strong>Load unpacked</strong> button.</li>
-              <li>Select the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>C:\\Cortex-v10.0.0</code> folder.</li>
+              <li>Select the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>C:\\Cortex-v11.0.0</code> folder.</li>
             </ul>
           </div>
 
@@ -162,7 +162,7 @@ export default function Guide() {
             </div>
             <ul style={{ color: 'var(--text-secondary)', lineHeight: '1.8', fontSize: '15px', paddingLeft: '24px', margin: 0 }}>
               <li>Click on the <strong>extension button</strong> in your toolbar.</li>
-              <li>Click on <strong>Cortex-v10.0.0</strong>, then click on <strong>Settings</strong>.</li>
+              <li>Click on <strong>Cortex-v11.0.0</strong>, then click on <strong>Settings</strong>.</li>
               <li><strong>Activate</strong> the extension using your license key.</li>
               <li><strong>Set all variables</strong> (preferred AI model, etc.) and turn ON the main <strong>Toggle button</strong>.</li>
               <li><strong>Restart the browser</strong> to ensure everything initializes properly.</li>
@@ -217,7 +217,7 @@ export default function Guide() {
             </div>
             
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem', lineHeight: '1.6', margin: 0 }}>
-              After completing the setup, <strong>export your settings and save the file in a safe place</strong>. If you mistakenly delete the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: '#ffbd2e' }}>Cortex-v10.0.0</code> folder, clear your browser history, or remove your extension, this exported settings file will help you to easily reactivate your extension!
+              After completing the setup, <strong>export your settings and save the file in a safe place</strong>. If you mistakenly delete the <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', color: '#ffbd2e' }}>Cortex-v11.0.0</code> folder, clear your browser history, or remove your extension, this exported settings file will help you to easily reactivate your extension!
             </p>
           </div>
         </div>

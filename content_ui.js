@@ -114,9 +114,15 @@ function typeHtml(el, htmlString, speed) {
       }
       
       if (charIndex === 0) {
-        const textarea = document.createElement('textarea')
-        textarea.innerHTML = part
-        const decodedText = textarea.value
+        let decodedText = part;
+        try {
+          decodedText = part.replace(/&(#\d+|#[xX][0-9a-fA-F]+|[a-zA-Z]+);/g, (match, entity) => {
+            if (entity.startsWith('#x') || entity.startsWith('#X')) return String.fromCodePoint(parseInt(entity.slice(2), 16));
+            if (entity.startsWith('#')) return String.fromCodePoint(parseInt(entity.slice(1), 10));
+            const map = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+            return map[entity] || match;
+          });
+        } catch (_) {}
         activeTextNode = document.createTextNode('')
         activeTextNode._fullText = decodedText
         currentParent.appendChild(activeTextNode)
@@ -223,7 +229,8 @@ function showCorrectAnswer(question, options, matched) {
 function openPanel() {
   const panel = document.getElementById('pagemind-panel')
   if (!panel) return
-  panel.classList.remove('pm-minimized', 'pm-expanded')
+  panel.classList.remove('pm-minimized', 'pm-expanded', 'pm-closing')
+  panel.style.animation = ''
   const yellow = document.getElementById('pm-minimize-btn')
   if (yellow) yellow.style.opacity = '1'
   const green = document.getElementById('pm-expand-btn')
@@ -233,13 +240,16 @@ function openPanel() {
       let x = _panelPos.x;
       let y = _panelPos.y;
       if (typeof clamp === 'function') {
-        x = clamp(x, 0, window.innerWidth - 100);
-        y = clamp(y, 0, window.innerHeight - 100);
+        const maxX = Math.max(0, window.innerWidth - (panel.offsetWidth || 340));
+        const maxY = Math.max(0, window.innerHeight - (panel.offsetHeight || 400));
+        x = clamp(x, 0, maxX);
+        y = clamp(y, 0, maxY);
         _panelPos = { x, y }; // dont call savePanelPos here to avoid heavy disk writes on open
       }
       panel.style.left = x + 'px'
       panel.style.top = y + 'px'
       panel.style.transform = 'none'
+      panel.style.animation = 'none'
       panel.classList.add('pm-positioned')
     } else {
       panel.classList.remove('pm-positioned')
@@ -250,11 +260,18 @@ function openPanel() {
 
 function closePanel() {
   const panel = document.getElementById('pagemind-panel')
-  if (panel) {
-    panel.classList.remove('pm-open')
-    panel.classList.remove('pm-expanded')
-    panel.classList.remove('pm-minimized')
-  }
+  if (!panel || !panel.classList.contains('pm-open') || panel.classList.contains('pm-closing')) return
+  
+  panel.classList.add('pm-closing')
+  panel.style.animation = ''
+  
+  setTimeout(() => {
+    if (panel && panel.classList.contains('pm-closing')) {
+      panel.classList.remove('pm-open', 'pm-expanded', 'pm-minimized', 'pm-closing')
+      panel.style.animation = ''
+      panel.style.transform = ''
+    }
+  }, 360)
 }
 
 function minimizePanel() {
@@ -285,7 +302,7 @@ function buildPanelHTML() {
     <div class="pm-header">
       <div class="pm-logo">
         <span class="pm-logo-text">Cortex</span>
-        <span class="pm-badge">OS v10</span>
+        <span class="pm-badge">OS v11.0.0</span>
       </div>
       <div class="pm-traffic-lights">
         <button class="pm-traffic-light red" id="pm-close-btn" aria-label="Close panel" title="Close"></button>
@@ -615,77 +632,114 @@ function initDragger() {
       if (saved) {
         _panelPos = JSON.parse(saved);
         if (typeof clamp === 'function') {
-          _panelPos.x = clamp(_panelPos.x, 0, window.innerWidth - 100);
-          _panelPos.y = clamp(_panelPos.y, 0, window.innerHeight - 100);
+          const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340));
+          const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400));
+          _panelPos.x = clamp(_panelPos.x, 0, maxX);
+          _panelPos.y = clamp(_panelPos.y, 0, maxY);
         }
         if (_panel && _panel.classList.contains('pm-open')) {
           _panel.style.left = _panelPos.x + 'px';
           _panel.style.top = _panelPos.y + 'px';
           _panel.style.transform = 'none';
+          _panel.style.animation = 'none';
           _panel.classList.add('pm-positioned');
         }
       }
     } catch (_) {}
   }
 
+  let _dragOverlay = null;
+
   _panel.addEventListener('mousedown', e => {
-    if (e.target.closest('button, input, select, textarea, .pm-traffic-light, .pm-icon-btn')) return
+    if (e.target.closest('button, input, select, textarea, .pm-traffic-light, .pm-icon-btn, a, code, pre')) return;
+    if (e.target.closest('.pm-body') && !e.target.classList.contains('pm-body')) return;
     
     if (_panel.classList.contains('pm-minimized')) {
-      minimizePanel()
-      return
+      minimizePanel();
+      return;
     }
     
-    _drag = true
-    const rect = _panel.getBoundingClientRect()
-    _sx = e.clientX
-    _sy = e.clientY
-    _sl = rect.left
-    _st = rect.top
-    _panel.style.transform = 'none'
-    _panel.classList.add('pm-dragging')
-    e.preventDefault()
-  })
+    _drag = true;
+    const rect = _panel.getBoundingClientRect();
+    _sx = e.clientX;
+    _sy = e.clientY;
+    _sl = rect.left;
+    _st = rect.top;
+    _panel.style.transform = 'none';
+    _panel.style.animation = 'none';
+    _panel.style.left = _sl + 'px';
+    _panel.style.top = _st + 'px';
+    _panel.classList.add('pm-dragging', 'pm-positioned');
+    e.preventDefault();
 
-  if (_dragListenersAdded) return
-  _dragListenersAdded = true
+    if (!_dragOverlay) {
+      _dragOverlay = document.createElement('div');
+      _dragOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:2147483647;cursor:move;background:transparent;';
+      document.documentElement.appendChild(_dragOverlay);
+    }
+  });
 
-  let _rafPending = false
-  let _currentDx = 0, _currentDy = 0
+  if (_dragListenersAdded) return;
+  _dragListenersAdded = true;
+
+  window.addEventListener('resize', () => {
+    if (!_panel || !_panelPos) return;
+    const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340));
+    const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400));
+    const newX = clamp(_panelPos.x, 0, maxX);
+    const newY = clamp(_panelPos.y, 0, maxY);
+    if (newX !== _panelPos.x || newY !== _panelPos.y) {
+      _panelPos = { x: newX, y: newY };
+      _panel.style.left = newX + 'px';
+      _panel.style.top = newY + 'px';
+      try { localStorage.setItem('pc_panel_pos', JSON.stringify(_panelPos)); } catch (_) {}
+    }
+  });
+
+  let _rafPending = false;
+  let _targetX = 0, _targetY = 0;
   
   document.addEventListener('mousemove', e => {
-    if (!_drag || !_panel) return
-    if (_rafPending) return
-    _rafPending = true
+    if (!_drag || !_panel) return;
+    const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340));
+    const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400));
+    _targetX = clamp(_sl + (e.clientX - _sx), 0, maxX);
+    _targetY = clamp(_st + (e.clientY - _sy), 0, maxY);
+    
+    if (_rafPending) return;
+    _rafPending = true;
     requestAnimationFrame(() => {
-      _rafPending = false
-      const targetX = clamp(_sl + (e.clientX - _sx), 0, window.innerWidth - 100)
-      const targetY = clamp(_st + (e.clientY - _sy), 0, window.innerHeight - 100)
-      _currentDx = targetX - _sl
-      _currentDy = targetY - _st
-      _panel.style.transform = `translate(${_currentDx}px, ${_currentDy}px)`
-    })
-  })
+      _rafPending = false;
+      if (!_drag || !_panel) return;
+      _panel.style.left = _targetX + 'px';
+      _panel.style.top = _targetY + 'px';
+    });
+  }, { passive: true });
 
-  document.addEventListener('mouseup', () => {
-    if (!_drag || !_panel) return
-    _drag = false
-    _lastDragEnd = Date.now()
-    _panel.classList.remove('pm-dragging')
+  document.addEventListener('mouseup', e => {
+    if (!_drag || !_panel) return;
+    _drag = false;
+    _lastDragEnd = Date.now();
+    _panel.classList.remove('pm-dragging');
+    _panel.classList.add('pm-positioned');
     
-    // Apply final position to left/top and reset transform
-    const x = clamp(_sl + _currentDx, 0, window.innerWidth - 100)
-    const y = clamp(_st + _currentDy, 0, window.innerHeight - 100)
+    if (_dragOverlay && _dragOverlay.parentNode) {
+      _dragOverlay.parentNode.removeChild(_dragOverlay);
+    }
+    _dragOverlay = null;
+
+    const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340));
+    const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400));
+    const x = clamp(_sl + (e.clientX - _sx), 0, maxX);
+    const y = clamp(_st + (e.clientY - _sy), 0, maxY);
     
-    _panel.style.transform = 'none'
-    _panel.style.left = x + 'px'
-    _panel.style.top = y + 'px'
+    _panel.style.transform = 'none';
+    _panel.style.animation = 'none';
+    _panel.style.left = x + 'px';
+    _panel.style.top = y + 'px';
     
-    _currentDx = 0
-    _currentDy = 0
-    
-    savePanelPos(x, y)
-  })
+    savePanelPos(x, y);
+  });
 }
 
 function wireActionButtons() {
@@ -698,6 +752,23 @@ function wireActionButtons() {
     if (btnFactcheck) btnFactcheck.addEventListener('click', () => { window.__ProjectCortexAI.runFactCheck() })
     if (btnSummarize) btnSummarize.addEventListener('click', () => { window.__ProjectCortexAI.runSummarize() })
     if (btnDefine) btnDefine.addEventListener('click', () => { window.__ProjectCortexAI.runDefine() })
+
+    const installIdSpan = document.getElementById('pm-credits-install-id');
+    if (installIdSpan) {
+      installIdSpan.style.cursor = 'pointer';
+      installIdSpan.title = 'Click to copy Install ID';
+      installIdSpan.addEventListener('click', async () => {
+        const text = installIdSpan.textContent;
+        if (!text || text === '...') return;
+        try {
+          await navigator.clipboard.writeText(text);
+          const orig = installIdSpan.textContent;
+          installIdSpan.textContent = 'Copied!';
+          setTimeout(() => { if (document.contains(installIdSpan)) installIdSpan.textContent = orig; }, 1500);
+        } catch (_) {}
+      });
+    }
+
     document.getElementById('pm-action-settings')?.addEventListener('click', () => {
       chrome.runtime.sendMessage({
         type: 'OPEN_OPTIONS',
@@ -906,6 +977,10 @@ function initSelectionListeners() {
     if (_bubble && !_bubble.contains(e.target)) {
       _clickedOutsideAt = Date.now()
       hideBubble()
+    }
+    const panel = document.getElementById('pagemind-panel');
+    if (panel && panel.classList.contains('pm-open') && !isOurElement(e.target)) {
+      closePanel();
     }
   })
 

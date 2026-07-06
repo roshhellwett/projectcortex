@@ -34,9 +34,9 @@ function applyCopyPasteOverride() {
     }
 
     const styleEl = document.getElementById('pm-copy-paste-override');
-    if (!styleEl) {
-      const target = document.head || document.documentElement;
-      if (target) target.appendChild(style);
+    if (!styleEl || (document.head && styleEl.parentNode !== document.head)) {
+      const bestTarget = document.head || document.documentElement;
+      if (bestTarget) bestTarget.appendChild(style);
       reinsertCount++
     }
 
@@ -48,14 +48,14 @@ function applyCopyPasteOverride() {
          reinsertCount = 0;
          lastReset = Date.now();
          const currentStyle = document.getElementById('pm-copy-paste-override');
-         if (!currentStyle) {
-           const target = document.head || document.documentElement;
-           if (target) target.appendChild(style);
+         if (!currentStyle || (document.head && currentStyle.parentNode !== document.head)) {
+           const bestTarget = document.head || document.documentElement;
+           if (bestTarget) bestTarget.appendChild(style);
          }
       }, 5000);
     }
   })
-  if (target) window._pmCssObserver.observe(target, { childList: true })
+  if (target) window._pmCssObserver.observe(target, { childList: true, subtree: true })
 }
 
 function removeCopyPasteOverride() {

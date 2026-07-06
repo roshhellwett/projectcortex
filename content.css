@@ -64,6 +64,25 @@
     100% { opacity: 0; left: -430px; filter: blur(4px); }
 }
 
+@keyframes pmDismiss {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 0 !important;
+        transform: scale(0.85) translateY(14px) !important;
+        filter: blur(16px) !important;
+    }
+}
+
+#pagemind-panel.pm-closing {
+    animation: pmDismiss 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    pointer-events: none !important;
+    transition: none !important;
+}
+
 #pagemind-panel {
     position: fixed !important;
     top: 50%;
@@ -140,6 +159,7 @@
     left: auto;
     top: auto;
     transform: none;
+    animation: none !important;
     will-change: opacity !important;
     transition: opacity 0.3s var(--pm-ease-out) !important;
     cursor: grab !important;
@@ -147,6 +167,7 @@
 
 #pagemind-panel.pm-dragging {
     transition: none !important;
+    animation: none !important;
     user-select: none !important;
     opacity: 0.97 !important;
     box-shadow: var(--pm-shadow-lg) !important;

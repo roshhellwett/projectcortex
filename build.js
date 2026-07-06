@@ -70,7 +70,7 @@ allFiles.forEach(file => {
     const header = code.split('\n').slice(0, 9).join('\n');
     let rest = code.split('\n').slice(9).join('\n');
     rest = rest.replace(/\/\*[\s\S]*?\*\//g, '');
-    rest = rest.replace(/(?<![:"'])\/\/.*/g, '');
+    rest = rest.replace(/(?<![:"'`])\/\/.*/g, '');
     rest = rest.replace(/^\s*[\r\n]/gm, '');
     fs.writeFileSync(path.join(distDir, file), header + '\n' + rest, 'utf8');
   }
@@ -137,3 +137,33 @@ filesToObfuscate.forEach(file => {
 });
 
 console.log('Build complete. Your secure extension is in the /dist folder ready to be packed!');
+
+const { execSync } = require('child_process');
+const zipPath = path.join(__dirname, 'projectcortex-dist-latest.zip');
+const cortexZipPath = path.join(__dirname, 'CortexV11.0.zip');
+const cortexZipPath1100 = path.join(__dirname, 'CortexV11.0.0.zip');
+const cortexZipPathHyphen = path.join(__dirname, 'Cortex-v11.0.0.zip');
+
+[zipPath, cortexZipPath, cortexZipPath1100, cortexZipPathHyphen].forEach(p => {
+  if (fs.existsSync(p)) fs.unlinkSync(p);
+});
+
+try {
+  if (process.platform === 'win32') {
+    execSync(`powershell -NoProfile -Command "Compress-Archive -Path 'dist\\*' -DestinationPath 'projectcortex-dist-latest.zip' -Force"`, { cwd: __dirname });
+    execSync(`powershell -NoProfile -Command "Compress-Archive -Path 'dist\\*' -DestinationPath 'CortexV11.0.zip' -Force"`, { cwd: __dirname });
+    execSync(`powershell -NoProfile -Command "Compress-Archive -Path 'dist\\*' -DestinationPath 'CortexV11.0.0.zip' -Force"`, { cwd: __dirname });
+    execSync(`powershell -NoProfile -Command "Compress-Archive -Path 'dist\\*' -DestinationPath 'Cortex-v11.0.0.zip' -Force"`, { cwd: __dirname });
+  } else {
+    execSync(`cd dist && zip -r ../projectcortex-dist-latest.zip *`, { cwd: __dirname });
+    execSync(`cd dist && zip -r ../CortexV11.0.zip *`, { cwd: __dirname });
+    execSync(`cd dist && zip -r ../CortexV11.0.0.zip *`, { cwd: __dirname });
+    execSync(`cd dist && zip -r ../Cortex-v11.0.0.zip *`, { cwd: __dirname });
+  }
+  console.log('Successfully created distribution zip: projectcortex-dist-latest.zip');
+  console.log('Successfully created distribution zip: CortexV11.0.zip');
+  console.log('Successfully created distribution zip: CortexV11.0.0.zip');
+  console.log('Successfully created distribution zip: Cortex-v11.0.0.zip');
+} catch (err) {
+  console.error('Note: Could not automatically generate zip file. You can manually zip the /dist folder.', err.message);
+}

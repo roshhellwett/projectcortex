@@ -9,7 +9,7 @@
 
 function isOurElement(el) {
   return Boolean(
-    el?.closest?.('#pagemind-panel, #pagemind-bubble')
+    el?.closest?.('#pagemind-panel, #pagemind-bubble, #pm-drag-overlay, .pm-traffic-light, .pm-icon-btn')
   )
 }
 
@@ -140,7 +140,7 @@ function getPageContext(el, selectedText = '') {
     if (len > 8000) break
     container = container.parentElement
   }
-  let rawText = typeof container.innerText === 'string' ? container.innerText : (container.textContent || '')
+  let rawText = container.textContent || ''
   if (rawText.length > 8000) {
     let index = selectedText ? rawText.indexOf(selectedText) : -1;
     if (index === -1) {
@@ -160,8 +160,9 @@ function getFastPageContext(maxLength = 15000) {
     NodeFilter.SHOW_TEXT,
     {
       acceptNode: function(node) {
-        const tag = node.parentElement ? node.parentElement.tagName : '';
-        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'NOSCRIPT' || tag === 'SVG' || tag === 'TEMPLATE') {
+        if (!node.parentElement) return NodeFilter.FILTER_REJECT;
+        const tag = node.parentElement.tagName;
+        if (/^(SCRIPT|STYLE|NOSCRIPT|SVG|TEMPLATE|IFRAME|CANVAS)$/i.test(tag) || node.parentElement.getAttribute('aria-hidden') === 'true' || node.parentElement.style.display === 'none') {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;

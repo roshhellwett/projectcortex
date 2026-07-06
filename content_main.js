@@ -209,7 +209,10 @@ async function init() {
     }
 
   } catch (e) {
-    console.error('[Cortex] Init failed:', e)
+    console.error('[Cortex] Init failed:', e);
+    if (typeof window.__ProjectCortexUI?.showError === 'function') {
+      window.__ProjectCortexUI.showError(`Initialization error: ${e.message}. Refresh page or contact zenithprojects@icloud.com`);
+    }
   }
 }
 
@@ -269,21 +272,32 @@ if (window !== window.top) {
 
 var _lastInitTime = 0;
 if (window === window.top) {
-  _initInterval = setInterval(() => {
+  const triggerNavCheck = () => {
     if (location.href !== _lastURL) {
-      _lastURL = location.href
+      _lastURL = location.href;
+      if (Date.now() - _lastInitTime < 1000) return;
+      _lastInitTime = Date.now();
+      init();
+    }
+  };
 
-      if (Date.now() - _lastInitTime < 1000) return;
-      _lastInitTime = Date.now();
-      init()
-    }
-  }, 500)
-  window.addEventListener('popstate', () => {
-    if (location.href !== _lastURL) {
-      _lastURL = location.href
-      if (Date.now() - _lastInitTime < 1000) return;
-      _lastInitTime = Date.now();
-      init()
-    }
-  })
+  const origPush = history.pushState;
+  const origReplace = history.replaceState;
+  try {
+    history.pushState = function(...args) {
+      const res = origPush.apply(this, args);
+      setTimeout(triggerNavCheck, 50);
+      return res;
+    };
+    history.replaceState = function(...args) {
+      const res = origReplace.apply(this, args);
+      setTimeout(triggerNavCheck, 50);
+      return res;
+    };
+  } catch (_) {}
+
+  window.addEventListener('popstate', triggerNavCheck);
+  window.addEventListener('hashchange', triggerNavCheck);
+
+  _initInterval = setInterval(triggerNavCheck, 1500);
 }

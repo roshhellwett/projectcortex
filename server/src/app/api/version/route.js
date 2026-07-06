@@ -14,12 +14,12 @@ export async function GET(req) {
 
     if (error || !data) {
       // Fallback version if not set
-      return NextResponse.json({ version: '10.0.0' }, { status: 200 });
+      return NextResponse.json({ version: '11.0.0' }, { status: 200 });
     }
 
     return NextResponse.json({ version: data.value }, { status: 200 });
   } catch (error) {
     console.error('Version API Error:', error);
-    return NextResponse.json({ version: '10.0.0' }, { status: 200 });
+    return NextResponse.json({ version: '11.0.0' }, { status: 200 });
   }
 }

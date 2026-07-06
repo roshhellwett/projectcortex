@@ -111,9 +111,24 @@ for (const [id, handler] of btnMap) {
   document.getElementById(id)?.addEventListener('click', handler);
 }
 
-chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
-  if (res && res.installId) {
-    const installIdEl = document.getElementById('popupInstallId');
-    if (installIdEl) installIdEl.textContent = res.installId;
-  }
+try {
+  chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+    if (chrome.runtime.lastError) {
+      console.warn('[Cortex] Popup auth check warning:', chrome.runtime.lastError.message);
+      return;
+    }
+    if (res && res.installId) {
+      const installIdEl = document.getElementById('popupInstallId');
+      if (installIdEl) installIdEl.textContent = res.installId;
+    }
+  });
+} catch (_) {}
+
+window.addEventListener('error', (e) => {
+  const msg = e.message || e.error?.message || 'Unknown popup error';
+  if (typeof showError === 'function') showError(`System Error: ${msg}. Reopen popup or contact support.`);
+});
+window.addEventListener('unhandledrejection', (e) => {
+  const reason = e.reason?.message || e.reason || 'Unhandled async error';
+  if (typeof showError === 'function') showError(`Error: ${reason}. Please reopen popup.`);
 });

@@ -15,9 +15,23 @@ export const MODELS = {
   DEFAULT_OR: 'openrouter/free',
   MCQ_GROQ: 'llama-3.3-70b-versatile',
   MCQ_OR: 'openrouter/free',
-  FALLBACK_GROQ: 'llama3-8b-8192',
+  FALLBACK_GROQ: 'mixtral-8x7b-32768',
   FALLBACK_OR: 'deepseek/deepseek-chat:free',
 };
+
+export const GROQ_FALLBACK_CHAIN = [
+  'llama-3.3-70b-versatile',
+  'llama-3.1-8b-instant',
+  'gemma2-9b-it',
+  'mixtral-8x7b-32768',
+];
+
+export const OPENROUTER_FALLBACK_CHAIN = [
+  'openrouter/free',
+  'deepseek/deepseek-chat:free',
+  'meta-llama/llama-3.1-8b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
+];
 
 export const ACTION_CONFIG = {
   correct_answers: {

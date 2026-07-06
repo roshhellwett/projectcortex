@@ -9,7 +9,8 @@
 
 import {
   GROQ_URL, OPENROUTER_URL, MODELS, ACTION_CONFIG, DEFAULT_ACTION,
-  TIMEOUT_MS, MAX_RETRIES, RETRY_BASES, PROVIDER_GROQ, PROVIDER_OPENROUTER, PROVIDER_CUSTOM
+  TIMEOUT_MS, MAX_RETRIES, RETRY_BASES, PROVIDER_GROQ, PROVIDER_OPENROUTER, PROVIDER_CUSTOM,
+  GROQ_FALLBACK_CHAIN, OPENROUTER_FALLBACK_CHAIN
 } from './bg_config.js';
 import { quickAuthCheck } from './bg_auth.js';
 
@@ -29,13 +30,18 @@ export const resolveModel = (apiProvider, model, action) => {
 
 export const nextFallback = (apiProvider, currentModel) => {
   if (apiProvider === PROVIDER_GROQ) {
-    if (currentModel === MODELS.MCQ_GROQ) return MODELS.FALLBACK_GROQ;
-    if (currentModel === MODELS.FALLBACK_GROQ) return MODELS.DEFAULT;
-    return MODELS.FALLBACK_GROQ;
+    const idx = GROQ_FALLBACK_CHAIN.indexOf(currentModel);
+    if (idx !== -1 && idx < GROQ_FALLBACK_CHAIN.length - 1) {
+      return GROQ_FALLBACK_CHAIN[idx + 1];
+    }
+    return idx === -1 ? GROQ_FALLBACK_CHAIN[1] : GROQ_FALLBACK_CHAIN[0];
   }
   if (apiProvider === PROVIDER_OPENROUTER) {
-    if (currentModel === MODELS.MCQ_OR) return MODELS.FALLBACK_OR;
-    return MODELS.FALLBACK_OR;
+    const idx = OPENROUTER_FALLBACK_CHAIN.indexOf(currentModel);
+    if (idx !== -1 && idx < OPENROUTER_FALLBACK_CHAIN.length - 1) {
+      return OPENROUTER_FALLBACK_CHAIN[idx + 1];
+    }
+    return idx === -1 ? OPENROUTER_FALLBACK_CHAIN[1] : OPENROUTER_FALLBACK_CHAIN[0];
   }
   return currentModel;
 };
@@ -110,8 +116,11 @@ export function classifyError(status, data, apiProvider) {
   if (status === 400 && (sanitizedMsg.includes('context length') || sanitizedMsg.includes('maximum context') || sanitizedMsg.includes('token limit'))) {
     return { type: 'error', message: 'The page content is too long for the selected model. Try summarizing shorter sections.', retryable: false };
   }
+  if (status === 408 || status === 524 || sanitizedMsg.includes('timeout') || sanitizedMsg.includes('timed out') || sanitizedMsg.includes('gateway')) {
+    return { type: 'server_error', message: `Server timeout or gateway error (${status || 'Timeout'}). Retrying with a fallback model…`, retryable: true };
+  }
   if (status >= 500) {
-    return { type: 'server_error', message: `${apiProvider} server returned ${status}.`, retryable: true };
+    return { type: 'server_error', message: `${apiProvider} server returned ${status}. Retrying…`, retryable: true };
   }
   if (status === 0 || !status) {
     return { type: 'network', message: 'Network request failed. Check your internet connection.', retryable: true };

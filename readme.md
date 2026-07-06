@@ -47,12 +47,12 @@ Currently at **Version 8.0.0**, the extension boasts a stunning, Apple-inspired 
 
 ## 📦 Deployment & Installation
 
-The latest enterprise build (`Cortex-v8.0.0.zip`) is fully compiled, obfuscated, and ready for deployment.
+The latest enterprise build (`CortexV11.0.0.zip`) is fully compiled, obfuscated, and ready for deployment.
 
 **[📥 Download ProjectCortex (Latest ZIP)](https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b)**
 
 ### Local Installation Guide:
-1. Download and extract `Cortex-v8.0.0.zip`.
+1. Download and extract `CortexV11.0.0.zip`.
 2. Open Google Chrome and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** using the toggle switch in the top-right corner.
 4. Click **Load unpacked** and select your extracted `dist/` or unzipped folder.

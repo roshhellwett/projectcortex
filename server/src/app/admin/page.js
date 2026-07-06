@@ -73,7 +73,7 @@ export default function AdminDashboard() {
   const [licenses, setLicenses] = useState([]);
   const [logs, setLogs] = useState([]);
   const [feedback, setFeedback] = useState([]);
-  const [latestVersion, setLatestVersion] = useState('10.0.0');
+  const [latestVersion, setLatestVersion] = useState('11.0.0');
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('all');
   const [tab, setTab] = useState('licenses');
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
       setLicenses(data.licenses || []);
       setLogs(data.logs || []);
       setFeedback(data.feedback || []);
-      setLatestVersion(data.latestVersion || '10.0.0');
+      setLatestVersion(data.latestVersion || '11.0.0');
       setLoggedIn(true);
       setError('');
     } catch (err) {
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
       title: 'Update client version',
       description: 'Clients can use this value to prompt users to update.',
       values: { version: latestVersion },
-      fields: [{ name: 'version', label: 'Latest version', placeholder: '10.0.0', autoFocus: true }]
+      fields: [{ name: 'version', label: 'Latest version', placeholder: '11.0.0', autoFocus: true }]
     });
   }
 

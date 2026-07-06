@@ -14,9 +14,18 @@ const extractHostname = url => {
   try { return new URL(url).hostname; } catch { return ''; }
 };
 
+const ensureAlarms = () => {
+  chrome.alarms.get('authCheck', (alarm) => {
+    if (!alarm) {
+      chrome.alarms.create('authCheck', { periodInMinutes: 1 });
+    }
+  });
+};
+ensureAlarms();
+
 chrome.runtime.onInstalled.addListener(() => {
   checkAuthStatus().catch(() => {});
-  chrome.alarms.create('authCheck', { periodInMinutes: 1 });
+  ensureAlarms();
 
   chrome.contextMenus.create({
     id: "cortex_correct_answers",
@@ -42,6 +51,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onStartup.addListener(() => {
   checkAuthStatus().catch(() => {});
+  ensureAlarms();
 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'authCheck') {

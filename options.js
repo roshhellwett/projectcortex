@@ -702,3 +702,12 @@ if (document.body) {
     observer.observe(document.body, { childList: true, subtree: true });
 }
 fitToScreen();
+
+window.addEventListener('error', (e) => {
+    const msg = e.message || e.error?.message || 'Unknown runtime error';
+    if (typeof showStatus === 'function') showStatus('err', `⚠ System Error: ${msg}. Contact support if this persists.`);
+});
+window.addEventListener('unhandledrejection', (e) => {
+    const reason = e.reason?.message || e.reason || 'Unhandled async error';
+    if (typeof showStatus === 'function') showStatus('err', `⚠ Async Error: ${reason}. Please try reloading.`);
+});

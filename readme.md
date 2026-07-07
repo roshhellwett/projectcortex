@@ -5,7 +5,7 @@
 <h1 align="center">ProjectCortex — Intelligence</h1>
 
 <div align="center">
-  <strong>Enterprise-Grade AI Web Assistant & Productivity Platform</strong>
+  <strong>AI Web Assistant & Productivity Platform</strong>
 </div>
 
 <br />
@@ -19,9 +19,9 @@
 
 <br />
 
-ProjectCortex is an enterprise-tier Google Chrome extension and fully integrated AI SaaS platform. Powered by state-of-the-art LLMs via Groq and OpenRouter, ProjectCortex gives users unprecedented control over web content—allowing them to summarize vast documents, fact-check claims against live contexts, define complex terminology, and instantly solve multiple-choice questions.
+ProjectCortex is a Google Chrome extension and AI SaaS platform. Powered by LLMs via Groq and OpenRouter, it gives users more control over web content — summarize documents, fact-check claims against live context, define complex terms, and solve multiple-choice questions.
 
-Currently at **Version 8.0.0**, the extension boasts a stunning, Apple-inspired 10x premium Glassmorphic UI. ProjectCortex is fully equipped with zero-touch JWT license management, enterprise build obfuscation, and anti-cheat capabilities.
+Currently at **Version 8.0.0** with JWT license management, build obfuscation, and anti-cheat capabilities.
 
 ---
 
@@ -34,9 +34,9 @@ Currently at **Version 8.0.0**, the extension boasts a stunning, Apple-inspired 
 * **MCQ Solver:** Highlight any multiple-choice question and instantly reveal the correct answer.
 * **Ask About Page:** Open the floating intelligence panel and type any question related to the current page to get instant answers without losing your workflow.
 
-### 🎨 10x Design System
-* **Stunning Options Dashboard:** A centered, fluid Vercel-style dashboard layout built with CSS flexbox/grid that looks flawless on any screen size.
-* **Glassmorphic Popup & Floating Bubble:** Beautiful frosted glass UI elements (`backdrop-filter: blur(32px)`), smooth spring animations, and radiant accent gradients (`#6366f1` to `#a855f7`).
+### 🎨 Design System
+* **Options Dashboard:** Centered, fluid dashboard layout built with CSS flexbox/grid.
+* **Glassmorphic Popup & Floating Bubble:** Frosted glass UI elements (`backdrop-filter: blur(32px)`) with spring animations and accent gradients (`#6366f1` to `#a855f7`).
 
 ### 🛡️ Enterprise Architecture
 * **Hardware-Bound Licensing:** Secure, JWT-based license verification tied to the user's hardware ID (`bg_auth.js`).
@@ -69,5 +69,6 @@ ProjectCortex operates on a premium SaaS model. You will need an active License 
 
 ---
 
-© 2026 Zenith Open Source Projects. All Rights Reserved. Developed by roshhellwett
+© 2026 [Zenith Open Source Projects](https://zenithopensourceprojects.vercel.app/). All Rights Reserved.
+Zenith is an Open Source Project Idea by @roshhellwett
 

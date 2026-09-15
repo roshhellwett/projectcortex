@@ -3,6 +3,8 @@
 
 'use client';
 import { useEffect, useState } from 'react';
+import SiteHeader from '@/components/SiteHeader';
+import SiteFooter from '@/components/SiteFooter';
 import './globals.css';
 
 export default function Home() {
@@ -57,29 +59,17 @@ export default function Home() {
       />
 
       {/* Navigation */}
-      <nav className="navbar-wrapper">
-        <div className="navbar-inner">
-          <a href="#" className="logo-circle" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-            <img src="/logo.png" alt="Cortex Logo" style={{ width: '32px', height: '32px', borderRadius: '8px' }} />
-          </a>
-          
-          <div className="nav-links-pill">
-            <a href="#" className="active">Home</a>
-            <a href="#features">Features</a>
-            <a href="/setup-guide">Setup Guide</a>
-            <a href="https://t.me/roshhellwett">Pricing</a>
-          </div>
-          
-          <a href="https://t.me/roshhellwett" className="nav-btn">Get License</a>
-        </div>
-      </nav>
+      <SiteHeader />
 
       {/* Hero Section */}
       <section className="container hero-section reveal">
         <div className="hero-content">
           <div className="hero-subtitle">ProjectCortex Enterprise</div>
           <h1 className="hero-title">Your personal AI assistant, right inside your browser.</h1>
-          <a href="https://drive.google.com/drive/folders/19xYd3LPdYIJ3fpsCbbUkMH5IzndQpS6b" className="btn-primary">Get Extension</a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginBottom: '24px' }}>
+            <a href="/setup-guide" className="btn-primary">Add to Chrome • Web Store</a>
+            <a href="https://t.me/roshhellwett" target="_blank" rel="noopener noreferrer" style={{ padding: '12px 20px', borderRadius: '12px', background: 'rgba(0,0,0,0.06)', color: 'var(--text-main)', textDecoration: 'none', fontWeight: 600, border: '1px solid var(--border)', fontSize: '14px' }}>Get License</a>
+          </div>
           
           <div className="social-links">
             <a href="https://t.me/roshhellwett" className="social-icon" aria-label="Telegram">
@@ -312,23 +302,8 @@ export default function Home() {
 
 
 
-      {/* Footer */}
-      <footer className="footer-section reveal">
-        <div className="container footer-content">
-          <div className="footer-brand">
-            <img src="/logo.png" alt="Cortex Logo" style={{ width: '24px', height: '24px', borderRadius: '6px' }} />
-            <span style={{ fontWeight: 700, letterSpacing: '0.5px' }}>ProjectCortex</span>
-          </div>
-          <div className="footer-links">
-            <a href="https://t.me/roshhellwett">Telegram</a>
-            <a href="https://github.com/roshhellwett/projectcortex">GitHub</a>
-            <a href="mailto:zenithprojects@icloud.com">Contact</a>
-          </div>
-          <div className="footer-copy">
-            &copy; 2026 Zenith Open Source Projects. Built by roshhellwett.
-          </div>
-        </div>
-      </footer>
+      {/* Master 4-Column SEO Footer */}
+      <SiteFooter />
     </main>
   );
 }

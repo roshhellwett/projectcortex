@@ -1068,3 +1068,23 @@ function initSelectionListeners() {
     }
   })
 }
+
+// Global error boundary for zero-error robust architecture
+window.addEventListener('error', (e) => {
+  const msg = e.message || e.error?.message || 'Unknown runtime error';
+  if (typeof showError === 'function') {
+    const panel = document.getElementById('pagemind-panel');
+    if (panel && panel.classList.contains('pm-open')) {
+      showError(`⚠ System Error: ${msg}. Try closing and reopening the panel.`);
+    }
+  }
+});
+window.addEventListener('unhandledrejection', (e) => {
+  const reason = e.reason?.message || e.reason || 'Unhandled async error';
+  if (typeof showError === 'function') {
+    const panel = document.getElementById('pagemind-panel');
+    if (panel && panel.classList.contains('pm-open')) {
+      showError(`⚠ Async Error: ${reason}. Please retry.`);
+    }
+  }
+});

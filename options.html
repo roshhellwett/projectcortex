@@ -816,7 +816,15 @@
             .stat-grid { grid-template-columns: 1fr; }
             .backup-row { flex-direction: column; }
             .header-actions a span { display: none; }
-            .lock-box { padding: 24px; margin: 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
@@ -896,16 +904,21 @@
             </div>
         </div>
 
-        <div class="update-panel" id="updatePanel">
-            <div class="update-icon-box" id="updateIconBox">
-                <svg id="updateIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-3.138-6.32"/><circle cx="12" cy="12" r="2"/><path d="M20 4v6h-6"/></svg>
+        <div class="card" style="background: linear-gradient(135deg, rgba(212, 160, 23, 0.08), rgba(212, 160, 23, 0.02)); border-color: rgba(212, 160, 23, 0.18);">
+            <div class="card-header" style="border-bottom-color: rgba(212, 160, 23, 0.12);">
+                <div class="card-header-icon" style="background: rgba(212, 160, 23, 0.12); border-color: rgba(212, 160, 23, 0.15);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                </div>
+                <span class="card-header-text">Help &amp; Support</span>
             </div>
-            <div class="update-body">
-                <h3 id="updateTitle">Extension Up to Date</h3>
-                <p id="updateDesc">You are running the latest version. Your configuration is fully synchronized and secure.</p>
-                <a id="updateLink" href="#" style="text-decoration: none; pointer-events: none;">
-                    <button id="updateBtn" class="btn btn-success btn-sm" disabled>Up to Date</button>
-                </a>
+            <div class="card-body">
+                <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 8px;">
+                    Project Cortex is now a production-grade extension. Updates will be delivered automatically via the Chrome Web Store.
+                </p>
+                <div style="display: flex; gap: 10px;">
+                    <a href="mailto:zenithprojects@icloud.com" class="btn btn-primary btn-sm" style="text-decoration: none;">Contact Support</a>
+                    <a href="https://github.com/roshhellwett/projectcortex" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">View Documentation</a>
+                </div>
             </div>
         </div>
 
@@ -990,14 +1003,23 @@
                         <div class="field">
                             <label>AI Model</label>
                             <select id="model">
-                                <optgroup label="— Groq (Free Tier) —">
-                                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best quality/reasoning</option>
+                                <optgroup label="— Groq (High Performance &amp; Reasoning) —">
+                                    <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile — High quality/reasoning</option>
                                     <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
+                                    <option value="openai/gpt-oss-120b">openai/gpt-oss-120b — SOTA 120B Open Reasoning</option>
+                                    <option value="openai/gpt-oss-20b">openai/gpt-oss-20b — Fast 20B Open Reasoning</option>
+                                    <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b — Advanced Math &amp; Multilingual (27B)</option>
+                                    <option value="groq/compound">groq/compound — Groq Compound Agent</option>
+                                    <option value="groq/compound-mini">groq/compound-mini — Groq Compound Mini Agent</option>
+                                    <option value="allam-2-7b">allam-2-7b — High Throughput (7K req/day)</option>
                                     <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
                                     <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
                                 </optgroup>
-                                <optgroup label="— OpenRouter (Free Tier) —">
+                                <optgroup label="— OpenRouter (xAI Grok &amp; SOTA Models) —">
+                                    <option value="x-ai/grok-2">xAI Grok 2 — State of the art intelligence</option>
+                                    <option value="x-ai/grok-beta">xAI Grok Beta — Fast reasoning</option>
                                     <option value="openrouter/free">Recommended — Auto-routes to best free</option>
+                                    <option value="deepseek/deepseek-r1:free">DeepSeek R1 — Elite chain-of-thought reasoning</option>
                                     <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning &amp; coding</option>
                                     <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality</option>
                                     <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B — Fast &amp; Reliable</option>

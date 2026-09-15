@@ -19,8 +19,12 @@
   "host_permissions": [
     "<all_urls>",
     "https://api.groq.com/*",
-    "https://openrouter.ai/*"
+    "https://openrouter.ai/*",
+    "https://projectcortex.vercel.app/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "commands": {
     "open_panel": {
       "suggested_key": {

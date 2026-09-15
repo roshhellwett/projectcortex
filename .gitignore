@@ -8,4 +8,6 @@ Thumbs.db
 *.zip
 .next/
 dist/
+dist_webstore/
 .early.coverage
+.agents

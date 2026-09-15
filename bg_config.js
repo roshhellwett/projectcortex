@@ -13,22 +13,32 @@ export const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 export const MODELS = {
   DEFAULT: 'llama-3.1-8b-instant',
   DEFAULT_OR: 'openrouter/free',
-  MCQ_GROQ: 'llama-3.3-70b-versatile',
-  MCQ_OR: 'openrouter/free',
+  MCQ_GROQ: 'llama-3.1-70b-versatile',
+  MCQ_OR: 'x-ai/grok-2',
   FALLBACK_GROQ: 'mixtral-8x7b-32768',
   FALLBACK_OR: 'deepseek/deepseek-chat:free',
 };
 
 export const GROQ_FALLBACK_CHAIN = [
-  'llama-3.3-70b-versatile',
+  'llama-3.1-70b-versatile',
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'qwen/qwen3.6-27b',
+  'groq/compound',
+  'groq/compound-mini',
   'llama-3.1-8b-instant',
   'gemma2-9b-it',
   'mixtral-8x7b-32768',
+  'allam-2-7b',
 ];
 
 export const OPENROUTER_FALLBACK_CHAIN = [
+  'x-ai/grok-2',
+  'x-ai/grok-beta',
   'openrouter/free',
+  'deepseek/deepseek-r1:free',
   'deepseek/deepseek-chat:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
   'meta-llama/llama-3.1-8b-instruct:free',
   'mistralai/mistral-7b-instruct:free',
 ];

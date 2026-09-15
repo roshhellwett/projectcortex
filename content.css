@@ -1508,3 +1508,5 @@
         grid-template-columns: 1fr !important;
     }
 }
+@ m e d i a   ( p r e f e r s - r e d u c e d - m o t i o n :   r e d u c e )   {   * ,   : : b e f o r e ,   : : a f t e r   {   a n i m a t i o n - d u r a t i o n :   0 . 0 1 m s   ! i m p o r t a n t ;   a n i m a t i o n - i t e r a t i o n - c o u n t :   1   ! i m p o r t a n t ;   t r a n s i t i o n - d u r a t i o n :   0 . 0 1 m s   ! i m p o r t a n t ;   s c r o l l - b e h a v i o r :   a u t o   ! i m p o r t a n t ;   }   }  
+ 

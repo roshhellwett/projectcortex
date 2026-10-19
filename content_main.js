@@ -29,6 +29,16 @@ function initMessageListener() {
         summarize: window.__ProjectCortexAI.runSummarize,
         factcheck: window.__ProjectCortexAI.runFactCheck,
         define: window.__ProjectCortexAI.runDefine,
+        command_palette: () => {
+          if (window.CortexPalette && typeof window.CortexPalette.toggle === 'function') {
+            window.CortexPalette.toggle()
+          }
+        },
+        run_workflow: () => {
+          if (window.__ProjectCortexAI && typeof window.__ProjectCortexAI.runWorkflow === 'function') {
+            window.__ProjectCortexAI.runWorkflow(message.workflow || 'wf_action_items')
+          }
+        },
         open_panel: () => {
           const sel = getDeepSelection()
           if (sel && !sel.isCollapsed && sel.toString().trim()) {
@@ -51,6 +61,17 @@ function initMessageListener() {
       return true
     }
 
+    if (message.type === 'RUN_WORKFLOW') {
+      if (!document.getElementById('pagemind-panel')) {
+        init();
+      }
+      if (window.__ProjectCortexAI && typeof window.__ProjectCortexAI.runWorkflow === 'function') {
+        window.__ProjectCortexAI.runWorkflow(message.workflow || 'wf_action_items');
+      }
+      sendResponse({ ok: true });
+      return true;
+    }
+
     if (message.type === 'CAPTURE_SELECTION') {
       const text = getDeepSelectionText();
       if (text && typeof _lastSelectionSnapshot !== 'undefined') {
@@ -61,9 +82,14 @@ function initMessageListener() {
           capturedAt: Date.now()
         };
       }
+      let readingMetrics = null;
+      if (typeof getPageReadingMetrics === 'function') {
+        readingMetrics = getPageReadingMetrics();
+      }
       sendResponse({
         ok: true,
-        selectionText: text || _lastSelectionSnapshot?.text || ''
+        selectionText: text || _lastSelectionSnapshot?.text || '',
+        readingMetrics
       });
       return true;
     }
@@ -115,6 +141,14 @@ function cleanup() {
   // keep _initInterval alive — it runs for the page lifetime to detect SPA navigations
   document.querySelectorAll('#pagemind-panel, #pagemind-bubble, #pm-copy-paste-override')
     .forEach(el => el.remove())
+  // A drag that was still in flight when the page navigated must not leave the
+  // move cursor behind, and any overlay from an older build is removed too.
+  if (typeof abortPanelDrag === 'function') abortPanelDrag()
+  _drag = false
+  try { document.documentElement.classList.remove('pm-dragging') } catch (_) {}
+  try {
+    document.querySelectorAll('#pm-drag-overlay').forEach(el => el.remove())
+  } catch (_) {}
   if (_thinkTimer) clearInterval(_thinkTimer)
   if (_typeTimer) cancelAnimationFrame(_typeTimer)
   if (_hideTimer) clearTimeout(_hideTimer)
@@ -128,15 +162,23 @@ function cleanup() {
 
 let _lastAuthCheck = 0
 let _cachedAuthRes = null
+let _authRetries = 0
 
 function handleAuthRes(res) {
   if (chrome.runtime.lastError) {
+    // Transient failure (service worker restarting) — never falsely lock the user.
     console.warn('[Cortex] Auth check failed (service worker may be restarting):', chrome.runtime.lastError.message);
-    _isLocked = true;
-    hideBubble();
-    showState('locked');
+    if (_authRetries < 3) {
+      _authRetries++;
+      setTimeout(() => {
+        try {
+          chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, handleAuthRes);
+        } catch (_) {}
+      }, 2500);
+    }
     return;
   }
+  _authRetries = 0;
   if (res && res.installId) {
     const idEl = document.getElementById('pm-install-id');
     const creditsIdEl = document.getElementById('pm-credits-install-id');
@@ -170,30 +212,43 @@ function handleAuthRes(res) {
     showState('locked');
   } else {
     _isLocked = false;
-    showState('welcome');
+    const activeState = document.querySelector('#pagemind-panel .pm-state.active');
+    if (!activeState || activeState.id === 'pm-state-locked') {
+      showState('welcome');
+    }
   }
 }
 
 async function init() {
   try {
-    cleanup()
     if (!document.body) {
-      document.addEventListener('DOMContentLoaded', init)
+      document.addEventListener('DOMContentLoaded', init, { once: true })
       return
     }
-    _panel = document.createElement('div')
-    _panel.id = 'pagemind-panel'
-    _panel.innerHTML = buildPanelHTML()
-    document.body.appendChild(_panel)
+    const existingPanel = document.getElementById('pagemind-panel')
+    if (!existingPanel) {
+      cleanup()
+      _panel = document.createElement('div')
+      _panel.id = 'pagemind-panel'
+      _panel.setAttribute('role', 'dialog')
+      _panel.setAttribute('aria-modal', 'false')
+      _panel.setAttribute('aria-label', 'ProjectCortex AI assistant')
+      _panel.innerHTML = buildPanelHTML()
+      document.body.appendChild(_panel)
 
-    initDragger()
-    wireActionButtons()
-    initCopyButton()
+      initDragger()
+      wireActionButtons()
+      initCopyButton()
+    } else {
+      _panel = existingPanel
+    }
 
     const titleEl = document.querySelector('.pm-page-title')
     if (titleEl) titleEl.textContent = document.title || window.location.hostname
 
-    createBubble()
+    if (!document.getElementById('pagemind-bubble')) {
+      createBubble()
+    }
     initSelectionListeners()
     initMessageListener()
     applySiteSettings()
@@ -210,8 +265,10 @@ async function init() {
 
   } catch (e) {
     console.error('[Cortex] Init failed:', e);
-    if (typeof window.__ProjectCortexUI?.showError === 'function') {
-      window.__ProjectCortexUI.showError(`Initialization error: ${e.message}. Refresh page or contact zenithprojects@icloud.com`);
+    if (typeof showError === 'function') {
+      showError(`Initialization error: ${e.message}. Refresh page or contact zenithprojects@icloud.com`);
+    } else {
+      console.error('[Cortex] UI not available to show error:', e.message);
     }
   }
 }

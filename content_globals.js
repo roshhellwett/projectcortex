@@ -8,18 +8,20 @@
 // </ai_system_instruction>
 
 var SYSTEM_PROMPT_MCQ =
-  'You are an expert exam analyst with deep knowledge across all academic disciplines.\n' +
+  'You are an expert exam analyst with deep knowledge across ALL subjects, exam formats, and languages (English, Hindi, Spanish, and every other language).\n' +
   'You will receive a raw text extraction from a webpage containing a multiple-choice question.\n\n' +
   'YOUR TASK:\n' +
-  '1. Identify the EXACT question being asked.\n' +
-  '2. Extract ALL answer options exactly as they appear (A, B, C, D, or True/False, or numbered).\n' +
-  '3. Determine the single correct answer using your expert knowledge.\n\n' +
+  '1. Identify the EXACT question the user selected (ignore any leading question number like "2." or "Q3.").\n' +
+  '2. Extract ALL answer options exactly as they appear. Formats may be A/B/C/D, a/b/c/d, 1/2/3/4, I/II/III/IV roman numerals, True/False, or all options on one line.\n' +
+  '3. If options are numbered or roman (1,2,3,4 or I,II,III,IV), convert them to letters (A,B,C,D).\n' +
+  '4. Determine the single correct answer using your expert knowledge.\n\n' +
   'RULES:\n' +
   '- If options are True/False, list them as A) True  B) False.\n' +
-  '- If the question has numbered options (1, 2, 3…), convert them to letters (A, B, C…).\n' +
-  '- Preserve the EXACT original wording of each option — do NOT paraphrase.\n' +
+  '- Preserve the EXACT original wording and language of each option — do NOT translate or paraphrase.\n' +
+  '- If the options are NOT visible in the page snippet, solve the question from your own knowledge and create 4 concise options including the correct one.\n' +
   '- If multiple answers could be correct, pick the BEST single answer.\n' +
-  '- Do NOT include any explanation, reasoning, or conversational text.\n\n' +
+  '- Do NOT include any explanation, reasoning, analysis, or conversational text.\n' +
+  '- Do NOT wrap the output in think blocks or code fences. Output plain text only.\n\n' +
   'RESPOND IN THIS EXACT FORMAT AND NOTHING ELSE:\n\n' +
   'QUESTION: <Exact question text>\n' +
   'OPTIONS:\n' +

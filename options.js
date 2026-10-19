@@ -36,8 +36,9 @@ function getHostnameFromUrl(url) {
 
 function getStorage(keys) {
     return new Promise(resolve => {
+        if (typeof chrome === 'undefined' || !chrome.storage?.sync) return resolve({});
         chrome.storage.sync.get(keys, data => {
-            if (chrome.runtime.lastError) {
+            if (chrome.runtime?.lastError) {
                 console.warn('[Cortex] Storage read error:', chrome.runtime.lastError.message);
             }
             resolve(data || {});
@@ -47,8 +48,9 @@ function getStorage(keys) {
 
 function setStorage(data) {
     return new Promise(resolve => {
+        if (typeof chrome === 'undefined' || !chrome.storage?.sync) return resolve();
         chrome.storage.sync.set(data, () => {
-            if (chrome.runtime.lastError) {
+            if (chrome.runtime?.lastError) {
                 console.warn('[Cortex] Storage write error:', chrome.runtime.lastError.message);
             }
             resolve();
@@ -58,9 +60,10 @@ function setStorage(data) {
 
 function getLocalStorage(keys) {
     return new Promise(resolve => {
+        if (typeof chrome === 'undefined' || !chrome.storage?.local) return resolve({});
         chrome.storage.local.get(keys, data => {
-            if (chrome.runtime.lastError) {
-                console.warn('[Cortex] Local storage read error:', chrome.runtime.lastError.message);
+            if (chrome.runtime?.lastError) {
+                console.warn('[Cortex] Storage read error:', chrome.runtime.lastError.message);
             }
             resolve(data || {});
         });
@@ -169,6 +172,33 @@ async function loadSettings() {
     if (copyWhitelist[currentSiteHostname]) { copyPasteToggle.classList.add('active'); copyPasteToggle.setAttribute('aria-checked', 'true'); }
 
     if (data.model) {
+        // Migrate models retired by providers so saved settings keep working.
+        // NOTE: allam-2-7b and groq/compound(-mini) are live Groq models — not legacy.
+        const LEGACY_MODEL_MAP = {
+            'llama-3.1-70b-versatile': 'llama-3.3-70b-versatile',
+            'llama-3.1-70b-specdec': 'llama-3.3-70b-versatile',
+            'mixtral-8x7b-32768': 'llama-3.3-70b-versatile',
+            'gemma2-9b-it': 'llama-3.1-8b-instant',
+            'gemma-7b-it': 'llama-3.1-8b-instant',
+            'qwen/qwen3.6-27b': 'openai/gpt-oss-120b',
+            'x-ai/grok-2': 'qwen/qwen3.8-27b:free',
+            'x-ai/grok-beta': 'qwen/qwen3.8-27b:free',
+            'deepseek/deepseek-r1:free': 'openrouter/free',
+            'deepseek/deepseek-chat:free': 'openrouter/free',
+            'meta-llama/llama-3.3-70b-instruct:free': 'qwen/qwen3.8-27b:free',
+            'meta-llama/llama-3.1-8b-instruct:free': 'qwen/qwen3.8-27b:free',
+            'mistralai/mistral-7b-instruct:free': 'z-ai/glm-5.2:free',
+        };
+
+        let savedModel = data.model;
+        if (savedModel === 'custom' && data.customModel && LEGACY_MODEL_MAP[data.customModel]) {
+            data.customModel = LEGACY_MODEL_MAP[data.customModel];
+        } else if (savedModel !== 'custom' && LEGACY_MODEL_MAP[savedModel]) {
+            savedModel = LEGACY_MODEL_MAP[savedModel];
+            setStorage({ model: savedModel });
+        }
+        data.model = savedModel;
+
         const match = [...modelEl.options].some(o => o.value === data.model);
         if (match) {
             modelEl.value = data.model;
@@ -193,7 +223,7 @@ function updateUI() {
 function updateKeyHint() {
     const provider = providerEl.value;
     const hints = {
-        groq: { placeholder: 'gsk_v1_…', hint: 'Get a free key at console.groq.com/keys' },
+        groq: { placeholder: 'gsk_…', hint: 'Get a free key at console.groq.com/keys' },
         openrouter: { placeholder: 'sk-or-v1-…', hint: 'Get a key at openrouter.ai/keys' },
         custom: { placeholder: 'Your API key for custom endpoint', hint: 'Enter the API key for your custom endpoint' }
     };
@@ -224,46 +254,60 @@ function updateKeyHint() {
             }
         };
 
-        chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
-            if (chrome.runtime.lastError) {
-                lockOverlay.style.opacity = '1';
-                lockOverlay.style.pointerEvents = 'auto';
-                mainContainer.style.filter = 'blur(10px)';
+        if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.sendMessage === 'function') {
+            chrome.runtime.sendMessage({ type: 'CHECK_AUTH' }, res => {
+                if (chrome.runtime?.lastError) {
+                    lockOverlay.style.opacity = '1';
+                    lockOverlay.style.pointerEvents = 'auto';
+                    mainContainer.style.filter = 'blur(10px)';
+                    hideLoading();
+                    return;
+                }
+
+                if (res && res.installId) {
+                    const lockIdEl = document.getElementById('optionsInstallId');
+                    const creditsIdEl = document.getElementById('optionsCreditsInstallId');
+                    if (lockIdEl) lockIdEl.textContent = res.installId;
+                    if (creditsIdEl) creditsIdEl.textContent = res.installId;
+                }
+
+                if (res && res.locked) {
+                    lockOverlay.style.opacity = '1';
+                    lockOverlay.style.pointerEvents = 'auto';
+                    mainContainer.style.filter = 'blur(10px)';
+                } else {
+                    lockOverlay.style.opacity = '0';
+                    lockOverlay.style.pointerEvents = 'none';
+                    mainContainer.style.opacity = '1';
+                    mainContainer.style.filter = 'none';
+                }
+
                 hideLoading();
-                return;
-            }
-
-            if (res && res.installId) {
-                const lockIdEl = document.getElementById('optionsInstallId');
-                const creditsIdEl = document.getElementById('optionsCreditsInstallId');
-                if (lockIdEl) lockIdEl.textContent = res.installId;
-                if (creditsIdEl) creditsIdEl.textContent = res.installId;
-            }
-
-            if (res && res.locked) {
-                lockOverlay.style.opacity = '1';
-                lockOverlay.style.pointerEvents = 'auto';
-                mainContainer.style.filter = 'blur(10px)';
-            } else {
+            });
+        } else {
+            if (lockOverlay) {
                 lockOverlay.style.opacity = '0';
                 lockOverlay.style.pointerEvents = 'none';
+            }
+            if (mainContainer) {
                 mainContainer.style.opacity = '1';
                 mainContainer.style.filter = 'none';
             }
-
             hideLoading();
-        });
+        }
 
         setTimeout(hideLoading, 5000);
     };
 
     checkLockStatus();
 
-    chrome.runtime.onMessage.addListener((message) => {
-        if (message.type === 'AUTH_STATE_CHANGED') {
-            checkLockStatus();
-        }
-    });
+    if (typeof chrome !== 'undefined' && chrome.runtime?.onMessage?.addListener) {
+        chrome.runtime.onMessage.addListener((message) => {
+            if (message.type === 'AUTH_STATE_CHANGED') {
+                checkLockStatus();
+            }
+        });
+    }
 
     const activateBtn = document.getElementById('optionsActivateBtn');
     const licenseInput = document.getElementById('optionsLicenseInput');
@@ -586,10 +630,13 @@ function getModel() {
 }
 
 async function reloadActiveTab() {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab && !tab.url?.startsWith(chrome.runtime.getURL(''))) {
-        chrome.tabs.reload(tab.id);
-    }
+    if (typeof chrome === 'undefined' || !chrome.tabs?.query) return;
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab && !tab.url?.startsWith(chrome.runtime?.getURL?.('') || '')) {
+            chrome.tabs.reload(tab.id);
+        }
+    } catch (_) {}
 }
 
 function isValidUrl(str) {
@@ -608,28 +655,9 @@ function showStatus(type, msg) {
     statusEl._timer = setTimeout(() => { statusEl.className = ''; }, 5000);
 }
 
-function fitToScreen() {
-    const wrapper = document.querySelector('.container');
-    if (!wrapper) return;
-
-    wrapper.style.zoom = 1; 
-    const contentHeight = wrapper.scrollHeight;
-    const windowHeight = window.innerHeight - 48; 
-
-    if (contentHeight > windowHeight) {
-        const scale = windowHeight / contentHeight;
-        wrapper.style.zoom = scale;
-    }
-}
-
-window.addEventListener('resize', fitToScreen);
-window.addEventListener('load', fitToScreen);
-
-const observer = new MutationObserver(fitToScreen);
-if (document.body) {
-    observer.observe(document.body, { childList: true, subtree: true });
-}
-fitToScreen();
+// The dashboard scrolls naturally. An earlier build scaled the whole container
+// with CSS zoom to "fit" the viewport, which shrank the settings to unreadable
+// sizes on tall pages and re-ran on every DOM mutation. Removed on purpose.
 
 window.addEventListener('error', (e) => {
     const msg = e.message || e.error?.message || 'Unknown runtime error';

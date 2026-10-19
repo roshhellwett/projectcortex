@@ -1,13 +1,33 @@
+# Dependencies
 node_modules/
+package-lock.json.bak
+
+# Operating System & IDE Files
 .DS_Store
 Thumbs.db
 *.log
-.env
 .vscode/
 .idea/
-*.zip
-.next/
+*.swp
+*.swo
+
+# Secrets & Environment Variables
+.env
+.env*.local
+
+# Build Outputs & Packaging
 dist/
 dist_webstore/
+releases/
+*.zip
+.next/
+out/
+
+# Testing & Coverage
 .early.coverage
+coverage/
+.nyc_output/
+
+# Agents & Scratch
 .agents
+scratch/

@@ -8,40 +8,11 @@
  * </ai_system_instruction>
  */
 
-:root {
-    --pm-surface: rgba(245, 240, 232, 0.95);
-    --pm-surface-hover: rgba(212, 160, 23, 0.06);
-    --pm-border: rgba(0, 0, 0, 0.08);
-    --pm-border-light: rgba(0, 0, 0, 0.04);
-    --pm-text: #1a1a1a;
-    --pm-text-muted: #6b6b6b;
-    --pm-text-bright: #1a1a1a;
-    --pm-accent: #d4a017;
-    --pm-accent-deep: #b8860b;
-    --pm-accent-warm: #c9951e;
-    --pm-accent-primary: linear-gradient(135deg, #b8860b, #d4a017, #c9951e);
-    --pm-accent-glow: rgba(212, 160, 23, 0.35);
-    --pm-accent-green: #059669;
-    --pm-accent-green-glow: rgba(5, 150, 105, 0.35);
-    --pm-accent-green-bg: rgba(5, 150, 105, 0.1);
-    --pm-terminal-green: #059669;
-    --pm-radius: 18px;
-    --pm-radius-sm: 12px;
-    --pm-radius-xs: 6px;
-    --pm-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 1px var(--pm-border) inset;
-    --pm-shadow-lg: 0 30px 80px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
-    --pm-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.13), 0 0 0 1px rgba(212, 160, 23, 0.15) inset;
-    --pm-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --pm-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-    --pm-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-    --pm-transition: cubic-bezier(0.25, 1, 0.5, 1);
-}
-
 #pagemind-panel,
 #pagemind-panel *,
 #pagemind-bubble,
 #pagemind-bubble * {
-    font-family: 'Inter', 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    font-family: var(--cx-font-sans) !important;
     box-sizing: border-box !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
@@ -54,26 +25,23 @@
 }
 
 @keyframes pmSlideIn {
-    0% { opacity: 0; left: -430px; filter: blur(8px); }
-    60% { filter: blur(0); }
-    100% { opacity: 1; left: 20px; filter: blur(0); }
+    0% { opacity: 0; left: -430px; }
+    100% { opacity: 1; left: 20px; }
 }
 
 @keyframes pmSlideOut {
     0% { opacity: 1; left: 20px; }
-    100% { opacity: 0; left: -430px; filter: blur(4px); }
+    100% { opacity: 0; left: -430px; }
 }
 
 @keyframes pmDismiss {
     0% {
         opacity: 1;
         transform: scale(1) translateY(0);
-        filter: blur(0px);
     }
     100% {
         opacity: 0 !important;
         transform: scale(0.85) translateY(14px) !important;
-        filter: blur(16px) !important;
     }
 }
 
@@ -88,7 +56,7 @@
     top: 50%;
     left: -430px;
     transform: translateY(-50%);
-    z-index: 2147483646 !important;
+    z-index: var(--cx-z-panel) !important;
     width: 340px !important;
     max-width: calc(100vw - 32px) !important;
     max-height: 80vh !important;
@@ -101,8 +69,8 @@
     display: flex !important;
     flex-direction: column !important;
     overflow: hidden !important;
-    transition: left 0.55s var(--pm-spring), opacity 0.4s var(--pm-ease-out), filter 0.4s var(--pm-ease-out) !important;
-    will-change: left, opacity, filter !important;
+    transition: left var(--cx-dur-panel) var(--cx-ease-spring), opacity var(--cx-dur-enter) var(--cx-ease-out) !important;
+    will-change: opacity !important;
     opacity: 0 !important;
     pointer-events: none !important;
     padding: 0 !important;
@@ -116,7 +84,6 @@
     border-radius: calc(var(--pm-radius) + 1px) !important;
     background: linear-gradient(135deg, rgba(184, 134, 11, 0.35), rgba(212, 160, 23, 0.25), rgba(201, 149, 30, 0.15), rgba(184, 134, 11, 0.35)) !important;
     background-size: 300% 300% !important;
-    animation: pmBorderGlow 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
     z-index: -1 !important;
     pointer-events: none !important;
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0) !important;
@@ -180,7 +147,7 @@
     justify-content: space-between !important;
     padding: 8px 12px !important;
     border-bottom: 1px solid var(--pm-border) !important;
-    background: rgba(225, 215, 194, 0.98) !important;
+    background: var(--cx-glass-strong) !important;
     flex-shrink: 0 !important;
     cursor: grab !important;
     position: relative !important;
@@ -221,7 +188,7 @@
     content: '\00D7' !important;
     font-size: 10px !important;
     font-weight: 700 !important;
-    color: rgba(0,0,0,0.5) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     opacity: 0 !important;
     transition: opacity 0.15s ease !important;
     line-height: 1 !important;
@@ -241,7 +208,7 @@
     content: '\2212' !important;
     font-size: 11px !important;
     font-weight: 700 !important;
-    color: rgba(0,0,0,0.5) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     opacity: 0 !important;
     transition: opacity 0.15s ease !important;
     line-height: 1 !important;
@@ -261,7 +228,7 @@
     content: '+' !important;
     font-size: 11px !important;
     font-weight: 700 !important;
-    color: rgba(0,0,0,0.5) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
     opacity: 0 !important;
     transition: opacity 0.15s ease !important;
     line-height: 1 !important;
@@ -302,7 +269,16 @@
 #pagemind-panel .pm-logo {
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 7px !important;
+}
+
+#pagemind-panel .pm-logo-icon {
+    width: 16px !important;
+    height: 16px !important;
+    object-fit: contain !important;
+    filter: brightness(0) saturate(100%) invert(73%) sepia(51%) saturate(996%) hue-rotate(5deg) brightness(94%) contrast(89%) !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
 }
 
 #pagemind-panel .pm-logo-text {
@@ -317,7 +293,7 @@
 #pagemind-panel .pm-badge {
     font-size: 8px !important;
     font-weight: 800 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     background: rgba(5, 150, 105, 0.1) !important;
     color: var(--pm-terminal-green) !important;
     border: 1px solid rgba(5, 150, 105, 0.25) !important;
@@ -339,7 +315,7 @@
     border-radius: 8px !important;
     background: transparent !important;
     border: none !important;
-    color: #888 !important;
+    color: var(--cx-text-tertiary) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -351,8 +327,8 @@
 }
 
 #pagemind-panel .pm-icon-btn:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
-    color: #1a1a1a !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--cx-text) !important;
     transform: scale(1.08) !important;
 }
 
@@ -363,15 +339,15 @@
 
 #pagemind-panel .pm-page-info {
     padding: 6px 12px !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
-    background: rgba(0, 0, 0, 0.03) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
     flex-shrink: 0 !important;
 }
 
 #pagemind-panel .pm-page-type {
     font-size: 9px !important;
     font-weight: 700 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     color: var(--pm-terminal-green) !important;
     margin: 0 0 2px 0 !important;
     padding: 0 !important;
@@ -397,8 +373,8 @@
     overflow-x: hidden !important;
     padding: 10px 14px !important;
     scrollbar-width: thin !important;
-    scrollbar-color: rgba(0,0,0,0.06) transparent !important;
-    background: linear-gradient(rgba(225, 215, 194, 0.82), rgba(225, 215, 194, 0.82)), url('icons/background.png') !important;
+    scrollbar-color: rgba(255, 255, 255, 0.06) transparent !important;
+    background: linear-gradient(var(--cx-glass-soft), var(--cx-glass-soft)), url('icons/background.png') !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -414,13 +390,13 @@
 }
 
 #pagemind-panel .pm-body::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.06) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
     border-radius: 8px !important;
     transition: background 0.3s var(--pm-ease-out) !important;
 }
 
 #pagemind-panel .pm-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.16) !important;
+    background: rgba(255, 255, 255, 0.16) !important;
 }
 
 #pagemind-panel .pm-state {
@@ -457,7 +433,7 @@
 #pagemind-panel .pm-section-label {
     font-size: 8px !important;
     font-weight: 800 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     color: var(--pm-accent) !important;
     text-transform: uppercase !important;
     margin: 0 0 8px 0 !important;
@@ -473,8 +449,8 @@
 }
 
 #pagemind-panel .pm-action-btn {
-    background: rgba(0, 0, 0, 0.03) !important;
-    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
     color: var(--pm-text) !important;
     padding: 8px 10px !important;
     border-radius: 12px !important;
@@ -514,11 +490,9 @@
 
 #pagemind-panel #pm-action-activate {
     background: var(--pm-accent-primary) !important;
-    background-size: 200% auto !important;
-    color: #000 !important;
+    color: var(--cx-on-accent) !important;
     border: none !important;
     font-weight: 800 !important;
-    animation: pmGradientShift 5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
 }
 
 @keyframes pmGradientShift {
@@ -530,7 +504,7 @@
 #pagemind-panel #pm-license-input.pm-invalid,
 #pagemind-panel #pm-ask-input.pm-invalid {
     animation: pmShake 0.5s cubic-bezier(.36,.07,.19,.97) both !important;
-    border-color: #ef4444 !important;
+    border-color: var(--cx-danger) !important;
     background: rgba(239, 68, 68, 0.08) !important;
     box-shadow: 0 0 12px rgba(239,68,68,0.2) !important;
 }
@@ -545,7 +519,7 @@
 }
 
 #pagemind-panel .pm-action-btn:hover {
-    background: rgba(0, 0, 0, 0.05) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
     border-color: rgba(212, 160, 23, 0.3) !important;
     color: var(--pm-accent) !important;
     transform: translateY(-2px) scale(1.01) !important;
@@ -569,7 +543,7 @@
 
 #pagemind-panel .pm-divider {
     height: 1px !important;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.06), transparent) !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent) !important;
     margin: 10px 0 !important;
     border: none !important;
 }
@@ -624,16 +598,16 @@
     margin: 0 !important;
     padding: 0 !important;
     font-weight: 700 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
 }
 
 #pagemind-panel .pm-loading-sub {
     font-size: 8px !important;
-    color: #888 !important;
+    color: var(--cx-text-tertiary) !important;
     margin-top: 6px !important;
     padding: 0 !important;
     letter-spacing: 0.05em !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
 }
 
 #pagemind-panel .pm-result-header {
@@ -647,7 +621,7 @@
 #pagemind-panel .pm-result-action {
     font-size: 9px !important;
     font-weight: 700 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     color: var(--pm-terminal-green) !important;
     text-transform: uppercase !important;
     letter-spacing: 0.1em !important;
@@ -656,9 +630,9 @@
 }
 
 #pagemind-panel .pm-back-btn {
-    background: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
     font-size: 10px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -671,7 +645,7 @@
 }
 
 #pagemind-panel .pm-back-btn:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
     color: var(--pm-accent) !important;
     border-color: rgba(212, 160, 23, 0.3) !important;
     transform: translateY(-1.5px) !important;
@@ -686,9 +660,9 @@
 }
 
 #pagemind-panel .pm-retry-btn {
-    background: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
     font-size: 10px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
@@ -701,7 +675,7 @@
 }
 
 #pagemind-panel .pm-retry-btn:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
     color: var(--pm-accent) !important;
     border-color: rgba(212, 160, 23, 0.3) !important;
     transform: translateY(-1.5px) !important;
@@ -743,7 +717,7 @@
 }
 
 #pagemind-panel .pm-result-body em {
-    color: #888 !important;
+    color: var(--cx-text-tertiary) !important;
     font-style: italic !important;
 }
 
@@ -756,7 +730,7 @@
     color: var(--pm-accent) !important;
     font-size: 9px !important;
     font-weight: 900 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     letter-spacing: 0.16em !important;
     text-transform: uppercase !important;
 }
@@ -781,18 +755,18 @@
     display: flex !important;
     gap: 10px !important;
     align-items: flex-start !important;
-    background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)) !important;
-    border: 1px solid rgba(0,0,0,0.06) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
     border-radius: 10px !important;
     padding: 9px 10px !important;
     margin: 6px 0 !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
     transition: all 0.3s var(--pm-ease-out) !important;
 }
 
 #pagemind-panel .pm-insight-card:hover {
     border-color: rgba(212, 160, 23, 0.15) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -811,7 +785,7 @@
     color: var(--pm-accent) !important;
     font-size: 10px !important;
     font-weight: 900 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     box-sizing: border-box !important;
 }
 
@@ -826,13 +800,13 @@
 #pagemind-panel .pm-insight-content strong,
 #pagemind-panel .pm-list-content strong {
     display: inline !important;
-    color: #1a1a1a !important;
+    color: var(--cx-text) !important;
 }
 
 #pagemind-panel .pm-insight-content em {
     display: block !important;
     margin-top: 3px !important;
-    color: #666 !important;
+    color: var(--cx-text-secondary) !important;
     font-style: normal !important;
 }
 
@@ -856,15 +830,121 @@
 #pagemind-panel .pm-result-footer {
     margin-top: 12px !important;
     padding-top: 10px !important;
-    border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
     display: flex !important;
     justify-content: flex-end !important;
+    gap: 8px !important;
+}
+
+#pagemind-panel .pm-page-intel {
+    background: var(--cx-surface-sunken) !important;
+    border: 1px solid var(--cx-border-subtle) !important;
+    border-radius: var(--cx-radius-md) !important;
+    padding: var(--cx-space-2) var(--cx-space-3) !important;
+    margin-bottom: var(--cx-space-3) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: var(--cx-space-2) !important;
+}
+
+#pagemind-panel .pm-intel-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--cx-space-2) !important;
+    font-size: var(--cx-text-label) !important;
+    color: var(--cx-text-muted) !important;
+    font-family: var(--cx-font-mono) !important;
+}
+
+#pagemind-panel .pm-intel-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    color: var(--cx-accent) !important;
+}
+
+#pagemind-panel .pm-intel-pills {
+    display: flex !important;
+    gap: var(--cx-space-2) !important;
+    flex-wrap: wrap !important;
+}
+
+#pagemind-panel .pm-intel-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: var(--cx-surface-raised) !important;
+    border: 1px solid var(--cx-border-subtle) !important;
+    border-radius: var(--cx-radius-full) !important;
+    padding: 3px 8px !important;
+    font-size: var(--cx-text-label) !important;
+    font-weight: 500 !important;
+    color: var(--cx-text-secondary) !important;
+    cursor: pointer !important;
+    transition: background-color var(--cx-dur-fast) var(--cx-ease-out),
+                border-color var(--cx-dur-fast) var(--cx-ease-out),
+                color var(--cx-dur-fast) var(--cx-ease-out) !important;
+}
+
+#pagemind-panel .pm-intel-pill:hover {
+    background: var(--cx-surface-hover) !important;
+    border-color: var(--cx-border) !important;
+    color: var(--cx-accent) !important;
+}
+
+#pagemind-panel .pm-intel-pill:focus-visible {
+    outline: none !important;
+    box-shadow: var(--cx-focus-ring) !important;
+}
+
+#pagemind-panel .pm-followup-container {
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--cx-border-subtle) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+#pagemind-panel .pm-followup-input {
+    flex: 1 !important;
+    background: var(--cx-surface-sunken) !important;
+    border: 1px solid var(--cx-border-subtle) !important;
+    border-radius: var(--cx-radius-sm) !important;
+    padding: 6px 10px !important;
+    color: var(--cx-text) !important;
+    font-size: var(--cx-text-small) !important;
+    outline: none !important;
+    transition: border-color var(--cx-dur-fast) var(--cx-ease-out) !important;
+}
+
+#pagemind-panel .pm-followup-input:focus {
+    border-color: var(--cx-accent) !important;
+    box-shadow: var(--cx-focus-ring) !important;
+}
+
+#pagemind-panel .pm-followup-send {
+    background: var(--cx-surface-raised) !important;
+    border: 1px solid var(--cx-border-subtle) !important;
+    border-radius: var(--cx-radius-sm) !important;
+    color: var(--cx-accent) !important;
+    padding: 6px 9px !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color var(--cx-dur-fast) var(--cx-ease-out) !important;
+}
+
+#pagemind-panel .pm-followup-send:hover {
+    background: var(--cx-surface-hover) !important;
+    border-color: var(--cx-accent) !important;
 }
 
 #pagemind-panel .pm-copy-btn {
-    background: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
     font-size: 10px !important;
     font-weight: 600 !important;
     padding: 5px 10px !important;
@@ -879,7 +959,7 @@
 }
 
 #pagemind-panel .pm-copy-btn:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
     color: var(--pm-accent) !important;
     border-color: rgba(212, 160, 23, 0.3) !important;
     transform: translateY(-1.5px) !important;
@@ -891,17 +971,47 @@
     transition-duration: 0.08s !important;
 }
 
+#pagemind-panel .pm-pin-btn {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    padding: 5px 10px !important;
+    cursor: pointer !important;
+    border-radius: 7px !important;
+    transition: all 0.25s var(--pm-ease-out) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    will-change: transform !important;
+}
+
+#pagemind-panel .pm-pin-btn:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--cx-accent) !important;
+    border-color: rgba(212, 160, 23, 0.3) !important;
+    transform: translateY(-1.5px) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important;
+}
+
+#pagemind-panel .pm-pin-btn:active {
+    transform: scale(0.95) !important;
+    transition-duration: 0.08s !important;
+}
+
 #pagemind-panel .pm-mcq-question {
     font-size: 12.5px !important;
-    color: #1a1a1a !important;
+    color: var(--cx-text) !important;
     font-weight: 750 !important;
     margin: 0 0 10px 0 !important;
     padding: 10px 12px !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 12px !important;
-    background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02)) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)) !important;
     line-height: 1.6 !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
 }
 
 #pagemind-panel .pm-options-list {
@@ -916,7 +1026,7 @@
     display: flex !important;
     align-items: flex-start !important;
     gap: 8px !important;
-    background: rgba(0, 0, 0, 0.02) !important;
+    background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid var(--pm-border-light) !important;
     border-radius: 12px !important;
     padding: 9px 10px !important;
@@ -925,7 +1035,7 @@
 }
 
 #pagemind-panel .pm-option:hover {
-    background: rgba(0, 0, 0, 0.04) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
     border-color: rgba(212, 160, 23, 0.15) !important;
     transform: translateX(3px) !important;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
@@ -935,7 +1045,7 @@
     background: linear-gradient(135deg, rgba(5, 150, 105, 0.18), rgba(5, 150, 105, 0.08)) !important;
     border-color: rgba(5, 150, 105, 0.55) !important;
     box-shadow: 0 0 18px rgba(5, 150, 105, 0.2), 0 0 0 1px rgba(5, 150, 105, 0.24) inset !important;
-    animation: pmCorrectPulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+    animation: pmCorrectPulse 2.5s var(--cx-ease-out) 1 both !important;
 }
 
 @keyframes pmCorrectPulse {
@@ -959,9 +1069,9 @@
     font-size: 10px !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: rgba(0,0,0,0.05) !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
 }
 
 #pagemind-panel .pm-option-tick {
@@ -977,20 +1087,20 @@
     padding: 0 !important;
     background: rgba(5, 150, 105, 0.2) !important;
     border: 1px solid rgba(5, 150, 105, 0.4) !important;
-    color: #059669 !important;
+    color: var(--cx-signal-deep) !important;
 }
 
 #pagemind-panel .pm-option-text {
     flex: 1 !important;
     font-size: 12px !important;
-    color: #555 !important;
+    color: var(--cx-text-secondary) !important;
     line-height: 1.5 !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
 #pagemind-panel .pm-option--correct .pm-option-text {
-    color: #065f46 !important;
+    color: var(--cx-signal-deep) !important;
     font-weight: 800 !important;
 }
 
@@ -1006,15 +1116,15 @@
     font-size: 10px !important;
     margin: 0 !important;
     padding: 0 !important;
-    background: rgba(0,0,0,0.05) !important;
-    border: 1px solid rgba(0,0,0,0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
 }
 
 #pagemind-panel .pm-option--correct .pm-option-badge {
     background: rgba(5, 150, 105, 0.2) !important;
     border: 1px solid rgba(5, 150, 105, 0.4) !important;
-    color: #059669 !important;
+    color: var(--cx-signal-deep) !important;
 }
 
 #pagemind-panel .pm-answer-card {
@@ -1024,7 +1134,7 @@
     padding: 12px !important;
     margin: 0 !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 16px rgba(5, 150, 105, 0.1), 0 0 0 1px rgba(5, 150, 105, 0.14) inset !important;
-    animation: pmAnswerGlow 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
+    animation: pmAnswerGlow 3.5s var(--cx-ease-out) 1 both !important;
 }
 
 @keyframes pmAnswerGlow {
@@ -1035,7 +1145,7 @@
 #pagemind-panel .pm-answer-kicker {
     font-size: 9px !important;
     font-weight: 700 !important;
-    font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace !important;
+    font-family: var(--cx-font-mono) !important;
     color: var(--pm-terminal-green) !important;
     text-transform: uppercase !important;
     margin: 0 0 8px 0 !important;
@@ -1058,7 +1168,7 @@
     border-radius: 50% !important;
     background: linear-gradient(135deg, rgba(5, 150, 105, 0.2), rgba(5, 150, 105, 0.1)) !important;
     border: 1px solid rgba(5, 150, 105, 0.4) !important;
-    color: #059669 !important;
+    color: var(--cx-signal-deep) !important;
     font-weight: 800 !important;
     font-size: 12px !important;
     display: flex !important;
@@ -1072,7 +1182,7 @@
 #pagemind-panel .pm-answer-txt {
     font-size: 13px !important;
     font-weight: 700 !important;
-    color: #065f46 !important;
+    color: var(--cx-signal-deep) !important;
     line-height: 1.4 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -1082,7 +1192,7 @@
     margin-top: 10px !important;
     padding-top: 9px !important;
     border-top: 1px solid rgba(5, 150, 105, 0.16) !important;
-    color: #4a9e7e !important;
+    color: var(--cx-signal) !important;
     font-size: 10px !important;
     line-height: 1.5 !important;
     font-style: italic !important;
@@ -1101,7 +1211,7 @@
 #pagemind-panel .pm-error-wrap svg {
     width: 32px !important;
     height: 32px !important;
-    color: #ef4444 !important;
+    color: var(--cx-danger) !important;
     opacity: 0.6 !important;
 }
 
@@ -1114,7 +1224,7 @@
 
 #pagemind-panel .pm-error-msg {
     font-size: 12px !important;
-    color: #666 !important;
+    color: var(--cx-text-secondary) !important;
     line-height: 1.6 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -1128,17 +1238,17 @@
     align-items: center !important;
     gap: 8px !important;
     padding: 8px 12px !important;
-    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
-    background: rgba(225, 215, 194, 0.3) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    background: rgba(212, 160, 23, 0.06) !important;
     flex-shrink: 0 !important;
 }
 
 #pagemind-panel #pm-ask-input {
     flex: 1 !important;
-    background: rgba(255, 255, 255, 0.6) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 10px !important;
-    color: #1a1a1a !important;
+    color: var(--cx-text) !important;
     font-size: 11px !important;
     padding: 8px 10px !important;
     outline: none !important;
@@ -1149,21 +1259,21 @@
 
 #pagemind-panel #pm-ask-input:focus {
     border-color: rgba(212, 160, 23, 0.4) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
     box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
 #pagemind-panel #pm-ask-input::placeholder {
-    color: #aaa !important;
+    color: var(--cx-text-tertiary) !important;
 }
 
 #pagemind-panel #pm-ask-send {
     width: 32px !important;
     height: 32px !important;
     border-radius: 10px !important;
-    background: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -1205,10 +1315,10 @@
 
 #pagemind-panel .pm-ask-input {
     flex: 1 !important;
-    background: rgba(255, 255, 255, 0.6) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 10px !important;
-    color: #1a1a1a !important;
+    color: var(--cx-text) !important;
     font-size: 11px !important;
     padding: 8px 10px !important;
     outline: none !important;
@@ -1219,21 +1329,21 @@
 
 #pagemind-panel .pm-ask-input:focus {
     border-color: rgba(212, 160, 23, 0.4) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
     box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
 #pagemind-panel .pm-ask-input::placeholder {
-    color: #aaa !important;
+    color: var(--cx-text-tertiary) !important;
 }
 
 .pm-ask-send {
     width: 32px !important;
     height: 32px !important;
     border-radius: 10px !important;
-    background: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    color: #888 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: var(--cx-text-tertiary) !important;
     cursor: pointer !important;
     display: flex !important;
     align-items: center !important;
@@ -1256,7 +1366,7 @@
     z-index: 2147483647 !important;
     display: flex !important;
     flex-direction: column !important;
-    background: rgba(245, 240, 232, 0.95) !important;
+    background: var(--cx-glass) !important;
     -webkit-backdrop-filter: blur(32px) saturate(160%) !important;
     backdrop-filter: blur(32px) saturate(160%) !important;
     border: none !important;
@@ -1285,7 +1395,7 @@
     width: 200px !important;
     border-radius: var(--pm-radius) !important;
     padding: 5px !important;
-    background: rgba(245, 240, 232, 0.98) !important;
+    background: var(--cx-glass) !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0,0,0,0.04) inset !important;
 }
 
@@ -1300,16 +1410,21 @@
     display: flex !important;
     background: rgba(212, 160, 23, 0.85) !important;
     border: 1px solid rgba(212, 160, 23, 0.4) !important;
-    color: #fff !important;
+    color: var(--cx-text) !important;
     font-weight: 800 !important;
     font-size: 14px !important;
-    font-family: 'Inter', 'Outfit', -apple-system, sans-serif !important;
+    font-family: var(--cx-font-sans) !important;
     line-height: 1 !important;
 }
 
-.pm-bubble-letter {
+.pm-bubble-letter,
+.pm-bubble-logo {
     pointer-events: none !important;
     user-select: none !important;
+    width: 14px !important;
+    height: 14px !important;
+    object-fit: contain !important;
+    display: block !important;
 }
 
 #pm-bubble-trigger:hover {
@@ -1338,10 +1453,10 @@
 
 #pm-bubble-input {
     width: 100% !important;
-    background: rgba(255, 255, 255, 0.6) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: var(--pm-radius-sm) !important;
-    color: #1a1a1a !important;
+    color: var(--cx-text) !important;
     padding: 8px 10px !important;
     font-size: 11px !important;
     margin-bottom: 6px !important;
@@ -1353,7 +1468,7 @@
 
 #pm-bubble-input:focus {
     border-color: rgba(212, 160, 23, 0.4) !important;
-    background: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
     box-shadow: 0 0 20px rgba(212, 160, 23, 0.12), 0 0 0 1px rgba(212, 160, 23, 0.1) inset !important;
 }
 
@@ -1364,7 +1479,6 @@
     border-radius: inherit !important;
     background: linear-gradient(135deg, rgba(184, 134, 11, 0.3), rgba(212, 160, 23, 0.2), rgba(201, 149, 30, 0.1), rgba(184, 134, 11, 0.3)) !important;
     background-size: 300% 300% !important;
-    animation: pmBorderGlow 7s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
     z-index: -1 !important;
     pointer-events: none !important;
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0) !important;
@@ -1415,7 +1529,7 @@
 }
 
 #pagemind-bubble button:hover {
-    background: rgba(0, 0, 0, 0.03) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
     color: var(--pm-accent) !important;
     transform: translateX(3px) !important;
 }
@@ -1431,25 +1545,25 @@
 }
 
 #pagemind-panel .pm-inline-code {
-    background: rgba(0, 0, 0, 0.04) !important;
-    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 4px !important;
     padding: 2px 5px !important;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
     font-size: 0.9em !important;
-    color: #333 !important;
+    color: var(--cx-text-secondary) !important;
 }
 
 #pagemind-panel blockquote {
     border-left: 3px solid rgba(212, 160, 23, 0.25) !important;
     margin: 10px 0 !important;
     padding-left: 14px !important;
-    color: #666 !important;
+    color: var(--cx-text-secondary) !important;
     font-style: italic !important;
 }
 
 #pagemind-panel h1, #pagemind-panel h2, #pagemind-panel h3 {
-    color: #1a1a1a !important;
+    color: var(--cx-text) !important;
     margin: 14px 0 6px 0 !important;
     font-weight: 600 !important;
 }
@@ -1457,6 +1571,33 @@
 #pagemind-panel h1 { font-size: 1.2em !important; }
 #pagemind-panel h2 { font-size: 1.1em !important; }
 #pagemind-panel h3 { font-size: 1em !important; }
+
+@media (max-width: 520px) {
+    #pagemind-panel {
+        left: 12px !important;
+        width: calc(100vw - 24px) !important;
+        max-width: none !important;
+        max-height: 86vh !important;
+    }
+
+    #pagemind-panel.pm-open {
+        left: 12px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pagemind-panel,
+    #pagemind-panel::before,
+    #pagemind-panel *,
+    #pagemind-bubble,
+    #pagemind-bubble::before,
+    #pagemind-bubble * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
 
 #pagemind-panel .pm-list-item {
     display: flex !important;
@@ -1508,5 +1649,125 @@
         grid-template-columns: 1fr !important;
     }
 }
-@ m e d i a   ( p r e f e r s - r e d u c e d - m o t i o n :   r e d u c e )   {   * ,   : : b e f o r e ,   : : a f t e r   {   a n i m a t i o n - d u r a t i o n :   0 . 0 1 m s   ! i m p o r t a n t ;   a n i m a t i o n - i t e r a t i o n - c o u n t :   1   ! i m p o r t a n t ;   t r a n s i t i o n - d u r a t i o n :   0 . 0 1 m s   ! i m p o r t a n t ;   s c r o l l - b e h a v i o r :   a u t o   ! i m p o r t a n t ;   }   }  
- 
+@media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
+/* ===== v11.2.1 Universal rich-content renderer ===== */
+.pm-para { margin: 2px 0; line-height: 1.55; }
+.pm-code-block {
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--cx-font-mono) !important;
+  font-size: 11px;
+  line-height: 1.55;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 8px 0;
+}
+.pm-math {
+  font-family: var(--cx-font-mono) !important;
+  background: rgba(212, 160, 23, 0.1);
+  border: 1px solid rgba(212, 160, 23, 0.18);
+  padding: 1px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.pm-math-block {
+  font-family: var(--cx-font-mono) !important;
+  text-align: center;
+  font-size: 13px;
+  background: rgba(212, 160, 23, 0.07);
+  border: 1px dashed rgba(212, 160, 23, 0.3);
+  border-radius: 8px;
+  padding: 12px 10px;
+  margin: 8px 0;
+  overflow-x: auto;
+}
+.pm-frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  margin: 0 3px;
+  line-height: 1.15;
+  font-size: 0.92em;
+}
+.pm-frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 4px; }
+.pm-frac > span:last-child { padding: 0 4px; }
+.pm-sqrt { border-top: 1px solid currentColor; padding: 0 3px; margin-left: 1px; }
+.pm-boxed {
+  border: 1.5px solid var(--cx-accent);
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-weight: 700;
+  background: rgba(212, 160, 23, 0.12);
+  display: inline-block;
+}
+.pm-step-card {
+  display: flex;
+  gap: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 3px solid var(--cx-accent);
+  border-radius: 8px;
+  padding: 9px 11px;
+  margin: 7px 0;
+  align-items: flex-start;
+}
+.pm-step-num {
+  background: linear-gradient(135deg, var(--cx-accent-deep), var(--cx-accent));
+  color: var(--cx-on-accent);
+  font-weight: 800;
+  font-size: 10px;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+.pm-step-content { flex: 1; line-height: 1.5; }
+.pm-table-wrap { overflow-x: auto; margin: 8px 0; border-radius: 8px; }
+.pm-table { border-collapse: collapse; width: 100%; font-size: 11px; }
+.pm-table th, .pm-table td {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 5px 9px;
+  text-align: left;
+  vertical-align: top;
+}
+.pm-table th {
+  background: rgba(212, 160, 23, 0.14);
+  font-weight: 800;
+  color: var(--cx-text-secondary);
+}
+.pm-table tr:nth-child(even) td { background: rgba(255, 255, 255, 0.025); }
+.pm-verdict-badge {
+  display: inline-block;
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--cx-signal-deep);
+  border: 1px solid rgba(5, 150, 105, 0.32);
+  font-weight: 800;
+  font-size: 11px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+  margin: 2px 0;
+}
+
+/* Panel drag state.
+ *
+ * This lives on a class on <html> rather than a full screen overlay element.
+ * The old overlay was only torn down by a mouseup the panel actually saw, so
+ * releasing the mouse outside the window (or over an iframe) left an invisible
+ * z-index-max element covering the page and blocking text selection until the
+ * user refreshed. A leaked class can only ever affect the cursor. */
+html.pm-dragging,
+html.pm-dragging body,
+html.pm-dragging * {
+    cursor: move !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}

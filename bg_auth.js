@@ -165,7 +165,9 @@ export async function checkAuthStatus() {
         chrome.storage.local.remove(['authToken']).catch(() => {});
         chrome.storage.sync.remove(['authToken']).catch(() => {});
         broadcastAuthStateChanged();
-        return { locked: true, reason: data.error || 'EXPIRED', installId: currentInstallId };
+        const reasonRaw = data && data.error;
+        const reason = typeof reasonRaw === 'string' ? reasonRaw : (reasonRaw?.message || 'EXPIRED');
+        return { locked: true, reason, installId: currentInstallId };
       }
 
       if (data.token) {

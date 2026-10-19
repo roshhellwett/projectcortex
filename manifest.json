@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ProjectCortex — Intelligence",
-  "version": "11.0.0",
+  "version": "11.3.0",
   "description": "Unlock premium intelligence directly inside your browser. Ask, summarize, and analyze anything instantly.",
   "author": "roshhellwett",
   "homepage_url": "https://github.com/roshhellwett/projectcortex",
@@ -32,6 +32,13 @@
         "mac": "Command+Shift+L"
       },
       "description": "Open ProjectCortex Panel"
+    },
+    "open_palette": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Open the Cortex Command Center"
     }
   },
   "background": {
@@ -49,9 +56,11 @@
         "content_anti_cheat.js",
         "content_ui.js",
         "content_ai.js",
+        "content_productivity.js",
         "content_main.js"
       ],
       "css": [
+        "tokens.css",
         "content.css"
       ],
       "run_at": "document_idle",

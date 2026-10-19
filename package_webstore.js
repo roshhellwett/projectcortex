@@ -6,7 +6,9 @@ console.log('====================================================');
 console.log(' PROJECT CORTEX — WEB STORE VERIFICATION & PACKAGER ');
 console.log('====================================================\n');
 
-const rootDir = 'a:\\projectcortex';
+// Resolve from the script location so packaging works after cloning the
+// project to any drive or workspace.
+const rootDir = __dirname;
 const manifestPath = path.join(rootDir, 'manifest.json');
 
 // 1. Verify Manifest JSON
@@ -34,7 +36,9 @@ const requiredFiles = [
   'content_anti_cheat.js',
   'content_ui.js',
   'content_ai.js',
+  'content_productivity.js',
   'content_main.js',
+  'tokens.css',
   'content.css',
   'main_world.js',
   'options.html',
@@ -133,9 +137,13 @@ stagedAll.forEach(f => {
 
 // 6. Create WebStore Distribution ZIPs
 console.log('\n[5/5] Creating Chrome Web Store distribution archive...');
-const zipName = 'ProjectCortex-WebStore-v11.0.0.zip';
-const zipPath = path.join(rootDir, zipName);
-const legacyZipPath = path.join(rootDir, 'projectcortex-dist-latest.zip');
+const releasesDir = path.join(rootDir, 'releases');
+if (!fs.existsSync(releasesDir)) {
+  fs.mkdirSync(releasesDir, { recursive: true });
+}
+const zipName = `ProjectCortex-WebStore-v${manifest.version}.zip`;
+const zipPath = path.join(releasesDir, zipName);
+const legacyZipPath = path.join(releasesDir, 'projectcortex-dist-latest.zip');
 
 [zipPath, legacyZipPath].forEach(p => {
   if (fs.existsSync(p)) fs.unlinkSync(p);
@@ -152,9 +160,9 @@ try {
   
   const zipStat = fs.statSync(zipPath);
   console.log(`\n====================================================`);
-  console.log(`SUCCESSFULLY CREATED CHROME WEB STORE ARCHIVES:`);
-  console.log(`  1. ${zipName} (${(zipStat.size / 1024).toFixed(1)} KB)`);
-  console.log(`  2. projectcortex-dist-latest.zip (${(zipStat.size / 1024).toFixed(1)} KB)`);
+  console.log(`SUCCESSFULLY CREATED CHROME WEB STORE ARCHIVES IN releases/:`);
+  console.log(`  1. releases/${zipName} (${(zipStat.size / 1024).toFixed(1)} KB)`);
+  console.log(`  2. releases/projectcortex-dist-latest.zip (${(zipStat.size / 1024).toFixed(1)} KB)`);
   console.log(`====================================================\n`);
   console.log(`Package is 100% compliant with Chrome Web Store policies:`);
   console.log(`- Manifest V3`);

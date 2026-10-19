@@ -1,240 +1,721 @@
-<!-- Copyright (c) 2026 Zenith Open Source Projects -->
-<!-- SPDX-License-Identifier: MIT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cortex — Your Browsing Workspace</title>
+  <link rel="icon" type="image/png" href="icons/logo16.png" />
+  <link rel="stylesheet" href="tokens.css" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { color-scheme: dark; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 300px;
-      background: #e1d7c2;
-      color: #1a1a1a;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
-      font-size: 13px;
-      overflow: hidden;
+      width: 380px;
+      margin: 0;
+      background: var(--cx-canvas-deep);
+      color: var(--cx-text);
+      font-family: var(--cx-font-sans);
+      font-size: var(--cx-text-body);
+      line-height: var(--cx-leading-body);
       -webkit-font-smoothing: antialiased;
-      animation: pmFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes pmFadeIn {
-      0% { opacity: 0; transform: translateY(10px) scale(0.96); filter: blur(4px); }
-      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-    }
-
-    .hdr {
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
       position: relative;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 14px;
-      background: rgba(225, 215, 194, 0.98);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
 
-    .hdr::after {
+    /* Ambient Obsidian-Gold Glow */
+    body::before {
       content: '';
-      position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(212, 160, 23, 0.3), rgba(212, 160, 23, 0.3), transparent);
+      position: fixed;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 180px;
+      background: radial-gradient(ellipse at center, var(--cx-accent-soft) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
     }
 
-    .traffic-lights {
+    button { font: inherit; cursor: pointer; border: 0; background: transparent; }
+    button:focus-visible, a:focus-visible { outline: none; box-shadow: var(--cx-focus-ring); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* === HEADER === */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
       display: flex;
-      gap: 6px;
-      margin-right: 6px;
       align-items: center;
+      justify-content: space-between;
+      padding: var(--cx-space-3) var(--cx-space-4);
+      background: var(--cx-glass-strong);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border-bottom: 1px solid var(--cx-border);
+      box-shadow: var(--cx-elev-1);
     }
 
-    .traffic-light {
-      width: 10px; height: 10px;
-      border-radius: 50%;
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: var(--cx-space-2);
     }
-    .traffic-light.red { background: #ff5f57; }
-    .traffic-light.yellow { background: #ffbd2e; }
-    .traffic-light.green { background: #28c840; }
 
-    .hdr-icon {
-      width: 20px; height: 20px;
+    .brand-logo {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--cx-radius-sm);
+      background: var(--cx-accent-gradient);
+      padding: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--cx-accent-glow);
       flex-shrink: 0;
     }
 
-    .hdr-text {
-      display: flex; flex-direction: column; gap: 2px;
+    .brand-logo-inner {
+      width: 100%;
+      height: 100%;
+      background: var(--cx-canvas-deep);
+      border-radius: calc(var(--cx-radius-sm) - 1px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cx-accent-bright);
     }
 
-    .hdr-title {
-      font-weight: 800;
-      font-size: 13px;
-      color: #d4a017;
-      letter-spacing: -0.02em;
+    .cortex-brand-icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      filter: brightness(0) saturate(100%) invert(73%) sepia(51%) saturate(996%) hue-rotate(5deg) brightness(94%) contrast(89%);
+      transition: transform var(--cx-dur-fast) var(--cx-ease-out), filter var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .brand-wrap:hover .cortex-brand-icon {
+      transform: scale(1.1);
+      filter: brightness(0) saturate(100%) invert(85%) sepia(55%) saturate(1200%) hue-rotate(5deg) brightness(105%) contrast(95%);
     }
 
-    .hdr-subtitle {
-      font-size: 8px; font-weight: 700;
-      color: #059669;
-      text-transform: uppercase; letter-spacing: 0.18em;
-      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+    .brand {
+      font-size: var(--cx-text-heading);
+      font-weight: var(--cx-weight-bold);
+      letter-spacing: var(--cx-track-title);
+      color: var(--cx-text);
     }
 
-    .hdr-badge {
-      margin-left: auto;
-      font-size: 8px; font-weight: 800;
-      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-      color: #059669;
-      background: rgba(5, 150, 105, 0.1);
-      border: 1px solid rgba(5, 150, 105, 0.25);
-      padding: 3px 8px;
-      border-radius: 5px;
-      letter-spacing: 0.08em;
+    .version-pill {
+      font-family: var(--cx-font-mono);
+      font-size: var(--cx-text-label);
+      font-weight: var(--cx-weight-semibold);
+      letter-spacing: 0.04em;
+      color: var(--cx-accent-bright);
+      background: var(--cx-badge-gold-bg);
+      border: 1px solid var(--cx-badge-gold-border);
+      border-radius: var(--cx-radius-full);
+      padding: 1px var(--cx-space-2);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--cx-space-1);
+    }
+
+    .icon-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--cx-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cx-text-secondary);
+      transition: background-color var(--cx-dur-fast) var(--cx-ease-out),
+                  color var(--cx-dur-fast) var(--cx-ease-out),
+                  transform var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .icon-btn:hover {
+      background: var(--cx-surface-hover);
+      color: var(--cx-accent-bright);
+      transform: translateY(-1px);
+    }
+    .icon-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* === MAIN BODY === */
+    main {
+      padding: var(--cx-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--cx-space-3);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* === ACTIVE TAB CONTEXT CARD === */
+    .context-card {
+      border: 1px solid var(--cx-border);
+      background: var(--cx-glass-soft);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--cx-radius-md);
+      padding: var(--cx-space-3);
+      box-shadow: var(--cx-elev-1);
+      transition: border-color var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .context-card:hover {
+      border-color: var(--cx-border-strong);
+    }
+
+    .context-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--cx-space-2);
+    }
+
+    .context-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--cx-text-label);
+      font-weight: var(--cx-weight-bold);
+      letter-spacing: var(--cx-track-label);
       text-transform: uppercase;
+      color: var(--cx-text-secondary);
     }
 
-    .bd { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-
-    .btn-main {
-      width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-      background: rgba(212, 160, 23, 0.1);
-      border: 1px solid rgba(212, 160, 23, 0.25);
-      color: #d4a017;
-      font-size: 12px; font-weight: 700;
-      padding: 10px; border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative; overflow: hidden;
+    .context-reading-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--cx-font-mono);
+      font-size: var(--cx-text-micro);
+      color: var(--cx-accent-bright);
+      background: var(--cx-surface-sunken);
+      border: 1px solid var(--cx-border-faint);
+      border-radius: var(--cx-radius-xs);
+      padding: 1px 6px;
     }
-    .btn-main:hover {
-      background: rgba(212, 160, 23, 0.18);
-      border-color: rgba(212, 160, 23, 0.4);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(212, 160, 23, 0.15);
-    }
-    .btn-main:active { transform: scale(0.97) translateY(0); transition-duration: 0.08s; }
-    .btn-main:disabled, .btn-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; pointer-events: none; }
+    .context-reading-chip svg { color: var(--cx-accent); }
 
-    .action-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: var(--cx-radius-full);
+      background: var(--cx-signal);
+      box-shadow: var(--cx-signal-glow);
     }
 
-    .btn-action {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-      background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);
-      padding: 10px 8px; border-radius: 12px;
-      color: #6b6b6b;
-      font-size: 11px; font-weight: 600; text-align: center;
-      cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative; overflow: hidden;
+    .context-title {
+      font-size: var(--cx-text-heading);
+      font-weight: var(--cx-weight-semibold);
+      letter-spacing: -0.01em;
+      color: var(--cx-text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-bottom: var(--cx-space-1);
     }
-    .btn-action svg { width: 16px; height: 16px; opacity: 0.7; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    
-    .btn-action:hover {
-      background: rgba(212, 160, 23, 0.08);
-      border-color: rgba(212, 160, 23, 0.25);
-      color: #d4a017;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-    .btn-action:hover svg { opacity: 1; transform: scale(1.12); }
-    .btn-action:active { transform: scale(0.95) translateY(0); transition-duration: 0.08s; }
 
-    .btn-action.primary { grid-column: 1 / -1; flex-direction: row; text-align: left; justify-content: flex-start; padding: 10px 12px; }
-    .btn-action.primary:last-child { margin-top: 4px; }
-
-    .loading {
-      display: none; align-items: center; justify-content: center; gap: 8px;
-      padding: 10px 0 0 0;
-      color: #d4a017;
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.15em;
-      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+    .context-host-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--cx-font-mono);
+      font-size: var(--cx-text-micro);
+      color: var(--cx-text-secondary);
+      background: var(--cx-surface-sunken);
+      border: 1px solid var(--cx-border-faint);
+      border-radius: var(--cx-radius-xs);
+      padding: 2px 7px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .loading.visible { display: flex; }
-    .spinner {
-      width: 10px; height: 10px; border: 2px solid rgba(0,0,0,0.08);
-      border-top-color: #d4a017; border-radius: 50%;
-      animation: pmSpin 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    }
-    @keyframes pmSpin { to { transform: rotate(360deg); } }
+    .context-host-pill svg { color: var(--cx-accent); flex-shrink: 0; }
 
-    .ftr {
-      padding: 10px; text-align: center; font-size: 9px;
-      color: #888;
-      background: rgba(225, 215, 194, 0.5);
-      border-top: 1px solid rgba(0, 0, 0, 0.04);
-      font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-      line-height: 1.5;
+    /* === ACTION BUTTONS === */
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      border: 0;
+      border-radius: var(--cx-radius-md);
+      padding: var(--cx-space-3) var(--cx-space-4);
+      background: var(--cx-accent-gradient);
+      color: var(--cx-on-accent);
+      font-weight: var(--cx-weight-bold);
+      font-size: 13.5px;
+      box-shadow: var(--cx-accent-glow), var(--cx-elev-2);
+      transition: filter var(--cx-dur-fast) var(--cx-ease-out),
+                  transform var(--cx-dur-fast) var(--cx-ease-out),
+                  box-shadow var(--cx-dur-fast) var(--cx-ease-out);
     }
-    .ftr a { color: #d4a017; text-decoration: none; transition: color 0.2s; }
-    .ftr a:hover { color: #d4a017; }
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(212, 160, 23, 0.4), var(--cx-elev-2);
+    }
+    .btn-primary:active:not(:disabled) {
+      filter: brightness(0.96);
+      transform: scale(0.98);
+    }
 
+    .btn-primary-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--cx-space-2);
+    }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      border: 1px solid var(--cx-border-soft);
+      border-radius: var(--cx-radius-md);
+      padding: var(--cx-space-2) var(--cx-space-4);
+      background: var(--cx-glass-soft);
+      color: var(--cx-text);
+      font-size: var(--cx-text-body);
+      font-weight: var(--cx-weight-semibold);
+      box-shadow: var(--cx-elev-1);
+      transition: background-color var(--cx-dur-fast) var(--cx-ease-out),
+                  border-color var(--cx-dur-fast) var(--cx-ease-out),
+                  transform var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--cx-surface-hover);
+      border-color: var(--cx-border);
+      color: var(--cx-accent-bright);
+      transform: translateY(-1px);
+    }
+    .btn-secondary:active:not(:disabled) {
+      background: var(--cx-surface-active);
+      transform: scale(0.98);
+    }
+
+    .btn-secondary-inner {
+      display: flex;
+      align-items: center;
+      gap: var(--cx-space-2);
+    }
+
+    kbd {
+      font-family: var(--cx-font-mono);
+      font-size: var(--cx-text-label);
+      font-weight: var(--cx-weight-semibold);
+      color: var(--cx-text-secondary);
+      background: var(--cx-surface-sunken);
+      border: 1px solid var(--cx-border-faint);
+      border-radius: var(--cx-radius-xs);
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
+
+    /* === QUICK ACTIONS GRID === */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--cx-space-1);
+    }
+    .section-head h2 {
+      font-size: var(--cx-text-small);
+      font-weight: var(--cx-weight-bold);
+      letter-spacing: -0.01em;
+      color: var(--cx-text);
+    }
+    .section-head span {
+      font-size: var(--cx-text-micro);
+      color: var(--cx-text-tertiary);
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--cx-space-2);
+    }
+
+    .action-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--cx-space-2);
+      text-align: left;
+      padding: var(--cx-space-3);
+      border: 1px solid var(--cx-border-soft);
+      border-radius: var(--cx-radius-md);
+      background: var(--cx-glass-soft);
+      color: var(--cx-text);
+      box-shadow: var(--cx-elev-1);
+      position: relative;
+      overflow: hidden;
+      transition: background-color var(--cx-dur-fast) var(--cx-ease-out),
+                  border-color var(--cx-dur-fast) var(--cx-ease-out),
+                  transform var(--cx-dur-fast) var(--cx-ease-out),
+                  box-shadow var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .action-card:hover:not(:disabled) {
+      background: var(--cx-surface-hover);
+      border-color: var(--cx-border);
+      transform: translateY(-1.5px);
+      box-shadow: var(--cx-elev-2);
+    }
+    .action-card:active:not(:disabled) {
+      background: var(--cx-surface-active);
+      transform: scale(0.97);
+    }
+
+    .action-icon-wrap {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--cx-radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cx-surface-sunken);
+      color: var(--cx-accent-bright);
+      border: 1px solid var(--cx-border-faint);
+      transition: background-color var(--cx-dur-fast) var(--cx-ease-out),
+                  color var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .action-icon-wrap--signal {
+      color: var(--cx-signal);
+      background: var(--cx-badge-signal-bg);
+      border-color: var(--cx-badge-signal-border);
+    }
+    .action-card:hover:not(:disabled) .action-icon-wrap {
+      background: var(--cx-badge-gold-bg);
+      border-color: var(--cx-badge-gold-border);
+    }
+
+    .action-meta strong {
+      display: block;
+      font-size: 12.5px;
+      font-weight: var(--cx-weight-semibold);
+      letter-spacing: -0.01em;
+      color: var(--cx-text);
+      margin-bottom: 2px;
+    }
+    .action-meta span {
+      display: block;
+      font-size: var(--cx-text-micro);
+      color: var(--cx-text-tertiary);
+      line-height: 1.35;
+    }
+
+    /* === STATUS & HINTS === */
+    .telemetry-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--cx-text-micro);
+      color: var(--cx-text-tertiary);
+      padding: var(--cx-space-1) var(--cx-space-2);
+      background: var(--cx-surface-sunken);
+      border: 1px solid var(--cx-border-faint);
+      border-radius: var(--cx-radius-sm);
+    }
+    .telemetry-hint svg { color: var(--cx-accent); flex-shrink: 0; }
+
+    #status {
+      font-size: var(--cx-text-small);
+      color: var(--cx-text-secondary);
+      text-align: center;
+      padding: var(--cx-space-1) 0;
+    }
+    #status:empty { display: none; }
+
+    #pm-error {
+      font-size: var(--cx-text-small);
+      color: var(--cx-danger);
+      border-left: 3px solid var(--cx-danger);
+      background: var(--cx-danger-faint);
+      border-radius: 0 var(--cx-radius-xs) var(--cx-radius-xs) 0;
+      padding: var(--cx-space-2) var(--cx-space-3);
+      line-height: 1.4;
+    }
+    #pm-error[hidden] { display: none; }
+
+    /* === FOOTER === */
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--cx-space-3) var(--cx-space-4);
+      background: var(--cx-glass-strong);
+      border-top: 1px solid var(--cx-border-soft);
+      font-size: var(--cx-text-micro);
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--cx-text-tertiary);
+      font-weight: var(--cx-weight-medium);
+    }
+    .footer-brand-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: var(--cx-radius-full);
+      background: var(--cx-accent);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: var(--cx-space-3);
+    }
+
+    .footer-btn {
+      background: none;
+      color: var(--cx-text-secondary);
+      border: 0;
+      padding: 0;
+      font-size: var(--cx-text-micro);
+      font-weight: var(--cx-weight-semibold);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .footer-btn:hover {
+      color: var(--cx-accent-bright);
+    }
+
+    footer a {
+      color: var(--cx-text-secondary);
+      text-decoration: none;
+      transition: color var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    footer a:hover {
+      color: var(--cx-accent-bright);
+    }
+
+    /* Contract: Reduced motion & Focus rings */
+    :where(button, a[href], input, select, textarea, [tabindex]):focus-visible {
+      outline: none;
+      box-shadow: var(--cx-focus-ring);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
-  
-  <div class="hdr">
-    <div class="traffic-lights">
-      <span class="traffic-light red"></span>
-      <span class="traffic-light yellow"></span>
-      <span class="traffic-light green"></span>
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-logo" aria-hidden="true">
+        <div class="brand-logo-inner">
+          <img src="icons/logo48.png" width="16" height="16" class="cortex-brand-icon" alt="Project Cortex" />
+        </div>
+      </div>
+      <span class="brand">Cortex</span>
+      <span id="popup-version" class="version-pill">v11.3.0</span>
     </div>
-    <svg class="hdr-icon" viewBox="0 0 32 32" fill="none">
-      <rect x="2" y="6" width="28" height="20" rx="3" fill="#e1d7c2" stroke="#d4a017" stroke-width="2"/>
-      <path d="M6 10h4v2H6zM12 10h4v2h-4zM20 10h6v2h-6z" fill="#d4a017" opacity="0.8"/>
-      <path d="M6 15h20v1H6z" fill="#65675e"/>
-      <path d="M6 18h14v1H6z" fill="#65675e"/>
-      <path d="M6 21h8v1H6z" fill="#65675e"/>
-    </svg>
-    <div class="hdr-text">
-      <div class="hdr-title">ProjectCortex</div>
-      <div class="hdr-subtitle">\u25B8 ZENITH_OS</div>
+    <div class="header-actions">
+      <button id="openSettingsHeader" class="icon-btn" aria-label="Open Settings" title="Settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
     </div>
-    <div class="hdr-badge">v11.0.0</div>
-  </div>
+  </header>
 
-  <div class="bd">
-    <button class="btn-main" id="openPanel" aria-label="Open the Cortex panel">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Open AI Assistant
+  <main>
+    <!-- Active Tab Context Card -->
+    <section class="context-card" aria-label="Current page">
+      <div class="context-header">
+        <div class="context-badge">
+          <span class="status-dot"></span>
+          <span>Active Context</span>
+        </div>
+        <div id="pageReadingChip" class="context-reading-chip" style="display: none;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span id="pageReadingTime">-- min read</span>
+        </div>
+      </div>
+      <div id="pageTitle" class="context-title">Checking page…</div>
+      <div class="context-host-pill" title="Current host">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span id="pageHost">Reading active tab…</span>
+      </div>
+    </section>
+
+    <!-- Primary & Secondary Launcher CTAs -->
+    <button id="openPanel" class="btn-primary" data-action="open_panel" disabled>
+      <span class="btn-primary-inner">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 16v-4"></path>
+          <path d="M12 8h.01"></path>
+        </svg>
+        <span>Ask about this page</span>
+      </span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="7" y1="17" x2="17" y2="7"></line>
+        <polyline points="7 7 17 7 17 17"></polyline>
+      </svg>
     </button>
 
-    <div class="action-grid">
-      <button class="btn-action primary" id="summarize">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span>Summarize Current Page</span>
+    <button id="openPalette" class="btn-secondary" data-action="command_palette" disabled>
+      <span class="btn-secondary-inner">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cx-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Command Center</span>
+      </span>
+      <kbd>Alt + K</kbd>
+    </button>
+
+    <!-- Quick Actions Section -->
+    <div class="section-head">
+      <h2>Quick Actions</h2>
+      <span>Stay in your flow</span>
+    </div>
+
+    <div class="actions-grid">
+      <button id="summarize" class="action-card" data-action="summarize" disabled>
+        <div class="action-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <line x1="10" y1="9" x2="8" y2="9"></line>
+          </svg>
+        </div>
+        <div class="action-meta">
+          <strong>Summarize</strong>
+          <span>Key takeaways &amp; tl;dr</span>
+        </div>
       </button>
 
-      <button class="btn-action" id="factCheck">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <span>Fact Check</span>
+      <button id="define" class="action-card" data-action="define" disabled>
+        <div class="action-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+        </div>
+        <div class="action-meta">
+          <strong>Explain a term</strong>
+          <span>Clear breakdown</span>
+        </div>
       </button>
 
-      <button class="btn-action" id="correctAnswers">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        <span>Correct Answer</span>
+      <button id="factCheck" class="action-card" data-action="factcheck" disabled>
+        <div class="action-icon-wrap action-icon-wrap--signal" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+        </div>
+        <div class="action-meta">
+          <strong>Assess a claim</strong>
+          <span>Fact verification</span>
+        </div>
       </button>
 
-      <button class="btn-action primary" id="define">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        <span>Define</span>
-      </button>
-
-      <button class="btn-action primary" id="openSettings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Extension Settings</span>
+      <button id="correctAnswers" class="action-card" data-action="correct_answers" disabled>
+        <div class="action-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="action-meta">
+          <strong>Study question</strong>
+          <span>Analyze selected MCQ</span>
+        </div>
       </button>
     </div>
-    <div id="pm-error" style="display: none; color: #ef4444; font-size: 12px; font-weight: 500; text-align: center; margin-top: 4px; padding: 8px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2);"></div>
-    
-    <div class="loading" id="loading"><div class="spinner"></div> Processing...</div>
-  </div>
 
-  <div class="ftr">
-    <div style="margin-bottom: 3px;">\u25C9 Install ID: <span id="popupInstallId" style="user-select: all; color: #d4a017;">Loading...</span></div>
-    <div style="margin-bottom: 3px;">Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank">Zenith Open Source Projects</a></div>
-    <div style="margin-bottom: 3px;">Dev: <a href="https://github.com/roshhellwett" target="_blank">roshhellwett</a></div>
-    <div>Support: <a href="mailto:zenithprojects@icloud.com">zenithprojects@icloud.com</a></div>
-  </div>
+    <!-- Productivity Workflows Section -->
+    <div class="section-head">
+      <h2>Workflows</h2>
+      <span>1-Click Productivity</span>
+    </div>
+
+    <div class="actions-grid">
+      <button id="wfActionItems" class="action-card" data-workflow="wf_action_items" disabled>
+        <div class="action-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+        </div>
+        <div class="action-meta">
+          <strong>Action Items</strong>
+          <span>Extract tasks &amp; checklist</span>
+        </div>
+      </button>
+
+      <button id="wfDigest" class="action-card" data-workflow="wf_digest" disabled>
+        <div class="action-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+        </div>
+        <div class="action-meta">
+          <strong>Digest</strong>
+          <span>Bullet-point debrief</span>
+        </div>
+      </button>
+    </div>
+
+    <div class="telemetry-hint">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>Select text for instant AI analysis. Summarize also works on full page.</span>
+    </div>
+
+    <p id="status" role="status" aria-live="polite"></p>
+    <div id="pm-error" role="alert" hidden></div>
+  </main>
+
+  <footer>
+    <div class="footer-brand">
+      <span class="footer-brand-dot" aria-hidden="true"></span>
+      <span>Project Cortex AI</span>
+    </div>
+    <div class="footer-links">
+      <button id="openSettings" class="footer-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span>Settings</span>
+      </button>
+      <a href="mailto:zenithprojects@icloud.com" title="Support">Support</a>
+    </div>
+  </footer>
 
   <script src="popup.js"></script>
 </body>

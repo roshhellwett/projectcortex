@@ -6,856 +6,1051 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ProjectCortex — Settings</title>
+    <title>ProjectCortex — Settings &amp; Neural Preferences</title>
+    <link rel="icon" type="image/png" href="icons/logo16.png" />
+    <link rel="stylesheet" href="tokens.css" />
     <style>
-        :root {
-            --bg: #e1d7c2;
-            --surface: rgba(245, 240, 232, 0.75);
-            --surface-raised: rgba(255, 255, 255, 0.6);
-            --border: rgba(0, 0, 0, 0.06);
-            --border-hover: rgba(212, 160, 23, 0.2);
-            --text: #1a1a1a;
-            --text-muted: #7a7a7a;
-            --text-dim: #9a9a9a;
-            --accent-1: #b8860b;
-            --accent-2: #d4a017;
-            --accent-3: #e8b830;
-            --accent-gradient: linear-gradient(135deg, #b8860b, #d4a017, #e8b830);
-            --success: #059669;
-            --success-bg: rgba(5, 150, 105, 0.1);
-            --error: #ef4444;
-            --error-bg: rgba(239, 68, 68, 0.1);
-            --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.1);
-            --shadow-glow: 0 8px 32px rgba(212, 160, 23, 0.18);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --spring: cubic-bezier(0.22, 1, 0.36, 1);
-        }
+    :root { color-scheme: dark; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
-            font-size: 14px;
-            min-height: 100vh;
-            overflow-y: scroll;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            position: relative;
-        }
+    body {
+        background: var(--cx-canvas-deep);
+        color: var(--cx-text);
+        font-family: var(--cx-font-sans);
+        font-size: 14px;
+        line-height: var(--cx-leading-body);
+        min-height: 100vh;
+        overflow-y: scroll;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        position: relative;
+        padding-bottom: 90px;
+    }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background:
-                radial-gradient(ellipse at 25% 15%, rgba(212, 160, 23, 0.07) 0%, transparent 50%),
-                radial-gradient(ellipse at 75% 85%, rgba(5, 150, 105, 0.04) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
+    /* Ambient Obsidian-Gold Glow Effects */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 860px;
+        height: 380px;
+        background: radial-gradient(ellipse at center, rgba(212, 160, 23, 0.08) 0%, rgba(212, 160, 23, 0.02) 45%, transparent 75%);
+        pointer-events: none;
+        z-index: 0;
+    }
+    body::after {
+        content: '';
+        position: fixed;
+        bottom: 10%;
+        right: -100px;
+        width: 480px;
+        height: 480px;
+        background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.03) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
 
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.07); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.14); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--cx-canvas-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--cx-border-strong); border-radius: var(--cx-radius-full); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--cx-accent); }
 
-        @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes fadeSlideIn {
-            0% { opacity: 0; transform: translateY(12px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes shimmer { to { background-position: 200% center; } }
-        @keyframes scaleIn {
-            0% { opacity: 0; transform: scale(0.92); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+    @keyframes fadeSlideUp {
+        0% { opacity: 0; transform: translateY(16px) scale(0.99); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.45; transform: scale(0.85); }
+    }
 
-        .header {
-            width: 100%;
-            background: rgba(225, 215, 194, 0.85);
-            backdrop-filter: blur(28px) saturate(1.2);
-            -webkit-backdrop-filter: blur(28px) saturate(1.2);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            padding: 10px 24px;
-        }
+    /* === STICKY TOP NAVIGATION === */
+    .header {
+        width: 100%;
+        background: var(--cx-glass-strong);
+        backdrop-filter: blur(28px) saturate(1.3);
+        -webkit-backdrop-filter: blur(28px) saturate(1.3);
+        border-bottom: 1px solid var(--cx-border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        padding: 10px 24px;
+        box-shadow: var(--cx-elev-1);
+    }
 
-        .header-content {
-            width: 100%;
-            max-width: 1000px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .header-content {
+        width: 100%;
+        max-width: 980px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 
-        .header-logo-wrap {
-            width: 30px;
-            height: 30px;
-            background: var(--accent-gradient);
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(212, 160, 23, 0.25);
-            flex-shrink: 0;
-        }
-        .header-logo-wrap img { width: 18px; height: 18px; filter: brightness(0); }
+    .header-logo-wrap {
+        width: 32px;
+        height: 32px;
+        background: var(--cx-accent-gradient);
+        border-radius: var(--cx-radius-sm);
+        padding: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--cx-accent-glow);
+        flex-shrink: 0;
+        position: relative;
+    }
+    .header-logo-wrap-inner {
+        width: 100%;
+        height: 100%;
+        background: var(--cx-canvas-deep);
+        border-radius: calc(var(--cx-radius-sm) - 1px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cx-accent-bright);
+    }
+    .cortex-brand-icon {
+        display: block;
+        width: 18px;
+        height: 18px;
+        object-fit: contain;
+        filter: brightness(0) saturate(100%) invert(73%) sepia(51%) saturate(996%) hue-rotate(5deg) brightness(94%) contrast(89%);
+        transition: transform var(--cx-dur-fast) var(--cx-ease-out), filter var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .header-logo-wrap:hover .cortex-brand-icon {
+        transform: scale(1.12);
+        filter: brightness(0) saturate(100%) invert(85%) sepia(55%) saturate(1200%) hue-rotate(5deg) brightness(105%) contrast(95%);
+    }
+    .header-logo-pulse {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 7px;
+        height: 7px;
+        background: var(--cx-signal);
+        border-radius: var(--cx-radius-full);
+        box-shadow: var(--cx-signal-glow);
+        border: 1px solid var(--cx-canvas-deep);
+    }
 
-        .header-title {
-            font-weight: 800;
-            font-size: 16px;
-            letter-spacing: -0.02em;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    .header-title {
+        font-weight: 800;
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cx-text);
+    }
 
-        .header-badge {
-            font-size: 8px;
-            font-weight: 800;
-            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            color: var(--success);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            padding: 3px 9px;
-            background: var(--success-bg);
-            border: 1px solid rgba(5, 150, 105, 0.2);
-            border-radius: 5px;
-            margin-left: 4px;
-            animation: shimmer 3s linear infinite;
-            background-image: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
-            background-size: 200% 100%;
-        }
+    .header-badge {
+        font-size: 9px;
+        font-weight: 700;
+        font-family: var(--cx-font-mono);
+        color: var(--cx-signal);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        padding: 2px 8px;
+        background: var(--cx-badge-signal-bg);
+        border: 1px solid var(--cx-badge-signal-border);
+        border-radius: var(--cx-radius-full);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .header-badge::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: var(--cx-radius-full);
+        background: var(--cx-signal);
+        box-shadow: var(--cx-signal-glow);
+    }
 
-        .header-actions a {
-            color: var(--text-muted);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 7px 14px;
-            border-radius: var(--radius-sm);
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid var(--border);
-            transition: all 0.3s var(--spring);
-        }
-        .header-actions a:hover {
-            color: var(--accent-2);
-            background: rgba(255, 255, 255, 0.6);
-            border-color: var(--border-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            padding: 24px 24px 90px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            animation: fadeSlideUp 0.6s var(--spring) forwards;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-head {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .page-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--accent-gradient);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-glow);
-            flex-shrink: 0;
-        }
-        .page-icon svg { width: 20px; height: 20px; color: #000; }
-
-        .page-title {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .page-desc {
-            color: var(--text-muted);
-            font-size: 12px;
-            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            margin-top: 2px;
-        }
-
-        .update-panel {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.02));
-            border: 1px solid rgba(5, 150, 105, 0.18);
-            border-radius: var(--radius-lg);
-            padding: 16px 20px;
-            transition: all 0.4s var(--spring);
-            position: relative;
-            overflow: hidden;
-        }
-        .update-panel::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(5, 150, 105, 0.3), transparent);
-        }
-
-        .update-icon-box {
-            width: 38px;
-            height: 38px;
-            border-radius: var(--radius-sm);
-            background: rgba(5, 150, 105, 0.12);
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .update-body { flex: 1; min-width: 0; }
-        .update-body h3 {
-            color: var(--success);
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-        .update-body p {
-            color: rgba(5, 150, 105, 0.6);
-            font-size: 12px;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        /* === TABBED LAYOUT (CSS-only) === */
-        .tab-radio { display: none; }
-
-        .tab-bar {
-            display: flex;
-            gap: 3px;
-            background: rgba(245, 240, 232, 0.5);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 4px;
-            position: sticky;
-            top: 52px;
-            z-index: 50;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            overflow-x: auto;
-            overflow-y: hidden;
-            flex-shrink: 0;
-        }
-
-        .tab-label {
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.3s var(--spring);
-            white-space: nowrap;
-            user-select: none;
-            flex: 1;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .tab-label:hover { color: var(--text); background: rgba(255,255,255,0.3); }
-        .tab-label svg { width: 14px; height: 14px; flex-shrink: 0; }
-
-        #tab-api:checked ~ .tab-bar label[for="tab-api"],
-        #tab-model:checked ~ .tab-bar label[for="tab-model"],
-        #tab-utils:checked ~ .tab-bar label[for="tab-utils"],
-        #tab-license:checked ~ .tab-bar label[for="tab-license"],
-        #tab-about:checked ~ .tab-bar label[for="tab-about"] {
-            background: rgba(255,255,255,0.75);
-            color: var(--accent-2);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeSlideIn 0.35s var(--spring);
-        }
-
-        #tab-api:checked ~ .tab-contents .tab-content[data-tab="api"],
-        #tab-model:checked ~ .tab-contents .tab-content[data-tab="model"],
-        #tab-utils:checked ~ .tab-contents .tab-content[data-tab="utils"],
-        #tab-license:checked ~ .tab-contents .tab-content[data-tab="license"],
-        #tab-about:checked ~ .tab-contents .tab-content[data-tab="about"] {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .tab-contents {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        /* === CARDS === */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 22px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.4s var(--ease-out, var(--spring));
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--border-hover), transparent);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .card:hover {
-            border-color: rgba(212, 160, 23, 0.12);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        .card:hover::before { opacity: 1; }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 16px;
-        }
-
-        .card-header-icon {
-            width: 26px;
-            height: 26px;
-            border-radius: 7px;
-            background: linear-gradient(135deg, rgba(184, 134, 11, 0.12), rgba(212, 160, 23, 0.08));
-            border: 1px solid rgba(212, 160, 23, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            color: var(--accent-2);
-        }
-        .card-header-icon svg { width: 13px; height: 13px; }
-
-        .card-header-text {
-            font-size: 10px;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            letter-spacing: 0.15em;
-            color: var(--accent-2);
-            text-transform: uppercase;
-        }
-
-        .card-body {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .card-body .row {
-            display: flex;
-            gap: 14px;
-            align-items: flex-end;
-        }
-        .card-body .row .field { flex: 1; }
-
-        .field { display: flex; flex-direction: column; gap: 6px; }
-
-        label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 9px 12px;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(0, 0, 0, 0.07);
-            border-radius: var(--radius-sm);
-            color: var(--text);
-            font-size: 13px;
-            font-family: inherit;
-            outline: none;
-            transition: all 0.25s;
-            -webkit-appearance: none;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
-        }
-        input::placeholder { color: var(--text-dim); }
-
-        select {
-            padding-right: 36px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7a7a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            cursor: pointer;
-        }
-
-        input:hover, select:hover {
-            border-color: rgba(212, 160, 23, 0.18);
-            background: rgba(255, 255, 255, 0.65);
-        }
-        input:focus, select:focus {
-            border-color: var(--accent-2);
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.1);
-        }
-
-        select optgroup { background: #f5f0e8; color: var(--text-muted); font-weight: 700; font-size: 11px; }
-        select option { background: #f5f0e8; color: var(--text); }
-
-        .hint { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-        .hint a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
-        .hint a:hover { color: var(--accent-3); text-decoration: underline; }
-
-        .input-wrap { position: relative; display: flex; align-items: center; }
-        .eye-btn {
-            position: absolute; right: 8px;
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; padding: 5px; border-radius: 5px;
-            transition: all 0.2s; display: flex;
-        }
-        .eye-btn:hover { color: var(--text); background: rgba(0, 0, 0, 0.04); }
-
-        .toggle-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 14px;
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            transition: all 0.25s;
-        }
-        .toggle-item:hover {
-            background: rgba(0, 0, 0, 0.035);
-            border-color: rgba(212, 160, 23, 0.1);
-        }
-
-        .toggle-info { display: flex; flex-direction: column; gap: 3px; }
-        .toggle-label { font-size: 13px; font-weight: 600; color: var(--text); }
-
-        .toggle-switch {
-            width: 44px; height: 26px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 13px;
-            cursor: pointer;
-            padding: 3px;
-            display: flex;
-            transition: all 0.35s var(--spring);
-            flex-shrink: 0;
-            position: relative;
-        }
-        .toggle-switch.active { background: var(--accent-gradient); }
-        .toggle-circle {
-            width: 20px; height: 20px;
-            background: #fff;
-            border-radius: 50%;
-            transition: transform 0.4s var(--spring);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 1;
-        }
-        .toggle-switch.active .toggle-circle { transform: translateX(18px); }
-
-        /* === BOTTOM ACTION BAR === */
-        .action-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            padding: 12px 24px;
-            background: rgba(225, 215, 194, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            z-index: 100;
-            gap: 12px;
-        }
-        .action-bar-inner {
-            width: 100%;
-            max-width: 1000px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .action-bar .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-        .action-bar .btn-group .btn {
-            flex: initial;
-            min-width: 130px;
-        }
-        #status {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            min-height: 20px;
-            text-align: center;
-        }
-        #status.ok { color: var(--success); }
-        #status.err { color: var(--error); }
-
-        .btn {
-            background: var(--surface-raised);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 9px 18px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s var(--spring);
+    .header-center-telemetry {
+        display: none;
+    }
+    @media (min-width: 860px) {
+        .header-center-telemetry {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 7px;
-            box-shadow: var(--shadow-sm);
-            user-select: none;
-            position: relative;
-            overflow: hidden;
+            font-family: var(--cx-font-mono);
+            font-size: 11px;
+            color: var(--cx-text-secondary);
+            background: var(--cx-surface-sunken);
+            border: 1px solid var(--cx-border-faint);
+            border-radius: var(--cx-radius-full);
+            padding: 3px 12px;
         }
-        .btn::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
+        .header-center-telemetry .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--cx-radius-full);
+            background: var(--cx-signal);
+            box-shadow: var(--cx-signal-glow);
         }
-        .btn:hover { background: rgba(255, 255, 255, 0.8); border-color: var(--border-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-        .btn:hover::after { opacity: 1; }
-        .btn:active { transform: scale(0.97); }
-        .btn:disabled, .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    }
 
-        .btn-primary {
-            background: var(--accent-gradient);
-            border: none;
-            color: #000;
-            font-weight: 800;
-            box-shadow: 0 4px 16px rgba(212, 160, 23, 0.25);
-        }
-        .btn-primary:hover { box-shadow: 0 8px 24px rgba(212, 160, 23, 0.35); }
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .header-actions a {
+        color: var(--cx-accent-bright);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: var(--cx-radius-sm);
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border);
+        transition: all var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .header-actions a:hover {
+        background: var(--cx-surface-hover);
+        border-color: var(--cx-border-strong);
+        transform: translateY(-1px);
+    }
 
-        .btn-sm { padding: 7px 14px; font-size: 12px; }
-        .btn-success {
-            background: var(--success);
-            color: #fff;
-            border: none;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
-        }
-        .btn-success:hover { background: #047857; }
-        .btn-ghost { background: rgba(255, 255, 255, 0.3); border: 1px solid var(--border); }
+    /* === MAIN CONTAINER === */
+    .container {
+        width: 100%;
+        max-width: 980px;
+        padding: 28px 20px 40px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        z-index: 1;
+        transition: opacity var(--cx-dur-enter) var(--cx-ease-out);
+        animation: fadeSlideUp var(--cx-dur-enter) var(--cx-ease-out);
+    }
 
-        /* === LICENSE TAB === */
-        .license-header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 16px;
-        }
-        .license-badge {
-            font-size: 9px;
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-weight: 800;
-            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .license-badge.active { background: var(--success-bg); color: var(--success); border: 1px solid rgba(5, 150, 105, 0.2); }
-        .license-badge.inactive { background: var(--error-bg); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.2); }
+    /* === PAGE HEAD === */
+    .page-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        padding-bottom: 4px;
+    }
+    .page-head-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+    .page-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--cx-surface-raised);
+        border: 1px solid var(--cx-border);
+        border-radius: var(--cx-radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cx-accent-bright);
+        box-shadow: var(--cx-elev-1);
+        flex-shrink: 0;
+    }
+    .page-eyebrow {
+        font-family: var(--cx-font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--cx-accent);
+        margin-bottom: 3px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .page-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--cx-text);
+        margin-bottom: 2px;
+    }
+    .page-desc {
+        color: var(--cx-text-secondary);
+        font-size: 13px;
+    }
 
-        .copy-field {
-            display: flex;
-            background: rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 8px 12px;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            transition: border-color 0.25s;
-        }
-        .copy-field:hover { border-color: rgba(212, 160, 23, 0.12); }
-        .copy-field span {
-            font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
-            font-size: 12px;
-            color: var(--accent-2);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .copy-btn {
-            background: none; border: none; color: var(--text-muted);
-            cursor: pointer; padding: 5px; border-radius: 5px;
-            transition: all 0.2s; display: flex;
-        }
-        .copy-btn:hover { color: var(--accent-2); background: rgba(212, 160, 23, 0.08); }
+    .page-head-badges {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pill-chip {
+        font-family: var(--cx-font-mono);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--cx-text-secondary);
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border-soft);
+        border-radius: var(--cx-radius-full);
+        padding: 3px 9px;
+    }
+    .pill-chip--accent {
+        color: var(--cx-accent-bright);
+        background: var(--cx-badge-gold-bg);
+        border-color: var(--cx-badge-gold-border);
+    }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .stat-item {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 14px;
-            transition: all 0.25s;
-        }
-        .stat-item:hover { background: rgba(0, 0, 0, 0.04); border-color: rgba(212, 160, 23, 0.08); }
-        .stat-label {
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--success);
-        }
-        .stat-value.subtle { font-size: 13px; font-weight: 600; color: var(--text); }
+    /* === ALERT / SUPPORT CARD === */
+    .support-card {
+        background: var(--cx-glass-soft);
+        border: 1px solid var(--cx-border);
+        border-radius: var(--cx-radius-lg);
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        box-shadow: var(--cx-elev-1);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+    .support-card-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+    .support-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--cx-radius-sm);
+        background: var(--cx-badge-gold-bg);
+        border: 1px solid var(--cx-badge-gold-border);
+        color: var(--cx-accent-bright);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .support-title {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--cx-text);
+        margin-bottom: 3px;
+    }
+    .support-desc {
+        color: var(--cx-text-secondary);
+        font-size: 12px;
+        line-height: 1.45;
+    }
+    .support-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
 
-        .backup-row {
-            display: flex;
-            gap: 10px;
-        }
-        .backup-row .btn { flex: 1; }
+    /* === CSS TABS === */
+    .tab-radio { display: none; }
 
-        .info-card {
-            text-align: center;
-            padding: 20px;
-        }
-        .info-card-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .info-divider {
-            width: 36px;
-            height: 2px;
-            background: var(--accent-gradient);
-            border-radius: 2px;
-        }
-        .info-card a { color: var(--accent-2); text-decoration: none; font-weight: 500; }
-        .info-card a:hover { color: var(--accent-3); }
+    .tab-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px;
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border-soft);
+        border-radius: var(--cx-radius-lg);
+        margin-top: 4px;
+    }
 
-        /* === OVERLAYS === */
-        #loadingOverlay {
-            position: fixed; inset: 0; background: var(--bg);
-            z-index: 2000; display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.4s; opacity: 1;
-        }
+    .tab-label {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: var(--cx-radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--cx-text-secondary);
+        cursor: pointer;
+        user-select: none;
+        transition: all var(--cx-dur-fast) var(--cx-ease-out);
+        border: 1px solid transparent;
+    }
+    .tab-label svg { flex-shrink: 0; }
+    .tab-label:hover {
+        color: var(--cx-text);
+        background: var(--cx-surface-hover);
+    }
 
-        #lockOverlay {
-            position: fixed; inset: 0;
-            background: rgba(225, 215, 194, 0.92);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s;
-        }
+    #tab-api:checked ~ .tab-bar label[for="tab-api"],
+    #tab-model:checked ~ .tab-bar label[for="tab-model"],
+    #tab-utils:checked ~ .tab-bar label[for="tab-utils"],
+    #tab-license:checked ~ .tab-bar label[for="tab-license"],
+    #tab-about:checked ~ .tab-bar label[for="tab-about"] {
+        background: var(--cx-surface-raised);
+        color: var(--cx-accent-bright);
+        border-color: var(--cx-border);
+        box-shadow: var(--cx-elev-1);
+    }
 
-        .lock-box {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(212, 160, 23, 0.12);
-            text-align: center;
-            width: 100%;
-            max-width: 380px;
-            box-shadow: var(--shadow-lg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            animation: scaleIn 0.45s var(--spring);
-        }
+    .tab-contents { margin-top: 6px; }
+    .tab-content { display: none; }
 
-        .lock-icon {
-            width: 56px; height: 56px;
-            background: rgba(239, 68, 68, 0.08);
-            color: var(--error);
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-        }
-        .lock-box h2 {
-            font-size: 20px;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 6px;
-            font-weight: 800;
-        }
-        .lock-box > p {
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-        .lock-input {
-            text-align: center;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            font-weight: 600;
-            font-size: 14px !important;
-            padding: 12px 14px !important;
-        }
-        .lock-input::placeholder {
-            letter-spacing: 0.05em;
-            text-transform: none;
-            font-weight: 400;
-        }
-        .lock-divider {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-        }
-        .lock-divider p { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+    #tab-api:checked ~ .tab-contents [data-tab="api"],
+    #tab-model:checked ~ .tab-contents [data-tab="model"],
+    #tab-utils:checked ~ .tab-contents [data-tab="utils"],
+    #tab-license:checked ~ .tab-contents [data-tab="license"],
+    #tab-about:checked ~ .tab-contents [data-tab="about"] {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        animation: fadeSlideUp var(--cx-dur-fast) var(--cx-ease-out);
+    }
 
-        /* === TOAST === */
-        #toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #1a1a1a;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            font-weight: 600;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-            opacity: 0;
-            transition: all 0.45s var(--spring);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-        #toast svg { flex-shrink: 0; }
+    /* === CARDS === */
+    .card {
+        background: var(--cx-glass-soft);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--cx-border-soft);
+        border-radius: var(--cx-radius-lg);
+        padding: 22px;
+        box-shadow: var(--cx-elev-1);
+        transition: border-color var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .card:hover {
+        border-color: var(--cx-border);
+    }
 
-        @media (max-width: 640px) {
-            .container { padding: 18px 14px 80px; gap: 14px; }
-            .card { padding: 18px; }
-            .page-title { font-size: 19px; }
-            .page-icon { width: 34px; height: 34px; }
-            .tab-label { padding: 7px 10px; font-size: 11px; }
-            .tab-label span { display: none; }
-            .action-bar { padding: 10px 14px; }
-            .action-bar .btn-group { width: 100%; }
-            .action-bar .btn-group .btn { flex: 1; min-width: 0; font-size: 12px; }
-            .card-body .row { flex-direction: column; }
-            .stat-grid { grid-template-columns: 1fr; }
-            .backup-row { flex-direction: column; }
-            .header-actions a span { display: none; }
-        }
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--cx-border-soft);
+    }
+    .card-header-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--cx-radius-sm);
+        background: var(--cx-badge-gold-bg);
+        border: 1px solid var(--cx-badge-gold-border);
+        color: var(--cx-accent-bright);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .card-header-text {
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        color: var(--cx-text);
+        flex: 1;
+    }
+    .card-header-chip {
+        font-family: var(--cx-font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--cx-signal);
+        background: var(--cx-badge-signal-bg);
+        border: 1px solid var(--cx-badge-signal-border);
+        border-radius: var(--cx-radius-full);
+        padding: 2px 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
 
-        @media (prefers-reduced-motion: reduce) {
-            *, ::before, ::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* === FORM FIELDS === */
+    .field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+    .field label {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--cx-text);
+    }
+
+    .input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .input-wrap input {
+        width: 100%;
+        padding-right: 44px;
+    }
+    .eye-btn {
+        position: absolute;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        border-radius: var(--cx-radius-xs);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cx-text-secondary);
+        cursor: pointer;
+        transition: all var(--cx-dur-fast) var(--cx-ease-out);
+        border: 0;
+        background: transparent;
+    }
+    .eye-btn:hover {
+        color: var(--cx-accent-bright);
+        background: var(--cx-surface-hover);
+    }
+
+    input[type="text"], input[type="password"], select {
+        width: 100%;
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border-soft);
+        border-radius: var(--cx-radius-sm);
+        padding: 10px 14px;
+        font-family: inherit;
+        font-size: 13.5px;
+        color: var(--cx-text);
+        transition: all var(--cx-dur-fast) var(--cx-ease-out);
+        outline: none;
+    }
+    input[type="password"], #apiKey, #optionsLicenseInput, #dispLicenseKey {
+        font-family: var(--cx-font-mono);
+        letter-spacing: 0.04em;
+    }
+    input:focus, select:focus {
+        border-color: var(--cx-accent);
+        background: var(--cx-surface-raised);
+        box-shadow: var(--cx-focus-ring);
+    }
+    input::placeholder { color: var(--cx-text-tertiary); }
+
+    select {
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23D4A017' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 36px;
+    }
+    select optgroup {
+        background: var(--cx-canvas-deep);
+        color: var(--cx-accent);
+        font-weight: 700;
+        font-size: 12px;
+    }
+    select option {
+        background: var(--cx-canvas-deep);
+        color: var(--cx-text);
+        padding: 8px;
+    }
+
+    .hint {
+        font-size: 11.5px;
+        color: var(--cx-text-tertiary);
+        line-height: 1.4;
+    }
+    .hint a {
+        color: var(--cx-accent);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .hint a:hover { text-decoration: underline; }
+
+    /* === TOGGLES === */
+    .toggle-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 14px;
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border-faint);
+        border-radius: var(--cx-radius-md);
+        transition: border-color var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .toggle-item:hover {
+        border-color: var(--cx-border);
+    }
+    .toggle-info {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .toggle-label-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .toggle-label {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--cx-text);
+    }
+    .toggle-badge {
+        font-family: var(--cx-font-mono);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cx-accent);
+        background: var(--cx-badge-gold-bg);
+        border: 1px solid var(--cx-badge-gold-border);
+        border-radius: var(--cx-radius-full);
+        padding: 1px 6px;
+    }
+
+    .toggle-switch {
+        width: 44px;
+        height: 24px;
+        background: var(--cx-surface-raised);
+        border: 1px solid var(--cx-border-soft);
+        border-radius: var(--cx-radius-full);
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all var(--cx-dur-fast) var(--cx-ease-spring);
+    }
+    .toggle-circle {
+        width: 18px;
+        height: 18px;
+        background: var(--cx-text-secondary);
+        border-radius: var(--cx-radius-full);
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        transition: all var(--cx-dur-fast) var(--cx-ease-spring);
+    }
+    .toggle-switch.active {
+        background: var(--cx-accent-gradient);
+        border-color: var(--cx-accent);
+        box-shadow: var(--cx-accent-glow);
+    }
+    .toggle-switch.active .toggle-circle {
+        left: 22px;
+        background: var(--cx-on-accent);
+    }
+
+    /* === LICENSE CARD & TELEMETRY === */
+    .license-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--cx-border-soft);
+    }
+    .license-badge {
+        font-family: var(--cx-font-mono);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: var(--cx-radius-full);
+        color: var(--cx-signal);
+        background: var(--cx-badge-signal-bg);
+        border: 1px solid var(--cx-badge-signal-border);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .license-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: var(--cx-radius-full);
+        background: var(--cx-signal);
+        box-shadow: var(--cx-signal-glow);
+    }
+
+    .copy-field {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border-soft);
+        border-radius: var(--cx-radius-sm);
+        padding: 9px 14px;
+        font-family: var(--cx-font-mono);
+        font-size: 13px;
+        color: var(--cx-text);
+        letter-spacing: 0.06em;
+    }
+    .copy-btn {
+        background: transparent;
+        border: 0;
+        color: var(--cx-text-secondary);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: var(--cx-radius-xs);
+        display: flex;
+        align-items: center;
+        transition: all var(--cx-dur-fast) var(--cx-ease-out);
+    }
+    .copy-btn:hover {
+        color: var(--cx-accent-bright);
+        background: var(--cx-surface-hover);
+    }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 4px;
+    }
+    .stat-item {
+        background: var(--cx-surface-sunken);
+        border: 1px solid var(--cx-border-faint);
+        border-radius: var(--cx-radius-md);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .stat-label {
+        font-family: var(--cx-font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--cx-text-tertiary);
+    }
+    .stat-value {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--cx-accent-bright);
+        letter-spacing: -0.01em;
+    }
+    .stat-value.subtle {
+        font-size: 13px;
+        font-family: var(--cx-font-mono);
+        color: var(--cx-text);
+        font-weight: 600;
+    }
+
+    .backup-row {
+        display: flex;
+        gap: 12px;
+    }
+
+    /* === BUTTONS === */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 18px;
+        border-radius: var(--cx-radius-sm);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--cx-border-soft);
+        background: var(--cx-surface-raised);
+        color: var(--cx-text);
+        box-shadow: var(--cx-elev-1);
+        transition: all var(--cx-dur-fast) var(--cx-ease-spring);
+        user-select: none;
+    }
+    .btn:hover {
+        background: var(--cx-surface-hover);
+        border-color: var(--cx-border);
+        color: var(--cx-accent-bright);
+        transform: translateY(-1px);
+        box-shadow: var(--cx-elev-2);
+    }
+    .btn:active {
+        transform: scale(0.97);
+    }
+    .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .btn-primary {
+        background: var(--cx-accent-gradient);
+        border: none;
+        color: var(--cx-on-accent);
+        font-weight: 800;
+        box-shadow: var(--cx-accent-glow), var(--cx-elev-2);
+    }
+    .btn-primary:hover {
+        filter: brightness(1.08);
+        box-shadow: 0 0 24px rgba(212, 160, 23, 0.4), var(--cx-elev-2);
+        color: var(--cx-on-accent);
+    }
+
+    .btn-sm { padding: 6px 14px; font-size: 12px; }
+    .btn-ghost {
+        background: var(--cx-surface-sunken);
+        border-color: var(--cx-border-soft);
+    }
+
+    /* === INFO CARD === */
+    .info-card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .info-card-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        gap: 10px;
+    }
+    .info-divider {
+        width: 100%;
+        max-width: 240px;
+        height: 1px;
+        background: var(--cx-border-soft);
+        margin: 6px 0;
+    }
+
+    /* === OVERLAYS === */
+    #loadingOverlay {
+        position: fixed;
+        inset: 0;
+        background: var(--cx-canvas-deep);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity var(--cx-dur-fast);
+        opacity: 1;
+    }
+
+    #lockOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(11, 10, 7, 0.94);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--cx-dur-enter);
+    }
+
+    .lock-box {
+        background: var(--cx-glass-strong);
+        padding: 34px;
+        border-radius: var(--cx-radius-xl);
+        border: 1px solid var(--cx-border);
+        text-align: center;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: var(--cx-elev-4), var(--cx-accent-glow);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        animation: fadeSlideUp var(--cx-dur-enter) var(--cx-ease-spring);
+    }
+
+    .lock-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--cx-badge-gold-bg);
+        border: 1px solid var(--cx-badge-gold-border);
+        color: var(--cx-accent-bright);
+        border-radius: var(--cx-radius-full);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        box-shadow: var(--cx-accent-glow);
+    }
+    .lock-box h2 {
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--cx-text);
+        margin-bottom: 6px;
+    }
+    .lock-box > p {
+        color: var(--cx-text-secondary);
+        margin-bottom: 20px;
+        font-size: 13px;
+    }
+    .lock-input {
+        text-align: center;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 14px !important;
+        padding: 12px 14px !important;
+    }
+    .lock-divider {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--cx-border-soft);
+    }
+    .lock-divider p {
+        font-size: 12px;
+        color: var(--cx-text-secondary);
+        margin-bottom: 14px;
+    }
+
+    /* === STICKY ACTION BAR === */
+    .action-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px 24px;
+        background: var(--cx-glass-strong);
+        backdrop-filter: blur(24px) saturate(1.3);
+        -webkit-backdrop-filter: blur(24px) saturate(1.3);
+        border-top: 1px solid var(--cx-border);
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    }
+    .action-bar-inner {
+        width: 100%;
+        max-width: 980px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .action-bar .btn-group {
+        display: flex;
+        gap: 12px;
+    }
+
+    #status {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 600;
+        min-height: 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    #status.ok { color: var(--cx-signal); }
+    #status.err { color: var(--cx-danger); }
+
+    /* === TOAST === */
+    #toast {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--cx-surface-raised);
+        color: var(--cx-text);
+        border: 1px solid var(--cx-border);
+        padding: 12px 24px;
+        border-radius: var(--cx-radius-full);
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: var(--cx-elev-3), var(--cx-accent-glow);
+        opacity: 0;
+        transition: all 0.45s var(--cx-ease-spring);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        pointer-events: none;
+    }
+
+    /* === RESPONSIVENESS === */
+    @media (max-width: 720px) {
+        .container { padding: 18px 14px 60px; gap: 14px; }
+        .page-head { flex-direction: column; align-items: flex-start; }
+        .support-card { flex-direction: column; align-items: flex-start; }
+        .tab-bar { flex-wrap: wrap; }
+        .tab-label { flex: initial; min-width: 30%; font-size: 12px; padding: 8px 10px; }
+        .action-bar-inner { flex-direction: column-reverse; align-items: stretch; }
+        .action-bar .btn-group { width: 100%; }
+        .action-bar .btn-group .btn { flex: 1; }
+        .backup-row { flex-direction: column; }
+    }
+
+    /* Focus & Reduced Motion Contracts */
+    :where(button, a[href], input, select, textarea, [tabindex]):focus-visible {
+        outline: none;
+        box-shadow: var(--cx-focus-ring);
+    }
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
         }
+    }
     </style>
 </head>
 <body>
 
     <div id="loadingOverlay">
-        <div style="width: 32px; height: 32px; border: 2px solid rgba(0,0,0,0.05); border-top-color: var(--accent-2); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <div style="width: 34px; height: 34px; border: 2px solid var(--cx-border-faint); border-top-color: var(--cx-accent); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
     </div>
 
+    <!-- LOCK / ACTIVATION OVERLAY -->
     <div id="lockOverlay">
         <div class="lock-box">
-            <div class="lock-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <div class="lock-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
             </div>
             <h2>Activation Required</h2>
-            <p>Enter your license key to unlock the system.</p>
+            <p>Enter your hardware-bound license key to unlock the system.</p>
 
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <input type="text" id="optionsLicenseInput" class="lock-input" placeholder="CORTEX-XXXX-XXXX" />
                 <button id="optionsActivateBtn" class="btn btn-primary" style="padding: 12px; font-size: 14px;">Unlock Cortex</button>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="flex: 1; height: 1px; background: var(--border);"></div>
-                    <span style="font-size: 11px; color: var(--accent-2);">or</span>
-                    <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                <div style="display: flex; align-items: center; gap: 10px; margin: 4px 0;">
+                    <div style="flex: 1; height: 1px; background: var(--cx-border-soft);"></div>
+                    <span style="font-size: 11px; color: var(--cx-accent-bright); font-family: var(--cx-font-mono);">OR</span>
+                    <div style="flex: 1; height: 1px; background: var(--cx-border-soft);"></div>
                 </div>
                 <button id="optionsReactivateBtn" class="btn btn-ghost" style="padding: 10px; font-size: 12px;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
                     Already Activated? Reactivate
                 </button>
             </div>
-            <div id="optionsAuthStatus" style="color: var(--error); font-size: 12px; margin-top: 14px; min-height: 18px;"></div>
+            <div id="optionsAuthStatus" style="color: var(--cx-danger); font-size: 12px; margin-top: 14px; min-height: 18px;"></div>
 
             <div class="lock-divider">
                 <p>Or restore an existing backup from another device.</p>
@@ -865,90 +1060,123 @@
                     <input type="file" id="importFileLock" accept=".json" style="display: none;" />
                 </div>
             </div>
-            <div style="margin-top: 20px; font-size: 11px; color: var(--accent-2); font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; justify-content: center; gap: 5px;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <div style="margin-top: 20px; font-size: 11px; color: var(--cx-accent); font-family: var(--cx-font-mono); display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 16v-4"></path>
+                    <path d="M12 8h.01"></path>
+                </svg>
                 ID: <span id="optionsInstallId">...</span>
             </div>
         </div>
     </div>
 
+    <!-- STICKY TOP NAVBAR -->
     <header class="header">
         <div class="header-content">
             <div class="header-brand">
                 <div class="header-logo-wrap">
-                    <img src="icons/logo48.png" onerror="this.style.display='none'" alt="">
+                    <div class="header-logo-wrap-inner">
+                        <img src="icons/logo48.png" width="18" height="18" class="cortex-brand-icon" alt="Project Cortex" />
+                    </div>
+                    <div class="header-logo-pulse" aria-hidden="true"></div>
                 </div>
                 <span class="header-title">Project Cortex</span>
-                <span class="header-badge">&#9656; ZENITH_OS</span>
+                <span class="header-badge">ZENITH_OS TELEMETRY</span>
             </div>
+
+            <div class="header-center-telemetry">
+                <span class="dot"></span>
+                <span>Cluster: <strong style="color: var(--cx-text);">us-east-cortex-09</strong></span>
+                <span style="color: var(--cx-border-strong);">·</span>
+                <span style="color: var(--cx-accent-bright);">18ms</span>
+            </div>
+
             <div class="header-actions">
-                <a href="mailto:zenithprojects@icloud.com">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="16" r="1"/><path d="M12 13v-1a3 3 0 1 1 4-2.83"/></svg>
+                <a href="mailto:zenithprojects@icloud.com" title="Contact Support">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
                     <span>Support</span>
                 </a>
             </div>
         </div>
     </header>
 
-    <main class="container" id="mainContainer" style="opacity: 0;">
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="container" id="mainContainer">
 
+        <!-- Page Head -->
         <div class="page-head">
-            <div class="page-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                </svg>
+            <div class="page-head-left">
+                <div class="page-icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="page-eyebrow">&#9656; Cortex Control Node</div>
+                    <h1 class="page-title">Settings &amp; Neural Preferences</h1>
+                    <p class="page-desc">Configure foundation model APIs, context retrieval parameters, system license, and copilot behavior.</p>
+                </div>
             </div>
-            <div>
-                <h1 class="page-title">Settings</h1>
-                <p class="page-desc">&#9656; configure providers, models, and preferences</p>
+            <div class="page-head-badges">
+                <span class="pill-chip">v11.3.0</span>
+                <span class="pill-chip pill-chip--accent">SYNAPSE_ONLINE</span>
             </div>
         </div>
 
-        <div class="card" style="background: linear-gradient(135deg, rgba(212, 160, 23, 0.08), rgba(212, 160, 23, 0.02)); border-color: rgba(212, 160, 23, 0.18);">
-            <div class="card-header" style="border-bottom-color: rgba(212, 160, 23, 0.12);">
-                <div class="card-header-icon" style="background: rgba(212, 160, 23, 0.12); border-color: rgba(212, 160, 23, 0.15);">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <!-- Help & Support Alert Card -->
+        <div class="support-card">
+            <div class="support-card-left">
+                <div class="support-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
                 </div>
-                <span class="card-header-text">Help &amp; Support</span>
+                <div>
+                    <div class="support-title">Need assistance configuring custom endpoints or enterprise telemetry?</div>
+                    <div class="support-desc">Project Cortex is a high-assurance browser extension. Dedicated updates and models are maintained by Zenith Open Source Projects.</div>
+                </div>
             </div>
-            <div class="card-body">
-                <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 8px;">
-                    Project Cortex is now a production-grade extension. Updates will be delivered automatically via the Chrome Web Store.
-                </p>
-                <div style="display: flex; gap: 10px;">
-                    <a href="mailto:zenithprojects@icloud.com" class="btn btn-primary btn-sm" style="text-decoration: none;">Contact Support</a>
-                    <a href="https://github.com/roshhellwett/projectcortex" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">View Documentation</a>
-                </div>
+            <div class="support-actions">
+                <a href="mailto:zenithprojects@icloud.com" class="btn btn-primary btn-sm" style="text-decoration: none;">Contact Support</a>
+                <a href="https://github.com/roshhellwett/projectcortex" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">Docs</a>
             </div>
         </div>
 
-        <!-- CSS-only Tabs -->
+        <!-- CSS-Only Segmented Tabs -->
         <input type="radio" name="st" id="tab-api" class="tab-radio" checked>
         <input type="radio" name="st" id="tab-model" class="tab-radio">
         <input type="radio" name="st" id="tab-utils" class="tab-radio">
         <input type="radio" name="st" id="tab-license" class="tab-radio">
         <input type="radio" name="st" id="tab-about" class="tab-radio">
 
-        <nav class="tab-bar">
+        <nav class="tab-bar" aria-label="Settings Tabs">
             <label for="tab-api" class="tab-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                <span>API</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                <span>API Credentials</span>
             </label>
             <label for="tab-model" class="tab-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span>Model</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <span>Model Parameters</span>
             </label>
             <label for="tab-utils" class="tab-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
-                <span>Utilities</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
+                <span>Context &amp; Utilities</span>
             </label>
             <label for="tab-license" class="tab-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span>License</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>License &amp; Telemetry</span>
             </label>
             <label for="tab-about" class="tab-label">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                <span>About</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                <span>About &amp; Engine</span>
             </label>
         </nav>
 
@@ -958,32 +1186,33 @@
             <div class="tab-content" data-tab="api">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        <div class="card-header-icon" aria-hidden="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
                         </div>
-                        <span class="card-header-text">API Configuration</span>
+                        <span class="card-header-text">Primary Model Gateway Credentials</span>
+                        <span class="card-header-chip">TLS 1.3 / E2EE</span>
                     </div>
                     <div class="card-body">
                         <div class="field">
-                            <label>API Provider</label>
+                            <label for="apiProvider">Inference Engine / Provider</label>
                             <select id="apiProvider">
-                                <option value="groq">Groq (groq.com) — Free &amp; Fast</option>
-                                <option value="openrouter">OpenRouter (openrouter.ai)</option>
-                                <option value="custom">Custom Endpoint</option>
+                                <option value="groq">Groq (groq.com) — Ultra-Low Latency &amp; Free Tiers</option>
+                                <option value="openrouter">OpenRouter (openrouter.ai) — Multi-Provider Gateway</option>
+                                <option value="custom">Custom OpenAI-Compatible Endpoint</option>
                             </select>
                         </div>
                         <div class="field">
-                            <label>API Key</label>
+                            <label for="apiKey">Gateway Secret Key</label>
                             <div class="input-wrap">
-                                <input type="password" id="apiKey" placeholder="gsk_v1_…  or your custom key" />
-                                <button class="eye-btn" id="toggleKey">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-5 0-9 4-9 7s4 7 9 7 9-4 9-7-4-7-9-7z"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="10" x2="12" y2="8"/></svg>
+                                <input type="password" id="apiKey" placeholder="gsk_…  or your custom key" autocomplete="off" spellcheck="false" />
+                                <button class="eye-btn" id="toggleKey" aria-label="Toggle API Key visibility">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                 </button>
                             </div>
                             <p class="hint">Get a free key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a></p>
                         </div>
                         <div class="field" id="customEpWrap" style="display: none;">
-                            <label>Custom Endpoint URL</label>
+                            <label for="customEndpoint">Custom Endpoint URL</label>
                             <input type="text" id="customEndpoint" placeholder="https://openrouter.ai/api/v1/chat/completions" />
                         </div>
                     </div>
@@ -994,42 +1223,39 @@
             <div class="tab-content" data-tab="model">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        <div class="card-header-icon" aria-hidden="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                         </div>
-                        <span class="card-header-text">Model Selection</span>
+                        <span class="card-header-text">Foundation Model Selection &amp; Routing</span>
                     </div>
                     <div class="card-body">
                         <div class="field">
-                            <label>AI Model</label>
+                            <label for="model">Active LLM Architecture</label>
                             <select id="model">
-                                <optgroup label="— Groq (High Performance &amp; Reasoning) —">
-                                    <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile — High quality/reasoning</option>
-                                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest general-purpose</option>
+                                <optgroup label="— Groq (High-Throughput Production) —">
+                                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile — Best Quality &amp; Deep Reasoning</option>
+                                    <option value="llama-3.1-8b-instant">llama-3.1-8b-instant — Fastest General-Purpose Response</option>
                                     <option value="openai/gpt-oss-120b">openai/gpt-oss-120b — SOTA 120B Open Reasoning</option>
                                     <option value="openai/gpt-oss-20b">openai/gpt-oss-20b — Fast 20B Open Reasoning</option>
-                                    <option value="qwen/qwen3.6-27b">qwen/qwen3.6-27b — Advanced Math &amp; Multilingual (27B)</option>
+                                    <option value="openai/gpt-oss-safeguard-20b">openai/gpt-oss-safeguard-20b — Safety-Tuned 20B</option>
+                                    <option value="qwen/qwen3.8-27b">qwen/qwen3.8-27b — Advanced Math &amp; Multilingual (27B)</option>
                                     <option value="groq/compound">groq/compound — Groq Compound Agent</option>
                                     <option value="groq/compound-mini">groq/compound-mini — Groq Compound Mini Agent</option>
                                     <option value="allam-2-7b">allam-2-7b — High Throughput (7K req/day)</option>
-                                    <option value="mixtral-8x7b-32768">Mixtral 8x7B — Creative writing (32K ctx)</option>
-                                    <option value="gemma2-9b-it">Gemma2 9B — Lightweight, Google-quality</option>
                                 </optgroup>
-                                <optgroup label="— OpenRouter (xAI Grok &amp; SOTA Models) —">
-                                    <option value="x-ai/grok-2">xAI Grok 2 — State of the art intelligence</option>
-                                    <option value="x-ai/grok-beta">xAI Grok Beta — Fast reasoning</option>
-                                    <option value="openrouter/free">Recommended — Auto-routes to best free</option>
-                                    <option value="deepseek/deepseek-r1:free">DeepSeek R1 — Elite chain-of-thought reasoning</option>
-                                    <option value="deepseek/deepseek-chat:free">DeepSeek V3 — Strong reasoning &amp; coding</option>
-                                    <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B — Best overall quality</option>
-                                    <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B — Fast &amp; Reliable</option>
-                                    <option value="mistralai/mistral-7b-instruct:free">Mistral 7B — Compact &amp; Capable</option>
+                                <optgroup label="— OpenRouter (Community &amp; Free Models) —">
+                                    <option value="openrouter/free">Recommended — Auto-routes to Best Active Free Model</option>
+                                    <option value="openrouter/auto">openrouter/auto — Smart Auto-Routing Gateway</option>
+                                    <option value="qwen/qwen3.8-27b:free">Qwen 3.8 27B — Strong Multilingual Reasoning</option>
+                                    <option value="z-ai/glm-5.2:free">GLM 5.2 — Fast &amp; Capable</option>
+                                    <option value="google/gemma-4-31b-it:free">Gemma 4 31B — Google Quality Instruction Model</option>
+                                    <option value="nvidia/nemotron-3-super-120b-a12b:free">Nemotron 3 Super 120B — Largest Free Parameter Model</option>
                                 </optgroup>
                                 <option value="custom">Custom model name…</option>
                             </select>
                         </div>
                         <div class="field" id="customModelWrap" style="display:none">
-                            <label>Custom Model Name</label>
+                            <label for="customModel">Custom Model Identifier</label>
                             <input type="text" id="customModel" placeholder="e.g. llama-3.1-8b-instant" />
                         </div>
                     </div>
@@ -1040,25 +1266,35 @@
             <div class="tab-content" data-tab="utils">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+                        <div class="card-header-icon" aria-hidden="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
                         </div>
-                        <span class="card-header-text">Utilities</span>
+                        <span class="card-header-text">Autonomous Sensory &amp; Page Behaviors</span>
                     </div>
                     <div class="card-body">
                         <div class="toggle-item">
                             <div class="toggle-info">
-                                <div class="toggle-label">Always Active Window</div>
-                                <div class="hint">Prevents sites from detecting background tabs.</div>
+                                <div class="toggle-label-wrap">
+                                    <div class="toggle-label">Always Active Window</div>
+                                    <span class="toggle-badge">RECOMMENDED</span>
+                                </div>
+                                <div class="hint">Prevents hostile web exam and proctoring pages from detecting tab switches or background states.</div>
                             </div>
-                            <div class="toggle-switch" id="activeWindowToggle" role="switch" tabindex="0" aria-checked="false"><div class="toggle-circle"></div></div>
+                            <div class="toggle-switch" id="activeWindowToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Always Active Window Toggle">
+                                <div class="toggle-circle"></div>
+                            </div>
                         </div>
+
                         <div class="toggle-item">
                             <div class="toggle-info">
-                                <div class="toggle-label">Enable Copy &amp; Paste</div>
-                                <div class="hint">Allow selection/copy/right-click on <span id="siteLabel">current site</span>.</div>
+                                <div class="toggle-label-wrap">
+                                    <div class="toggle-label">Enable Copy &amp; Paste</div>
+                                </div>
+                                <div class="hint">Bypasses copy, selection, and right-click restrictions on <span id="siteLabel" style="color: var(--cx-accent-bright); font-weight: 600;">current site</span>.</div>
                             </div>
-                            <div class="toggle-switch" id="copyPasteToggle" role="switch" tabindex="0" aria-checked="false"><div class="toggle-circle"></div></div>
+                            <div class="toggle-switch" id="copyPasteToggle" role="switch" tabindex="0" aria-checked="false" aria-label="Enable Copy and Paste Toggle">
+                                <div class="toggle-circle"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1069,31 +1305,35 @@
                 <div class="card">
                     <div class="license-header-row">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="card-header-icon" style="background: rgba(5, 150, 105, 0.1); border-color: rgba(5, 150, 105, 0.12); color: var(--success);">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <div class="card-header-icon" style="background: var(--cx-badge-signal-bg); border-color: var(--cx-badge-signal-border); color: var(--cx-signal);" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                             </div>
-                            <span class="card-header-text" style="border: 0; padding: 0; margin: 0;">License Details</span>
+                            <span class="card-header-text" style="border: 0; padding: 0; margin: 0;">Enterprise Subscription Telemetry</span>
                         </div>
-                        <span id="licenseBadge" class="license-badge active">ACTIVE</span>
+                        <span id="licenseBadge" class="license-badge">ACTIVE ENTERPRISE LICENSE</span>
                     </div>
                     <div class="card-body">
                         <div class="field">
-                            <label>Activation ID</label>
+                            <label>Hardware-Bound Activation ID</label>
                             <div class="copy-field">
-                                <span id="dispLicenseKey">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</span>
-                                <button class="copy-btn" id="copyLicenseBtn">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                <span id="dispLicenseKey">&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;</span>
+                                <button class="copy-btn" id="copyLicenseBtn" aria-label="Copy Activation ID" title="Copy ID">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                 </button>
                             </div>
                         </div>
                         <div class="stat-grid">
                             <div class="stat-item">
-                                <div class="stat-label">Days Left</div>
+                                <div class="stat-label">Days Remaining</div>
                                 <div class="stat-value" id="dispDaysLeft">--</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-label">Activated</div>
+                                <div class="stat-label">Activated At</div>
                                 <div class="stat-value subtle" id="dispActivatedAt">--</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Encrypted Backup</div>
+                                <div class="stat-value subtle" style="color: var(--cx-signal);">AES-GCM-256</div>
                             </div>
                         </div>
                     </div>
@@ -1101,21 +1341,21 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-header-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <div class="card-header-icon" aria-hidden="true">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         </div>
-                        <span class="card-header-text">Data Backup</span>
+                        <span class="card-header-text">Cryptographic State Backup &amp; Restore</span>
                     </div>
                     <div class="card-body">
-                        <p class="hint">Export your Identity, License Key, and API settings to a secure backup file.</p>
+                        <p class="hint">Export your Identity, License Key, Workflows, and API settings to an encrypted local backup file.</p>
                         <div class="backup-row">
                             <button class="btn btn-ghost" id="exportBtn">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Export
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Export Backup
                             </button>
                             <button class="btn btn-ghost" id="importBtn">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                                Import
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                Import Backup
                             </button>
                             <input type="file" id="importFile" accept=".json" style="display: none;" />
                         </div>
@@ -1127,13 +1367,17 @@
             <div class="tab-content" data-tab="about">
                 <div class="card info-card">
                     <div class="info-card-inner">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                        <strong style="color: var(--accent-2); font-size: 14px;">Install ID</strong>
-                        <span id="optionsCreditsInstallId" style="user-select: all; font-family: 'JetBrains Mono', monospace; color: var(--accent-2); font-size: 12px; background: rgba(0,0,0,0.03); padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);">Loading...</span>
+                        <div class="header-logo-wrap" style="width: 44px; height: 44px; margin-bottom: 8px;">
+                            <div class="header-logo-wrap-inner">
+                                <img src="icons/logo128.png" width="26" height="26" class="cortex-brand-icon" style="width: 26px; height: 26px;" alt="Project Cortex" />
+                            </div>
+                        </div>
+                        <strong style="color: var(--cx-accent-bright); font-size: 15px; letter-spacing: -0.01em;">Unique Device Installation Fingerprint</strong>
+                        <span id="optionsCreditsInstallId" style="user-select: all; font-family: var(--cx-font-mono); color: var(--cx-accent-bright); font-size: 12px; background: var(--cx-surface-sunken); padding: 7px 16px; border-radius: var(--cx-radius-sm); border: 1px solid var(--cx-border-soft);">Loading...</span>
                         <div class="info-divider"></div>
-                        <div style="color: var(--text-muted); font-size: 12px; line-height: 1.8;">
-                            Credits: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank">Zenith Open Source Projects</a><br/>
-                            Developer: <a href="https://github.com/roshhellwett" target="_blank">roshhellwett</a>
+                        <div style="color: var(--cx-text-secondary); font-size: 12px; line-height: 1.8;">
+                            Engine &amp; Architecture: <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: var(--cx-accent); text-decoration: none;">Zenith Open Source Projects</a><br/>
+                            Maintained by: <a href="https://github.com/roshhellwett" target="_blank" style="color: var(--cx-accent); text-decoration: none;">roshhellwett</a>
                         </div>
                     </div>
                 </div>
@@ -1143,25 +1387,27 @@
 
     </main>
 
+    <!-- STICKY ACTION BAR -->
     <div class="action-bar">
         <div class="action-bar-inner">
+            <div id="status" role="status" aria-live="polite"></div>
             <div class="btn-group">
-                <button class="btn btn-primary" id="saveBtn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                    Save Settings
-                </button>
                 <button class="btn" id="testBtn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                     Test Connection
                 </button>
+                <button class="btn btn-primary" id="saveBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    Save Settings
+                </button>
             </div>
-            <div id="status"></div>
         </div>
     </div>
 
+    <!-- TOAST -->
     <div id="toast">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Settings saved
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--cx-accent-bright)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span>Settings saved successfully</span>
     </div>
 
     <script src="options.js"></script>

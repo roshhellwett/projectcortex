@@ -10,7 +10,7 @@
 import {
   GROQ_URL, OPENROUTER_URL, MODELS, ACTION_CONFIG, DEFAULT_ACTION,
   TIMEOUT_MS, MAX_RETRIES, RETRY_BASES, PROVIDER_GROQ, PROVIDER_OPENROUTER, PROVIDER_CUSTOM,
-  GROQ_FALLBACK_CHAIN, OPENROUTER_FALLBACK_CHAIN
+  GROQ_FALLBACK_CHAIN, OPENROUTER_FALLBACK_CHAIN, migrateModel
 } from './bg_config.js';
 import { quickAuthCheck } from './bg_auth.js';
 
@@ -22,10 +22,13 @@ export const resolveEndpoint = (apiProvider, customEndpoint) => {
 
 export const resolveModel = (apiProvider, model, action) => {
   const cfg = ACTION_CONFIG[action];
-  if (!cfg) return model || (apiProvider === PROVIDER_OPENROUTER ? MODELS.DEFAULT_OR : MODELS.DEFAULT);
+  let base = model || (apiProvider === PROVIDER_OPENROUTER ? MODELS.DEFAULT_OR : MODELS.DEFAULT);
+  // Silently migrate models the provider has retired so saved settings keep working.
+  if (apiProvider !== PROVIDER_CUSTOM) base = migrateModel(base);
+  if (!cfg) return base;
   if (cfg.overrideModelOnGroq && apiProvider === PROVIDER_GROQ) return MODELS.MCQ_GROQ;
   if (cfg.overrideModelOnOpenRouter && apiProvider === PROVIDER_OPENROUTER) return MODELS.MCQ_OR;
-  return model || (apiProvider === PROVIDER_OPENROUTER ? MODELS.DEFAULT_OR : MODELS.DEFAULT);
+  return base;
 };
 
 export const nextFallback = (apiProvider, currentModel) => {
@@ -108,7 +111,17 @@ export function classifyError(status, data, apiProvider) {
     return { type: 'quota', message: 'OpenRouter blocked the request. Check billing at openrouter.ai/activity or switch to Groq.', retryable: false };
   }
   if (sanitizedMsg.includes('model not found') || sanitizedMsg.includes('model_not_found') || sanitizedMsg.includes('does not exist')) {
+    // A stored/retired model ID is still requestable — fall back instead of hard-failing.
+    if (apiProvider !== PROVIDER_CUSTOM) {
+      return { type: 'model', message: `The selected model is unavailable on ${apiProvider}. Retrying with a fallback model…`, retryable: true };
+    }
     return { type: 'model', message: `Model not found on ${apiProvider}. Select a different model in Settings.`, retryable: false };
+  }
+  if (sanitizedMsg.includes('decommissioned') || sanitizedMsg.includes('no longer supported') || sanitizedMsg.includes('has been decommissioned')) {
+    if (apiProvider !== PROVIDER_CUSTOM) {
+      return { type: 'model', message: 'The selected model has been retired by the provider. Retrying automatically with a supported model…', retryable: true };
+    }
+    return { type: 'model', message: 'The selected model has been retired by the provider. Pick a supported model in Settings.', retryable: false };
   }
   if (status === 400 && sanitizedMsg.includes('must provide')) {
     return { type: 'error', message: 'The API rejected the request format. Try updating the extension.', retryable: false };
@@ -192,12 +205,16 @@ export async function handleAIRequest(payload, sendResponse, tabId) {
 
     const endpoint = resolveEndpoint(apiProvider, customEndpoint);
 
+    const messages = Array.isArray(payload.messages) && payload.messages.length > 0
+      ? payload.messages
+      : [
+          { role: 'system', content: systemPrompt || '' },
+          { role: 'user', content: prompt || '' }
+        ];
+
     const body = {
       model: modelToTry || MODELS.DEFAULT,
-      messages: [
-        { role: 'system', content: systemPrompt || '' },
-        { role: 'user', content: prompt || '' }
-      ],
+      messages,
       max_tokens: cfg.maxTokens,
       temperature: cfg.temperature,
       top_p: cfg.topP

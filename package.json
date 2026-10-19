@@ -1,21 +1,40 @@
 {
   "name": "projectcortex",
-  "version": "11.0.0",
-  "description": "![Stars](https://img.shields.io/github/stars/roshhellwett/projectcortex?style=for-the-badge)\r ![Chrome](https://img.shields.io/badge/Chrome-Extension-brightgreen?style=for-the-badge)\r ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge)",
+  "version": "11.3.0",
+  "description": "Project Cortex — High-Performance Browser Intelligence & Productivity Operating System",
   "main": "bg_api.js",
   "scripts": {
-    "package": "node package_webstore.js",
-    "assets": "node build_webstore_assets.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node scripts/build.js",
+    "clean": "node scripts/clean.js",
+    "assets": "node scripts/build.js",
+    "package": "node scripts/package-webstore.js",
+    "verify": "node scripts/package-webstore.js",
+    "verify:dist": "node scripts/build.js && node tests/verify-dist.js",
+    "unit": "node tests/run-tests.js",
+    "check:tokens": "python scripts/css-tokens-check.py",
+    "check:audit": "python scripts/css-audit.py content.css",
+    "test": "node tests/run-tests.js && node scripts/package-webstore.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/roshhellwett/projectcortex.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "chrome-extension",
+    "ai",
+    "llm",
+    "productivity",
+    "command-palette",
+    "manifest-v3",
+    "obsidian-gold",
+    "zenith-os"
+  ],
+  "author": "roshhellwett (Zenith Open Source Projects)",
+  "license": "MIT",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "bugs": {
     "url": "https://github.com/roshhellwett/projectcortex/issues"
   },

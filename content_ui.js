@@ -33,6 +33,18 @@ function startThinking(baseText) {
   }, 350)
 }
 
+function updatePageIntel() {
+  try {
+    if (typeof getPageReadingMetrics === 'function') {
+      const metrics = getPageReadingMetrics()
+      const readEl = document.getElementById('pm-intel-readtime')
+      const wordsEl = document.getElementById('pm-intel-words')
+      if (readEl) readEl.textContent = metrics.readingTimeFormatted || '1 min'
+      if (wordsEl) wordsEl.textContent = metrics.wordsFormatted || '0 words'
+    }
+  } catch (_) {}
+}
+
 function showState(name) {
   cancelTypewriter()
   if (name !== 'loading') {
@@ -44,6 +56,9 @@ function showState(name) {
     .forEach(s => s.classList.remove('active'))
   const el = document.getElementById('pm-state-' + name)
   if (el) el.classList.add('active')
+  if (name === 'welcome') {
+    updatePageIntel()
+  }
 }
 
 function setLoadingLabel(text) {
@@ -155,8 +170,22 @@ function typeHtml(el, htmlString, speed) {
   _typeTimer = requestAnimationFrame(frame)
 }
 
+var _suppressHistory = false
+
+// Persist every finished answer into the local Recall store so it survives
+// navigation. Guarded so the module works even when the store is missing.
+function pcxRememberResult(label, content) {
+  if (_suppressHistory) return
+  try {
+    if (window.CortexMemory && typeof window.CortexMemory.record === 'function') {
+      const pending = window.CortexMemory.record(label, content)
+      // Never let a storage hiccup surface as an unhandled rejection.
+      if (pending && typeof pending.catch === 'function') pending.catch(() => {})
+    }
+  } catch (_) {}
+}
+
 function showGenericResult(actionLabel, content) {
-  content = content.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
   const htmlContent = parseMarkdown(content)
   const actionEl = document.getElementById('pm-result-action')
   const genericEl = document.getElementById('pm-generic-result')
@@ -169,6 +198,7 @@ function showGenericResult(actionLabel, content) {
   if (copyBtn) copyBtn.dataset.content = content
   showState('result')
   if (bodyEl) typeHtml(bodyEl, htmlContent)
+  pcxRememberResult(actionLabel, content)
 }
 
 function renderOptions(options) {
@@ -223,6 +253,7 @@ function showCorrectAnswer(question, options, matched) {
   `
 
   if (copyBtn) copyBtn.dataset.content = matched.label + '. ' + sanitizeText(matched.text)
+  pcxRememberResult('Correct Answer', matched.label + '. ' + sanitizeText(matched.text))
   showState('result')
 }
 
@@ -255,6 +286,7 @@ function openPanel() {
       panel.classList.remove('pm-positioned')
     }
     panel.classList.add('pm-open')
+    updatePageIntel()
   }
 }
 
@@ -301,8 +333,9 @@ function buildPanelHTML() {
   return `
     <div class="pm-header">
       <div class="pm-logo">
+        <img class="pm-logo-icon" src="${(() => { try { return chrome?.runtime?.getURL?.('icons/logo48.png') || 'icons/logo48.png' } catch (_) { return 'icons/logo48.png' } })()}" width="16" height="16" alt="Cortex" />
         <span class="pm-logo-text">Cortex</span>
-        <span class="pm-badge">OS v11.0.0</span>
+        <span class="pm-badge">OS v${(() => { try { return chrome?.runtime?.getManifest?.().version || '11.1.0' } catch (_) { return '' } })()}</span>
       </div>
       <div class="pm-traffic-lights">
         <button class="pm-traffic-light red" id="pm-close-btn" aria-label="Close panel" title="Close"></button>
@@ -343,6 +376,27 @@ function buildPanelHTML() {
       </div>
 
       <div id="pm-state-welcome" class="pm-state">
+        <div class="pm-page-intel" id="pm-page-intel">
+          <div class="pm-intel-row">
+            <span class="pm-intel-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="pm-intel-readtime">-- min</span>
+            </span>
+            <span>\u00B7</span>
+            <span id="pm-intel-words">-- words</span>
+          </div>
+          <div class="pm-intel-pills">
+            <button class="pm-intel-pill" id="pm-quick-summary" type="button" aria-label="Quick summary of page">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Summary
+            </button>
+            <button class="pm-intel-pill" id="pm-quick-actions" type="button" aria-label="Extract action items from page">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              Action Items
+            </button>
+          </div>
+        </div>
+
         <div class="pm-section-label">\u25B8 Quick Actions</div>
         <div class="pm-actions-grid">
           <button class="pm-action-btn" id="pm-action-correct" aria-label="Find Correct Answer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Correct Answer</button>
@@ -386,6 +440,16 @@ function buildPanelHTML() {
             <svg width="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copy
           </button>
+          <button class="pm-pin-btn" id="pm-pin-btn" aria-label="Pin to Scratchpad" title="Pin note to Scratchpad">
+            <svg width="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2l6 6L8 22H2v-6L16 2z"/><line x1="19" y1="5" x2="15" y2="9"/></svg>
+            Pin Note
+          </button>
+        </div>
+        <div class="pm-followup-container">
+          <input type="text" class="pm-followup-input" id="pm-followup-input" placeholder="Ask follow-up question..." aria-label="Follow-up question">
+          <button class="pm-followup-send" id="pm-followup-send" aria-label="Send follow-up">
+            <svg width="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
         </div>
       </div>
 
@@ -410,10 +474,10 @@ function buildPanelHTML() {
           <svg width="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-      <div style="font-size: 10px; color: #888; text-align: center; padding: 8px; background: rgba(225, 215, 194, 0.3); border-top: 1px solid rgba(0, 0, 0, 0.04); line-height: 1.5; font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;">
-        <span style="color: #059669;">\u25C9</span> Install ID: <span id="pm-credits-install-id" style="font-family: 'JetBrains Mono', monospace; user-select: all; color: #d4a017;">...</span><br/>
-        <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: #d4a017; text-decoration: none;">Zenith OS \u2014 Open Source</a> \u00B7 
-        <a href="https://github.com/roshhellwett" target="_blank" style="color: #d4a017; text-decoration: none;">roshhellwett</a>
+      <div style="font-size: var(--cx-text-label, 10px); color: var(--cx-text-muted, #A39B8E); text-align: center; padding: 8px; background: var(--cx-surface-sunken, rgba(0, 0, 0, 0.28)); border-top: 1px solid var(--cx-border-subtle, rgba(255, 255, 255, 0.08)); line-height: 1.5; font-family: var(--cx-font-mono, monospace);">
+        <span style="color: var(--cx-signal, #059669); font-size: 8px;">\u25CF</span> Install ID: <span id="pm-credits-install-id" style="font-family: var(--cx-font-mono, monospace); user-select: all; color: var(--cx-accent, #D4A017);">...</span><br/>
+        <a href="https://zenithopensourceprojects.vercel.app/" target="_blank" style="color: var(--cx-accent, #D4A017); text-decoration: none;">Zenith OS \u2014 Open Source</a> \u00B7 
+        <a href="https://github.com/roshhellwett" target="_blank" style="color: var(--cx-accent, #D4A017); text-decoration: none;">roshhellwett</a>
       </div>
   `
 }
@@ -424,7 +488,7 @@ function createBubble() {
     _bubble.id = 'pagemind-bubble'
     _bubble.innerHTML =
       '<button id="pm-bubble-trigger" aria-label="Open ProjectCortex actions" title="ProjectCortex">' +
-        '<span class="pm-bubble-letter">C</span>' +
+        `<img class="pm-bubble-logo" src="${(() => { try { return chrome?.runtime?.getURL?.('icons/logo48.png') || 'icons/logo48.png' } catch (_) { return 'icons/logo48.png' } })()}" width="14" height="14" alt="Cortex" />` +
       '</button>' +
       '<div id="pm-bubble-menu" aria-label="ProjectCortex selection actions">' +
         '<div style="padding: 0 4px"><input type="text" id="pm-bubble-input" placeholder="Ask anything..." autocomplete="off"></div>' +
@@ -623,6 +687,81 @@ function clamp(v, min, max) {
   return Math.max(min, Math.min(v, max))
 }
 
+/* --------------------------------------------------------------------------
+ * Panel drag lifecycle
+ *
+ * The panel used to raise a full screen "drag overlay" element to hold the
+ * move cursor. That element was only removed by a mouseup the panel actually
+ * received, so releasing the mouse outside the window, over a cross origin
+ * iframe, or after a tab switch left it covering the page: the cursor stayed
+ * on the cross, text selection was dead, and only a refresh brought it back.
+ *
+ * The drag state now lives on a class on <html>, which can only ever affect
+ * the cursor, and every plausible way for a drag to end is wired up so the
+ * state cannot survive. Anything left over is swept on the next mousedown.
+ * ------------------------------------------------------------------------ */
+
+function removeDragOverlay() {
+  try {
+    document.querySelectorAll('#pm-drag-overlay').forEach(el => el.remove())
+  } catch (_) {}
+  try {
+    document.documentElement.classList.remove('pm-dragging')
+  } catch (_) {}
+}
+
+// Ends a drag whose mouseup we saw.
+function finishPanelDrag(clientX, clientY) {
+  if (!_drag) return
+  _drag = false
+  _lastDragEnd = Date.now()
+  removeDragOverlay()
+  if (!_panel || !document.contains(_panel)) return
+
+  _panel.classList.remove('pm-dragging')
+  _panel.classList.add('pm-positioned')
+  const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340))
+  const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400))
+  const x = clamp(_sl + (clientX - _sx), 0, maxX)
+  const y = clamp(_st + (clientY - _sy), 0, maxY)
+  _panel.style.transform = 'none'
+  _panel.style.animation = 'none'
+  _panel.style.left = x + 'px'
+  _panel.style.top = y + 'px'
+  savePanelPos(x, y)
+}
+
+// Aborts a drag whose mouseup we will never receive. The panel stays where it
+// currently sits and that position is remembered, so nothing is lost.
+function abortPanelDrag() {
+  if (!_drag) return
+  _drag = false
+  _lastDragEnd = Date.now()
+  removeDragOverlay()
+  if (!_panel || !document.contains(_panel)) return
+
+  _panel.classList.remove('pm-dragging')
+  try {
+    const rect = _panel.getBoundingClientRect()
+    if (rect && isFinite(rect.left) && isFinite(rect.top)) {
+      savePanelPos(Math.round(rect.left), Math.round(rect.top))
+    }
+  } catch (_) {}
+}
+
+// Cheap self healing: a leaked drag state never outlives the next click.
+function clearStrayDragState() {
+  if (_drag) return
+  try {
+    if (document.documentElement.classList.contains('pm-dragging')) {
+      removeDragOverlay()
+      return
+    }
+  } catch (_) {}
+  const stray = document.getElementById('pm-drag-overlay')
+  if (stray && stray.parentNode) stray.parentNode.removeChild(stray)
+}
+
 function initDragger() {
   if (!_panel) return
 
@@ -648,8 +787,6 @@ function initDragger() {
     } catch (_) {}
   }
 
-  let _dragOverlay = null;
-
   _panel.addEventListener('mousedown', e => {
     if (e.target.closest('button, input, select, textarea, .pm-traffic-light, .pm-icon-btn, a, code, pre')) return;
     if (e.target.closest('.pm-body') && !e.target.classList.contains('pm-body')) return;
@@ -672,11 +809,9 @@ function initDragger() {
     _panel.classList.add('pm-dragging', 'pm-positioned');
     e.preventDefault();
 
-    if (!_dragOverlay) {
-      _dragOverlay = document.createElement('div');
-      _dragOverlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:2147483647;cursor:move;background:transparent;';
-      document.documentElement.appendChild(_dragOverlay);
-    }
+    // Clear any leaked state from a previous drag before starting a new one.
+    removeDragOverlay();
+    document.documentElement.classList.add('pm-dragging');
   });
 
   if (_dragListenersAdded) return;
@@ -701,6 +836,10 @@ function initDragger() {
   
   document.addEventListener('mousemove', e => {
     if (!_drag || !_panel) return;
+    // The button was released somewhere we never saw — outside the window, or
+    // over a cross origin iframe that swallowed the mouseup. Recover the moment
+    // the pointer comes back instead of staying stuck on the cross cursor.
+    if (e.buttons === 0) { finishPanelDrag(e.clientX, e.clientY); return; }
     const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340));
     const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400));
     _targetX = clamp(_sl + (e.clientX - _sx), 0, maxX);
@@ -716,30 +855,22 @@ function initDragger() {
     });
   }, { passive: true });
 
-  document.addEventListener('mouseup', e => {
-    if (!_drag || !_panel) return;
-    _drag = false;
-    _lastDragEnd = Date.now();
-    _panel.classList.remove('pm-dragging');
-    _panel.classList.add('pm-positioned');
-    
-    if (_dragOverlay && _dragOverlay.parentNode) {
-      _dragOverlay.parentNode.removeChild(_dragOverlay);
-    }
-    _dragOverlay = null;
-
-    const maxX = Math.max(0, window.innerWidth - (_panel.offsetWidth || 340));
-    const maxY = Math.max(0, window.innerHeight - (_panel.offsetHeight || 400));
-    const x = clamp(_sl + (e.clientX - _sx), 0, maxX);
-    const y = clamp(_st + (e.clientY - _sy), 0, maxY);
-    
-    _panel.style.transform = 'none';
-    _panel.style.animation = 'none';
-    _panel.style.left = x + 'px';
-    _panel.style.top = y + 'px';
-    
-    savePanelPos(x, y);
-  });
+  // Every plausible way for a drag to end. Registered in the capture phase on
+  // window so a page script calling stopPropagation on mouseup at the document
+  // level can no longer strand the drag.
+  window.addEventListener('mouseup', e => finishPanelDrag(e.clientX, e.clientY), true);
+  window.addEventListener('pointercancel', abortPanelDrag, true);
+  window.addEventListener('blur', abortPanelDrag, true);
+  window.addEventListener('dragend', abortPanelDrag, true);
+  window.addEventListener('mouseout', e => {
+    // relatedTarget is null only when the pointer left the browser window.
+    if (!e.relatedTarget && !e.toElement) abortPanelDrag();
+  }, true);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) abortPanelDrag();
+  }, true);
+  // Last line of defence: a leaked drag state dies on the next click.
+  document.addEventListener('mousedown', clearStrayDragState, true);
 }
 
 function wireActionButtons() {
@@ -752,6 +883,53 @@ function wireActionButtons() {
     if (btnFactcheck) btnFactcheck.addEventListener('click', () => { window.__ProjectCortexAI.runFactCheck() })
     if (btnSummarize) btnSummarize.addEventListener('click', () => { window.__ProjectCortexAI.runSummarize() })
     if (btnDefine) btnDefine.addEventListener('click', () => { window.__ProjectCortexAI.runDefine() })
+
+    document.getElementById('pm-quick-summary')?.addEventListener('click', () => {
+      window.__ProjectCortexAI.runSummarize()
+    })
+    document.getElementById('pm-quick-actions')?.addEventListener('click', () => {
+      if (window.__ProjectCortexAI && typeof window.__ProjectCortexAI.runWorkflow === 'function') {
+        window.__ProjectCortexAI.runWorkflow('action_items')
+      }
+    })
+
+    document.getElementById('pm-pin-btn')?.addEventListener('click', async function () {
+      const copyBtn = document.getElementById('pm-copy-btn')
+      const content = copyBtn?.dataset?.content || document.getElementById('pm-result-body')?.innerText || ''
+      if (!content) return
+      const actionLabel = document.getElementById('pm-result-action')?.textContent?.replace(/^\u2713\s*/, '') || 'Note'
+      const btn = this
+      const orig = btn.innerHTML
+      try {
+        if (window.CortexScratchpad) {
+          await window.CortexScratchpad.add(content, actionLabel)
+          btn.innerHTML = '<svg width="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Pinned!'
+          setTimeout(() => { if (document.contains(btn)) btn.innerHTML = orig }, 1500)
+        }
+      } catch (_) {
+        btn.innerHTML = 'Error'
+        setTimeout(() => { if (document.contains(btn)) btn.innerHTML = orig }, 1500)
+      }
+    })
+
+    const followupInput = document.getElementById('pm-followup-input')
+    const followupSend = document.getElementById('pm-followup-send')
+    const triggerFollowup = () => {
+      if (!followupInput) return
+      const q = followupInput.value.trim()
+      if (!q) return
+      followupInput.value = ''
+      window.__ProjectCortexAI.runAsk(q)
+    }
+    if (followupSend) followupSend.addEventListener('click', triggerFollowup)
+    if (followupInput) {
+      followupInput.addEventListener('keydown', e => {
+        e.stopPropagation()
+        if (e.key === 'Enter') triggerFollowup()
+      })
+      followupInput.addEventListener('keyup', e => e.stopPropagation())
+      followupInput.addEventListener('keypress', e => e.stopPropagation())
+    }
 
     const installIdSpan = document.getElementById('pm-credits-install-id');
     if (installIdSpan) {
@@ -887,6 +1065,7 @@ function wireActionButtons() {
     const askSendBtn = document.getElementById('pm-ask-send')
     
     const triggerAsk = () => {
+      if (!askInput) return
       const q = askInput.value.trim()
       if (!q) {
         askInput.classList.remove('pm-invalid')
@@ -930,6 +1109,7 @@ function wireActionButtons() {
       else if (a.name === 'summarize') window.__ProjectCortexAI.runSummarize()
       else if (a.name === 'define') window.__ProjectCortexAI.runDefine()
       else if (a.name === 'ask' && a.question) window.__ProjectCortexAI.runAsk(a.question)
+      else if (a.name === 'workflow' && a.workflow) window.__ProjectCortexAI.runWorkflow(a.workflow)
       else showState('welcome')
     })
   } catch (_) {}
@@ -1012,6 +1192,7 @@ function initSelectionListeners() {
   }, true)
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
+      if (typeof abortPanelDrag === 'function') abortPanelDrag()
       hideBubble()
       const panel = document.getElementById('pagemind-panel')
       const wasOpen = panel && panel.classList.contains('pm-open')
@@ -1069,13 +1250,26 @@ function initSelectionListeners() {
   })
 }
 
+// Re-renders a previously saved answer from the Recall store without writing
+// it back into history a second time.
+window.__ProjectCortexAI = window.__ProjectCortexAI || {}
+window.__ProjectCortexAI.showStoredResult = function (label, content) {
+  _suppressHistory = true
+  try {
+    openPanel()
+    showGenericResult(String(label || 'Result'), String(content || ''))
+  } finally {
+    _suppressHistory = false
+  }
+}
+
 // Global error boundary for zero-error robust architecture
 window.addEventListener('error', (e) => {
   const msg = e.message || e.error?.message || 'Unknown runtime error';
   if (typeof showError === 'function') {
     const panel = document.getElementById('pagemind-panel');
     if (panel && panel.classList.contains('pm-open')) {
-      showError(`⚠ System Error: ${msg}. Try closing and reopening the panel.`);
+      showError(`[System Error] ${msg}. Try closing and reopening the panel.`);
     }
   }
 });
@@ -1084,7 +1278,7 @@ window.addEventListener('unhandledrejection', (e) => {
   if (typeof showError === 'function') {
     const panel = document.getElementById('pagemind-panel');
     if (panel && panel.classList.contains('pm-open')) {
-      showError(`⚠ Async Error: ${reason}. Please retry.`);
+      showError(`[Async Error] ${reason}. Please retry.`);
     }
   }
 });
